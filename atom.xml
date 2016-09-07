@@ -4,9 +4,9 @@
   <subtitle>头顶有光终是幻，足下生云未是仙</subtitle>
   <link href="/atom.xml" rel="self"/>
   
-  <link href="http://yoursite.com/"/>
+  <link href="https://t1ger.github.io/"/>
   <updated>2016-09-07T07:05:14.990Z</updated>
-  <id>http://yoursite.com/</id>
+  <id>https://t1ger.github.io/</id>
   
   <author>
     <name>t1ger</name>
@@ -17,8 +17,8 @@
   
   <entry>
     <title></title>
-    <link href="http://yoursite.com/2016/09/07/404/"/>
-    <id>http://yoursite.com/2016/09/07/404/</id>
+    <link href="https://t1ger.github.io/2016/09/07/404/"/>
+    <id>https://t1ger.github.io/2016/09/07/404/</id>
     <published>2016-09-07T07:05:14.990Z</published>
     <updated>2016-09-07T07:05:14.990Z</updated>
     
@@ -68,8 +68,8 @@
   
   <entry>
     <title>Hello World</title>
-    <link href="http://yoursite.com/2016/09/07/hello-world/"/>
-    <id>http://yoursite.com/2016/09/07/hello-world/</id>
+    <link href="https://t1ger.github.io/2016/09/07/hello-world/"/>
+    <id>https://t1ger.github.io/2016/09/07/hello-world/</id>
     <published>2016-09-07T02:34:20.852Z</published>
     <updated>2016-09-07T02:34:20.852Z</updated>
     
