@@ -150,6 +150,12 @@
 <p>修改后的配置文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">location  / &#123;</div><div class="line">    proxy_pass http://10.44.15.43:8080/MP/;</div><div class="line">    proxy_redirect off;</div><div class="line">    proxy_set_header Host $host;</div><div class="line">    proxy_set_header X-Real-IP       $remote_addr;</div><div class="line">    proxy_set_header X-Forwarded-For  $proxy_add_x_forwarded_for;</div><div class="line">    proxy_set_header   Cookie $http_cookie;                 </div><div class="line">    add_header From admin.weiwei.com.cn;</div><div class="line">    proxy_cookie_path /MP/ /;</div><div class="line">    chunked_transfer_encoding       off;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
 <p>问题分析：原来配置会导致cookie存储的位置不是基于“/”那么在第二次访问的时候会从新创建session，因此session中的信息丢失，因此修改cookeie的存储路径解决问题。</p>
 
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/120" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/120" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
 					</div>
 
 			  <!-- about -->
@@ -174,6 +180,7 @@
 
 		<footer>
 			
+
 
 <p>
   由 <a href="https://hexo.io">hexo</a> 强力驱动 |&nbsp;&nbsp;本站总点击 <span id="busuanzi_value_site_pv"></span> 次
