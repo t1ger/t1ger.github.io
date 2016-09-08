@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-09-08T07:19:45.482Z</updated>
+  <updated>2016-09-08T07:25:37.912Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -20,10 +20,9 @@
     <link href="https://t1ger.github.io/2016/09/08/nginx-proxy-pass%E5%B8%B8%E7%94%A8%E7%9F%A5%E8%AF%86%E7%82%B9%E8%A7%A3%E6%9E%90/"/>
     <id>https://t1ger.github.io/2016/09/08/nginx-proxy-pass常用知识点解析/</id>
     <published>2016-09-08T03:55:45.000Z</published>
-    <updated>2016-09-08T07:19:45.482Z</updated>
+    <updated>2016-09-08T07:25:37.912Z</updated>
     
-    <content type="html"><![CDATA[<p>##proxy_pass 指令<code>/</code> 解析</p>
-<p>首先，我们先上两个例子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">location ^~ /test/</div><div class="line">	&#123;</div><div class="line">	proxy_pass http://www.test.com;</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
+    <content type="html"><![CDATA[<h2 id="proxy-pass-指令-解析"><a href="#proxy-pass-指令-解析" class="headerlink" title="proxy_pass 指令/ 解析"></a>proxy_pass 指令<code>/</code> 解析</h2><p>首先，我们先上两个例子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">location ^~ /test/</div><div class="line">	&#123;</div><div class="line">	proxy_pass http://www.test.com;</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">location ^~ /test/</div><div class="line">	&#123;</div><div class="line">	proxy_pass http://www.test.com/;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
 <p>区别只在于proxy_pass转发的路径后是否带 “/“,</p>
 <ul>
@@ -32,8 +31,7 @@
 <li>实现上述效果也可以通过rewrite来实现，代码如下<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">location ^~ /test/</div><div class="line">	&#123;</div><div class="line">	proxy_set_header Host www.test.com;</div><div class="line">	rewrite /test/(.+)$ /$1 break;</div><div class="line">	proxy_pass http://www.test.com;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
 </li>
 </ul>
-<p>##proxy_set_header 解析</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">proxy_set_header</div><div class="line">Syntax: proxy_set_header field value</div><div class="line">Default: Host $proxy_host / Connection close</div><div class="line">Context: http / server / location</div><div class="line">Reference: proxy_set_header</div></pre></td></tr></table></figure>
+<h2 id="proxy-set-header-解析"><a href="#proxy-set-header-解析" class="headerlink" title="proxy_set_header 解析"></a>proxy_set_header 解析</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">proxy_set_header</div><div class="line">Syntax: proxy_set_header field value</div><div class="line">Default: Host $proxy_host / Connection close</div><div class="line">Context: http / server / location</div><div class="line">Reference: proxy_set_header</div></pre></td></tr></table></figure>
 <ul>
 <li><p>当nginx作为反向代理使用，而如果后端服务器有防盗链或根据http请求头中的host字段来进行路由或判断功能的话，如nginx不重写请求头中的host字段，将会导致请求失败【默认反向代理服务器会向后端服务器发送请求，并且请求头中的host字段应为proxy_pass指令设置的服务器】</p>
 </li>
@@ -44,8 +42,7 @@
 </li>
 </ul>
 <p>需要注意的是：如果Host请求头部没有出现在请求头中，则$http_host值为空，但是$host值为主域名。因此，一般而言，会用$host代替$http_host变量，从而避免http请求中丢失Host头部的情况下Host不被重写的失误。</p>
-<p>##proxy_pass 与 tomcat session丢失</p>
-<p>闲言少叙，直接看nginx修改前后的配置文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">location  / &#123;</div><div class="line">       proxy_pass http://10.44.15.43:8080/MP/;</div><div class="line">       proxy_redirect off;</div><div class="line">       proxy_set_header Host $host;</div><div class="line">       proxy_set_header X-Real-IP       $remote_addr;</div><div class="line">       proxy_set_header X-Forwarded-For  $proxy_add_x_forwarded_for;</div><div class="line">       &#125;</div></pre></td></tr></table></figure></p>
+<h2 id="proxy-pass-与-tomcat-session丢失"><a href="#proxy-pass-与-tomcat-session丢失" class="headerlink" title="proxy_pass 与 tomcat session丢失"></a>proxy_pass 与 tomcat session丢失</h2><p>闲言少叙，直接看nginx修改前后的配置文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">location  / &#123;</div><div class="line">       proxy_pass http://10.44.15.43:8080/MP/;</div><div class="line">       proxy_redirect off;</div><div class="line">       proxy_set_header Host $host;</div><div class="line">       proxy_set_header X-Real-IP       $remote_addr;</div><div class="line">       proxy_set_header X-Forwarded-For  $proxy_add_x_forwarded_for;</div><div class="line">       &#125;</div></pre></td></tr></table></figure></p>
 <p>修改后的配置文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">location  / &#123;</div><div class="line">    proxy_pass http://10.44.15.43:8080/MP/;</div><div class="line">    proxy_redirect off;</div><div class="line">    proxy_set_header Host $host;</div><div class="line">    proxy_set_header X-Real-IP       $remote_addr;</div><div class="line">    proxy_set_header X-Forwarded-For  $proxy_add_x_forwarded_for;</div><div class="line">    proxy_set_header   Cookie $http_cookie;                 </div><div class="line">    add_header From admin.weiwei.com.cn;</div><div class="line">    proxy_cookie_path /MP/ /;</div><div class="line">    chunked_transfer_encoding       off;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
 <p>问题分析：原来配置会导致cookie存储的位置不是基于“/”那么在第二次访问的时候会从新创建session，因此session中的信息丢失，因此修改cookeie的存储路径解决问题。</p>
 <hr>
