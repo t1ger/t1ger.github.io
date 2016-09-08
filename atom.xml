@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-09-07T07:05:14.990Z</updated>
+  <updated>2016-09-08T04:06:38.727Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,52 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>nginx proxy_pass常用知识点解析</title>
+    <link href="https://t1ger.github.io/2016/09/08/nginx-proxy-pass%E5%B8%B8%E7%94%A8%E7%9F%A5%E8%AF%86%E7%82%B9%E8%A7%A3%E6%9E%90/"/>
+    <id>https://t1ger.github.io/2016/09/08/nginx-proxy-pass常用知识点解析/</id>
+    <published>2016-09-08T03:55:45.000Z</published>
+    <updated>2016-09-08T04:06:38.727Z</updated>
+    
+    <content type="html"><![CDATA[<p>##proxy_pass 指令<code>/</code> 解析</p>
+<p>首先，我们先上两个例子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">location ^~ /test/</div><div class="line">	&#123;</div><div class="line">	proxy_pass http://www.test.com;</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">location ^~ /test/</div><div class="line">	&#123;</div><div class="line">	proxy_pass http://www.test.com/;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>区别只在于proxy_pass转发的路径后是否带 “/“,</p>
+<ul>
+<li>针对不带<code>/</code>, 假如我们访问的url=<a href="http://www.test.com/test/test.php" target="_blank" rel="external">http://www.test.com/test/test.php</a>,<br>则通过nginx代理后，请求的路径访问地址为<a href="http://www.test.com/test/test.php" target="_blank" rel="external">http://www.test.com/test/test.php</a></li>
+<li>针对带<code>/</code>, 假如我们访问的url=<a href="http://www.test.com/test/test.php" target="_blank" rel="external">http://www.test.com/test/test.php</a>,<br>则通过nginx代理后，请求的路径访问地址为<a href="http://www.test.com/test.php" target="_blank" rel="external">http://www.test.com/test.php</a></li>
+<li>实现上述效果也可以通过rewrite来实现，代码如下<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">location ^~ /test/</div><div class="line">	&#123;</div><div class="line">	proxy_set_header Host www.test.com;</div><div class="line">	rewrite /test/(.+)$ /$1 break;</div><div class="line">	proxy_pass http://www.test.com;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>##proxy_set_header 解析</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">proxy_set_header</div><div class="line">Syntax: proxy_set_header field value</div><div class="line">Default: Host $proxy_host / Connection close</div><div class="line">Context: http / server / location</div><div class="line">Reference: proxy_set_header</div></pre></td></tr></table></figure>
+<ul>
+<li><p>当nginx作为反向代理使用，而如果后端服务器有防盗链或根据http请求头中的host字段来进行路由或判断功能的话，如nginx不重写请求头中的host字段，将会导致请求失败【默认反向代理服务器会向后端服务器发送请求，并且请求头中的host字段应为proxy_pass指令设置的服务器】</p>
+</li>
+<li><p>同理，X_Forward_For字段表示该条http请求是有谁发出的，如果反向代理服务器不重写该请求头的话，那么后端服务器在处理时会认为所有的请求都来在反向代理服务器，如果后端有防攻击策略的话，那么机器就无法访问了。</p>
+</li>
+<li><p>因此，一般我们用以下nginx中增加以下配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">proxy_set_header Host $http_host;</div><div class="line">proxy_set_header X-Forward-For $remote_addr;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>需要注意的是：如果Host请求头部没有出现在请求头中，则$http_host值为空，但是$host值为主域名。因此，一般而言，会用$host代替$http_host变量，从而避免http请求中丢失Host头部的情况下Host不被重写的失误。</p>
+<p>##proxy_pass 与 tomcat session丢失</p>
+<p>闲言少叙，直接看nginx修改前后的配置文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">location  / &#123;</div><div class="line">       proxy_pass http://10.44.15.43:8080/MP/;</div><div class="line">       proxy_redirect off;</div><div class="line">       proxy_set_header Host $host;</div><div class="line">       proxy_set_header X-Real-IP       $remote_addr;</div><div class="line">       proxy_set_header X-Forwarded-For  $proxy_add_x_forwarded_for;</div><div class="line">       &#125;</div></pre></td></tr></table></figure></p>
+<p>修改后的配置文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">location  / &#123;</div><div class="line">    proxy_pass http://10.44.15.43:8080/MP/;</div><div class="line">    proxy_redirect off;</div><div class="line">    proxy_set_header Host $host;</div><div class="line">    proxy_set_header X-Real-IP       $remote_addr;</div><div class="line">    proxy_set_header X-Forwarded-For  $proxy_add_x_forwarded_for;</div><div class="line">    proxy_set_header   Cookie $http_cookie;                 </div><div class="line">    add_header From admin.weiwei.com.cn;</div><div class="line">    proxy_cookie_path /MP/ /;</div><div class="line">    chunked_transfer_encoding       off;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>问题分析：原来配置会导致cookie存储的位置不是基于“/”那么在第二次访问的时候会从新创建session，因此session中的信息丢失，因此修改cookeie的存储路径解决问题。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      nginx proxy_pass 知识点
+    
+    </summary>
+    
+    
+      <category term="nginx" scheme="https://t1ger.github.io/tags/nginx/"/>
+    
+  </entry>
   
   <entry>
     <title></title>
@@ -60,33 +106,6 @@
     &lt;br&gt;&lt;!--
     &lt;!DOCTYPE HTML&gt;
     &lt;
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Hello World</title>
-    <link href="https://t1ger.github.io/2016/09/07/hello-world/"/>
-    <id>https://t1ger.github.io/2016/09/07/hello-world/</id>
-    <published>2016-09-07T02:34:20.852Z</published>
-    <updated>2016-09-07T02:34:20.852Z</updated>
-    
-    <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.
     
     </summary>
     
