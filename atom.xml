@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-09-08T07:27:28.824Z</updated>
+  <updated>2016-09-09T07:31:10.492Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,119 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>提高工作效率之vim篇</title>
+    <link href="https://t1ger.github.io/2016/09/09/%E6%8F%90%E9%AB%98%E5%B7%A5%E4%BD%9C%E6%95%88%E7%8E%87%E4%B9%8Bvim%E7%AF%87/"/>
+    <id>https://t1ger.github.io/2016/09/09/提高工作效率之vim篇/</id>
+    <published>2016-09-09T06:50:23.000Z</published>
+    <updated>2016-09-09T07:31:10.492Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="启动及关闭-Vi-Vim"><a href="#启动及关闭-Vi-Vim" class="headerlink" title="启动及关闭 Vi/Vim"></a>启动及关闭 Vi/Vim</h3><pre><code>1. vi 打开 Vi/Vim
+   vi &lt;file&gt; 打开 Vi/Vim 并加载文件 &lt;file&gt;
+2. ZQ 无条件退出 
+   :q! 无条件退出
+   ZZ 存盘并退出
+   :wq 存盘并退出
+3. :m,nw &lt;file&gt; 将 m 行到 n 行部分的内容保存到文件 &lt;file&gt; 中 
+   :m,nw &gt;&gt; &lt;file&gt; 将 m 行到 n 行的内容添加到文件 &lt;file&gt; 的末尾
+</code></pre><p>在使用 Vi/Vim 的时候，有时想临时退出 Vi/Vim，转到 shell 环境里去做一些操作，等这些操作结束后，再继续回到刚才的 Vi/Vim 状态。<br>有两种方法可以可以实现临时退出 Vi/Vim、进入 shell 环境后再回来的要求：<br><strong>方法一：使用 Ctrl-z 以及 fg 这两个命令组合。</strong></p>
+<ul>
+<li>Ctrl-z 命令将当前的 Vi/Vim 进程放到后台执行，之后 shell 环境即可为你所用；fg 命令则将位于后台的 Vi/Vim 进程放到前台执行，这样我们就再次进入 Vi/Vim 操作界面并恢复到原先的编辑状态。</li>
+</ul>
+<p><strong>方法二：使用行命令 :sh。</strong> </p>
+<ul>
+<li>在 Vi/Vim 的正常模式下输入 :sh即可进入 Linux/Unix shell 环境。在要返回到 Vi/Vim 编辑环境时，输入 exit 命令即可。</li>
+</ul>
+<h3 id="移动光标"><a href="#移动光标" class="headerlink" title="移动光标"></a>移动光标</h3><p>要正确高效的运用 Vi/Vim 的各种操作，一定要把握这一原则: <strong>先定单位再定量。</strong> 操作对象的范围计算公式为：操作范围 = 操作次数 * 操作单位。比如：5h 命令左移 5 个字符，8w 命令右移 8 个单词。</p>
+<p>Vi/Vim 中操作单位有很多，按从小到大的顺序为（括号内为相应的操作命令）：字符（h、l）→ 单词 (w、W、b、B、e) → 行 (j、k、0、^、$、:n) → 句子（(、)）→ 段落（{、}）→ 屏 (H、M、L) → 页（Ctrl-f、Ctrl-b、Ctrl-u、Ctrl-d) → 文件（G、gg、:0、:$）。</p>
+<p>除了这些基本单位之外，还有 %（跳转到与之匹配的括号处），`.（跳转到最近修改过的位置并定位编辑点）, ‘.（跳转到最近修改过的位置但不定位编辑点）这三个命令也非常重要，在 Vi/Vim 中灵活使用会极大提高效率。% 除用于光标移动之后，还可用于检测源码中各种括号的匹配情况。</p>
+<pre><code>1. fa → 到下一个为a的字符处,你也可以fs到下一个为s的字符
+2. 0 移到当前行开头 
+   ^ 移到当前行的第一个非空字符
+   $ 移到当前行末尾
+   :n 移动到第 n 行
+3. ) 移动到当前句子的末尾
+   ( 移动到当前句子的开头
+4. } 移动当前段落的末尾
+   { 移到当前段落的开头
+5. H 移动到屏幕的第一行
+   M 移动到屏幕的中间一行
+   L 移动到屏幕的最后一行
+6. Ctrl-f 向前滚动一页
+   Ctrl-b 向后滚动一页
+   Ctrl-u 向前滚动半页
+   Ctrl-d 向后滚动半页
+7. G 移动到文件末尾
+   gg 移动到文件开头
+   :0 移动到文件第一行
+   :$ 移动到文件最后一行
+</code></pre><hr>
+<p>除了这些基本单位之外，还有 %（跳转到与之匹配的括号处），`.（跳转到最近修改过的位置并定位编辑点）, ‘.（跳转到最近修改过的位置但不定位编辑点）这三个命令也非常重要，在 Vi/Vim 中灵活使用会极大提高效率。% 除用于光标移动之后，还可用于检测源码中各种括号的匹配情况。</p>
+<hr>
+<h3 id="文本编辑"><a href="#文本编辑" class="headerlink" title="文本编辑"></a>文本编辑</h3><p>与光标移动一样，Vi/Vim 中关于编辑操作的命令也比较多，但操作单位要比移动光标少得多。按从小到大的顺序为（括号内为相应的操作命令）：字符 （x、c、s、r、i、a）→ 单词 (cw、cW、cb、cB、dw、dW、db、dB) → 行 (dd、d0、d$、I、A、o、O) → 句子（(、)）→ 段落（{、}）。这些操作单位有些可以加操作次数。操作对象的范围计算公式为：操作范围 = 操作次数 * 操作单位。比如：d3w 命令删除三个单词，10dd 命令删除十行。</p>
+<pre><code>1. dd 删除当前行
+   d0 删除从当前光标开始到行末的内容
+   d$ 删除从当前光标开始到行末的内容
+2. d) 删除当前句子从光标位置开始到句末的内容
+   d( 删除当前句子从光标位置开始到句首的内容
+3. d} 删除当前段落从光标位置开始到段末的内容
+   d{ 删除当前段落从光标位置开始到段首的内容
+4. yw 复制当前单词从光标开始的部分
+   yy 复制光标所在行的所有字符;p 将最后一个删除或复制文本放在当前字符 
+5. u 撤消更改
+   Ctrl-R 重做更改
+6. . 重复上次操作(. 为小数点（dot）,有点象 MS Office 的格式刷)
+7. :%!nl 在所有非空行前加入行号 
+   :%!nl -ba 在所有行前加入行号(利用 Linux 命令 nl 来实现的)
+8. Ctrl-g 显示当前编辑文件名及行数
+9. Ctrl-p 自动补全(在编写代码的时候非常有用.比如，输入 prin 后按 Ctrl-p 将自动帮你输入 printf 函数名后面的部分，同时将相关备选函数在底下列出来.)
+</code></pre><h3 id="文本搜索与替换"><a href="#文本搜索与替换" class="headerlink" title="文本搜索与替换"></a>文本搜索与替换</h3><p>Vi/Vim 用于文本搜索的主要有下面的三个基本命令：</p>
+<pre><code>1. / 在文件中向前搜索(可配合操作数使用，比如 3/str 向前搜索字串 str 并将光标移到第三个找到的串)
+2. ? 在文件中向后搜索
+3. n 搜索下一个 N 反向搜索下一个
+</code></pre><p>除这三个基本命令之外，还有以下三个非常有效快捷的与搜索查找有关的命令：</p>
+<pre><code>1. * 在文件中向前搜索当前光标所在的单词
+   # 在文件中向后搜索当前光标所在的单词
+2. q/ 显示搜索命令历史的窗口, q? 显示搜索命令历史的窗口
+</code></pre><p>关于替换主是要结合搜索使用行命令来实现，命令格式为：</p>
+<pre><code>:m,ns/str1/str2/g 将 m 行到 n 行中的字串 str1 全部替换为字串 str2。
+在众多使用正则表达式进行替换的命令中，平时需要掌握的一个命令是如何快速去除 ^M 字符。
+在 Vi/Vim 中使用替换命令 :1,$s/^M//g即可以很容易地快速去掉 ^M 字符。这里需要注意的是 ^M 是使用 Ctrl-v、Ctrl-m 输入的。
+</code></pre><h3 id="Vi-Vim-设置"><a href="#Vi-Vim-设置" class="headerlink" title="Vi/Vim 设置"></a>Vi/Vim 设置</h3><pre><code>1. 设置行号显示与否
+   :set number 显示行号
+   :set no number 取消行号显示
+   命令的简写形式：
+   :set nu 
+   :set no nu
+2. 设置自动缩进 
+   :set autoindent 设置自动缩进 
+   :set no autoindent 取消自动缩进设置
+   命令的简写形式：
+   :set ai 
+   :set no ai
+3. 设置缩进宽度 :set shiftwidth=4 设置缩进宽度为 4 
+   命令的简写形式：
+   :set sw=4
+</code></pre><h3 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h3><p>vim 编辑器是一个极其强大的工具，本文提供了一些技巧和诀窍，希望能够帮助您更高效地编辑文件。请记住，vim 还有更多不太为人所知的特性。</p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;启动及关闭-Vi-Vim&quot;&gt;&lt;a href=&quot;#启动及关闭-Vi-Vim&quot; class=&quot;headerlink&quot; title=&quot;启动及关闭 Vi/Vim&quot;&gt;&lt;/a&gt;启动及关闭 Vi/Vim&lt;/h3&gt;&lt;pre&gt;&lt;code&gt;1. vi 打开 Vi/Vim
+   vi 
+    
+    </summary>
+    
+    
+      <category term="linux" scheme="https://t1ger.github.io/tags/linux/"/>
+    
+      <category term="vim" scheme="https://t1ger.github.io/tags/vim/"/>
+    
+  </entry>
   
   <entry>
     <title>nginx proxy_pass常用知识点解析</title>
