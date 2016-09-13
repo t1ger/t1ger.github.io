@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-09-09T07:31:10.492Z</updated>
+  <updated>2016-09-13T03:29:54.744Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,47 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>五分钟快速了解 MySQL8新特性</title>
+    <link href="https://t1ger.github.io/2016/09/13/%E4%BA%94%E5%88%86%E9%92%9F%E5%BF%AB%E9%80%9F%E4%BA%86%E8%A7%A3-MySQL8%E6%96%B0%E7%89%B9%E6%80%A7/"/>
+    <id>https://t1ger.github.io/2016/09/13/五分钟快速了解-MySQL8新特性/</id>
+    <published>2016-09-13T02:42:57.000Z</published>
+    <updated>2016-09-13T03:29:54.744Z</updated>
+    
+    <content type="html"><![CDATA[<p>MySQL Community Server 8.0.0 dmr(Development Milestone Release)终于发布了，8.0的发布，可以说是MySQL来到了一个崭新的时代。MySQL终于废弃了MyISAM引擎，完成了MySQL的完美转身。</p>
+<p>MySQL的来历</p>
+<p>MySQL是一个小型关系型数据库管理系统，开发者为瑞典MySQL AB公司。在2008年1月16号被Sun公司收购。而2009年,SUN又被Oracal收购。</p>
+<p>MySQL的标志趣闻</p>
+<p>MySQL的海豚标志的名字叫“sakila”，它是由MySQL AB的创始人从用户在“海豚命名”的竞赛中建议的大量的名字表中选出的。获胜的名字是由来自非洲斯威士兰的开源软件开发者Ambrose Twebaze提供。根据Ambrose所说，Sakila来自一种叫SiSwati的斯威士兰方言，也是在Ambrose的家乡乌干达附近的坦桑尼亚的Arusha的一个小镇的名字。    </p>
+<p>这里吐槽一下的是MySQL的体积是越来越大了，几乎1G的大小让用户情何以堪呀，好怀念以前的时光呀。自从oracle收购了MySQL以后，体积是越来越向oracle看齐了。</p>
+<p>闲言少续，让我们一起看看MySQL的变化吧：</p>
+<ul>
+<li>账户管理，官方正式支持MySQL的ROLE了，grant tables 现在是InnoDB引擎了，放弃了先前的MyISAM。</li>
+<li>参数持久化，支持 SET语句并将参数写入data 目录下MySQLd-auto.cnf。在MySQL重启时，MySQL将优先读取此文件。</li>
+<li>MySQL的初始化， MySQL将使用–initialize or –initialize-insecure 代替 MySQL_install_db</li>
+<li>The .frm 元数据不在存在，元数据文件将存储在数据字典表中。</li>
+<li>MySQL 现在支持 invisible indexes。这对dba来说可是个福音，小伙伴们可以不用移除index而放心测试查询性能了。</li>
+<li>mysqld 不在支持  –partition and –skip-partition 选项。</li>
+<li>持久化自增值。通过将 auto-increment 值写入redo 日志来持久化自增值，优雅的解决了这一历史问题。</li>
+</ul>
+<p>上述只是8.0改进的一小部分，感兴趣的同学请移步官网。</p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;MySQL Community Server 8.0.0 dmr(Development Milestone Release)终于发布了，8.0的发布，可以说是MySQL来到了一个崭新的时代。MySQL终于废弃了MyISAM引擎，完成了MySQL的完美转身。&lt;/p&gt;
+&lt;p&gt;
+    
+    </summary>
+    
+    
+      <category term="MySQL" scheme="https://t1ger.github.io/tags/MySQL/"/>
+    
+  </entry>
   
   <entry>
     <title>提高工作效率之vim篇</title>

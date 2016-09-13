@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2016 | t1ger的茶馆</title>
+  <title>五分钟快速了解 MySQL8新特性 | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
   
   <meta name="description" content="https://t1ger.github.io/">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  
+  <meta property="og:title" content="五分钟快速了解 MySQL8新特性"/>
   <meta property="og:site_name" content="t1ger的茶馆"/>
 
   
@@ -114,21 +114,45 @@
 		<div class="content">
 			<!-- index -->
 		   
-			  	<h2>归档</h2>
-		  		
-	              <p class="archive-item">
-						<a href="/2016/09/13/五分钟快速了解-MySQL8新特性/" class="archive-title">五分钟快速了解 MySQL8新特性</a><span class="archive post-time">2016-09-13</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/09/提高工作效率之vim篇/" class="archive-title">提高工作效率之vim篇</a><span class="archive post-time">2016-09-09</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/08/nginx-proxy-pass常用知识点解析/" class="archive-title">nginx proxy_pass常用知识点解析</a><span class="archive post-time">2016-09-08</span>
-					</p>
-			  	
-			  <!-- post -->
+
+			  		<h2>五分钟快速了解 MySQL8新特性</h2>
+					
+					<div>
+						<span class="post-time">2016-09-13 11:42:57</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<p>MySQL Community Server 8.0.0 dmr(Development Milestone Release)终于发布了，8.0的发布，可以说是MySQL来到了一个崭新的时代。MySQL终于废弃了MyISAM引擎，完成了MySQL的完美转身。</p>
+<p>MySQL的来历</p>
+<p>MySQL是一个小型关系型数据库管理系统，开发者为瑞典MySQL AB公司。在2008年1月16号被Sun公司收购。而2009年,SUN又被Oracal收购。</p>
+<p>MySQL的标志趣闻</p>
+<p>MySQL的海豚标志的名字叫“sakila”，它是由MySQL AB的创始人从用户在“海豚命名”的竞赛中建议的大量的名字表中选出的。获胜的名字是由来自非洲斯威士兰的开源软件开发者Ambrose Twebaze提供。根据Ambrose所说，Sakila来自一种叫SiSwati的斯威士兰方言，也是在Ambrose的家乡乌干达附近的坦桑尼亚的Arusha的一个小镇的名字。    </p>
+<p>这里吐槽一下的是MySQL的体积是越来越大了，几乎1G的大小让用户情何以堪呀，好怀念以前的时光呀。自从oracle收购了MySQL以后，体积是越来越向oracle看齐了。</p>
+<p>闲言少续，让我们一起看看MySQL的变化吧：</p>
+<ul>
+<li>账户管理，官方正式支持MySQL的ROLE了，grant tables 现在是InnoDB引擎了，放弃了先前的MyISAM。</li>
+<li>参数持久化，支持 SET语句并将参数写入data 目录下MySQLd-auto.cnf。在MySQL重启时，MySQL将优先读取此文件。</li>
+<li>MySQL的初始化， MySQL将使用–initialize or –initialize-insecure 代替 MySQL_install_db</li>
+<li>The .frm 元数据不在存在，元数据文件将存储在数据字典表中。</li>
+<li>MySQL 现在支持 invisible indexes。这对dba来说可是个福音，小伙伴们可以不用移除index而放心测试查询性能了。</li>
+<li>mysqld 不在支持  –partition and –skip-partition 选项。</li>
+<li>持久化自增值。通过将 auto-increment 值写入redo 日志来持久化自增值，优雅的解决了这一历史问题。</li>
+</ul>
+<p>上述只是8.0改进的一小部分，感兴趣的同学请移步官网。</p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
 			  
 		</div>
 
@@ -137,6 +161,8 @@
 
 		<div class="comment-section">
   
+  
+
 
 </div>
 	</div>
