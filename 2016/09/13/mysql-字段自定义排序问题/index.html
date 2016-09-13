@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>t1ger的茶馆</title>
+  <title>mysql 字段自定义排序问题 | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
   
   <meta name="description" content="https://t1ger.github.io/">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  
+  <meta property="og:title" content="mysql 字段自定义排序问题"/>
   <meta property="og:site_name" content="t1ger的茶馆"/>
 
   
@@ -108,50 +108,45 @@
 	  <div class="container" >
 	    <div class="row">
 	
-	<div class="col-md-9">
+	<div class="col-md-9 center-content">
 	
 
 		<div class="content">
 			<!-- index -->
 		   
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/09/13/mysql-字段自定义排序问题/">mysql 字段自定义排序问题</a>
-		              </h3>
-									<span class="post-time">2016-09-13</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/09/13/五分钟快速了解-MySQL8新特性/">五分钟快速了解 MySQL8新特性</a>
-		              </h3>
-									<span class="post-time">2016-09-13</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/09/09/提高工作效率之vim篇/">提高工作效率之vim篇</a>
-		              </h3>
-									<span class="post-time">2016-09-09</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/09/08/nginx-proxy-pass常用知识点解析/">nginx proxy_pass常用知识点解析</a>
-		              </h3>
-									<span class="post-time">2016-09-08</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-				<!-- archives -->
+
+			  		<h2>mysql 字段自定义排序问题</h2>
+					
+					<div>
+						<span class="post-time">2016-09-13 17:13:27</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<p>今天碰到一个问题，指定mysql字段自定义排序</p>
+<pre><code>SELECT id FROM table  WHERE `id` IN (40593,6352,38120,56049,56050,56051);
+</code></pre><p>外事不决问google，经过搜索，网上的建议是使用FIELD()和FIND_IN_SET():</p>
+<pre><code>SELECT id FROM table  WHERE `id` IN (40593,6352,38120,56049,56050,56051) order by FIELD(id,6352,38120)desc ;
+
+SELECT id FROM table  WHERE `id` IN (40593,6352,38120,56049,56050,56051) order by FIND_IN_SET(username,&quot;6352,38120&quot;);
+</code></pre><p>继续google之,又找到一个建议，使用substring_index：</p>
+<p>substring_index(str,delim,count) str:要处理的字符串 delim:分隔符 count:计数</p>
+<p>str=www.google.com<br>substring_index(str,’.’,1)<br>结果是：www<br>substring_index(str,’.’,2)<br>结果是：www.google<br>即如果count是正数，那么就是从左往右数，第N个分隔符的左边的全部内容<br>相反，如果是负数，那么就是从右边开始数，第N个分隔符右边的所有内容，如：<br>substring_index(str,’.’,-2)<br>结果为：google.com<br>有人会说，如果我要中间的google怎么办？<br>很简单的，两个方向：<br>1、从右数第二个分隔符的右边全部，再从左数的第一个分隔符的左边：<br>substring_index(substring_index(str,’.’,-2),’.’,1);<br>2、你懂得！</p>
+<pre><code>SELECT id FROM table  WHERE `id` IN (40593,6352,38120,56049,56050,56051) order by substring_index(&apos;40593&apos;,username,1);
+</code></pre><p>完美解决，更多详细讨论请移步<a href="http://dev.mysql.com/doc/refman/5.7/en/sorting-rows.html" target="_blank" rel="external">官网讨论</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
 			  
 		</div>
 
@@ -160,56 +155,12 @@
 
 		<div class="comment-section">
   
+  
+
 
 </div>
 	</div>
 
-	
-		<div class="col-md-3">
-			<div id="sidebar">
-		</div>
-			
-					
-<div class="widget">
-  <h4>最新文章</h4>
-  <ul class="entry list-unstyled">
-    
-      <li>
-        <a href="/2016/09/13/mysql-字段自定义排序问题/"  > <i class="mdi-editor-insert-drive-file"></i>mysql 字段自定义排序问题</a>
-      </li>
-    
-      <li>
-        <a href="/2016/09/13/五分钟快速了解-MySQL8新特性/"  > <i class="mdi-editor-insert-drive-file"></i>五分钟快速了解 MySQL8新特性</a>
-      </li>
-    
-      <li>
-        <a href="/2016/09/09/提高工作效率之vim篇/"  > <i class="mdi-editor-insert-drive-file"></i>提高工作效率之vim篇</a>
-      </li>
-    
-      <li>
-        <a href="/2016/09/08/nginx-proxy-pass常用知识点解析/"  title="nginx proxy_pass 知识点"  > <i class="mdi-editor-insert-drive-file"></i>nginx proxy_pass常用知识点解析</a>
-      </li>
-    
-  </ul>
-</div>
-
-
-				
-					
-<div class="widget">
-	<h4>链接</h4>
-	<ul class="blogroll list-unstyled">
-	
-		<li> <a href="https://www.github.com/t1ger" title="t1ger的茶馆" target="_blank"> <i class="mdi-action-launch"></i> GitHub</a></li>
-	
-		<li> <a href="https://t1ger.github.io" title="t1ger的茶馆" target="_blank"> <i class="mdi-action-launch"></i> QQ</a></li>
-	
-	</ul>
-</div>
-
-
-				
-			</div>
 	
 
 </div>

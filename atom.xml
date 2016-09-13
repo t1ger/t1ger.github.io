@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-09-13T03:29:54.744Z</updated>
+  <updated>2016-09-13T08:43:12.890Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,42 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>mysql 字段自定义排序问题</title>
+    <link href="https://t1ger.github.io/2016/09/13/mysql-%E5%AD%97%E6%AE%B5%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%92%E5%BA%8F%E9%97%AE%E9%A2%98/"/>
+    <id>https://t1ger.github.io/2016/09/13/mysql-字段自定义排序问题/</id>
+    <published>2016-09-13T08:13:27.000Z</published>
+    <updated>2016-09-13T08:43:12.890Z</updated>
+    
+    <content type="html"><![CDATA[<p>今天碰到一个问题，指定mysql字段自定义排序</p>
+<pre><code>SELECT id FROM table  WHERE `id` IN (40593,6352,38120,56049,56050,56051);
+</code></pre><p>外事不决问google，经过搜索，网上的建议是使用FIELD()和FIND_IN_SET():</p>
+<pre><code>SELECT id FROM table  WHERE `id` IN (40593,6352,38120,56049,56050,56051) order by FIELD(id,6352,38120)desc ;
+
+SELECT id FROM table  WHERE `id` IN (40593,6352,38120,56049,56050,56051) order by FIND_IN_SET(username,&quot;6352,38120&quot;);
+</code></pre><p>继续google之,又找到一个建议，使用substring_index：</p>
+<p>substring_index(str,delim,count) str:要处理的字符串 delim:分隔符 count:计数</p>
+<p>str=www.google.com<br>substring_index(str,’.’,1)<br>结果是：www<br>substring_index(str,’.’,2)<br>结果是：www.google<br>即如果count是正数，那么就是从左往右数，第N个分隔符的左边的全部内容<br>相反，如果是负数，那么就是从右边开始数，第N个分隔符右边的所有内容，如：<br>substring_index(str,’.’,-2)<br>结果为：google.com<br>有人会说，如果我要中间的google怎么办？<br>很简单的，两个方向：<br>1、从右数第二个分隔符的右边全部，再从左数的第一个分隔符的左边：<br>substring_index(substring_index(str,’.’,-2),’.’,1);<br>2、你懂得！</p>
+<pre><code>SELECT id FROM table  WHERE `id` IN (40593,6352,38120,56049,56050,56051) order by substring_index(&apos;40593&apos;,username,1);
+</code></pre><p>完美解决，更多详细讨论请移步<a href="http://dev.mysql.com/doc/refman/5.7/en/sorting-rows.html" target="_blank" rel="external">官网讨论</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;今天碰到一个问题，指定mysql字段自定义排序&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;SELECT id FROM table  WHERE `id` IN (40593,6352,38120,56049,56050,56051);
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;外事不决问goo
+    
+    </summary>
+    
+    
+      <category term="mysql" scheme="https://t1ger.github.io/tags/mysql/"/>
+    
+  </entry>
   
   <entry>
     <title>五分钟快速了解 MySQL8新特性</title>
