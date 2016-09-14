@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-09-13T08:43:12.890Z</updated>
+  <updated>2016-09-14T01:58:32.729Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,24 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title></title>
+    <link href="https://t1ger.github.io/2016/09/14/google9a8feb742f4276dd/"/>
+    <id>https://t1ger.github.io/2016/09/14/google9a8feb742f4276dd/</id>
+    <published>2016-09-14T01:59:03.060Z</published>
+    <updated>2016-09-14T01:58:32.729Z</updated>
+    
+    <content type="html"><![CDATA[google-site-verification: google9a8feb742f4276dd.html]]></content>
+    
+    <summary type="html">
+    
+      google-site-verification: google9a8feb742f4276dd.html
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>mysql 字段自定义排序问题</title>
