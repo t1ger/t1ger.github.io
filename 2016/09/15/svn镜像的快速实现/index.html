@@ -4,15 +4,15 @@
   <meta charset="utf-8">
   <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
   
-  <title>nginx proxy_pass常用知识点解析 | t1ger的茶馆</title>
+  <title>svn镜像的快速实现 | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
   
-  <meta name="description" content="nginx proxy_pass 知识点">
+  <meta name="description" content="https://t1ger.github.io/">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="nginx proxy_pass常用知识点解析"/>
+  <meta property="og:title" content="svn镜像的快速实现"/>
   <meta property="og:site_name" content="t1ger的茶馆"/>
 
   
@@ -116,37 +116,47 @@
 			<!-- index -->
 		   
 
-			  		<h2>nginx proxy_pass常用知识点解析</h2>
+			  		<h2>svn镜像的快速实现</h2>
 					
 					<div>
-						<span class="post-time">2016-09-08 12:55:45</span>
+						<span class="post-time">2016-09-15 23:19:00</span>
 					</div>	
 					
 
 					<div class="article-content">
-						<h3 id="proxy-pass-指令-解析"><a href="#proxy-pass-指令-解析" class="headerlink" title="proxy_pass 指令/ 解析"></a>proxy_pass 指令<code>/</code> 解析</h3><p>首先，我们先上两个例子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">location ^~ /test/</div><div class="line">	&#123;</div><div class="line">	proxy_pass http://www.test.com;</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">location ^~ /test/</div><div class="line">	&#123;</div><div class="line">	proxy_pass http://www.test.com/;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
-<p>区别只在于proxy_pass转发的路径后是否带 “/“,</p>
-<ul>
-<li>针对不带<code>/</code>, 假如我们访问的url=<a href="http://www.test.com/test/test.php" target="_blank" rel="external">http://www.test.com/test/test.php</a>,<br>则通过nginx代理后，请求的路径访问地址为<a href="http://www.test.com/test/test.php" target="_blank" rel="external">http://www.test.com/test/test.php</a></li>
-<li>针对带<code>/</code>, 假如我们访问的url=<a href="http://www.test.com/test/test.php" target="_blank" rel="external">http://www.test.com/test/test.php</a>,<br>则通过nginx代理后，请求的路径访问地址为<a href="http://www.test.com/test.php" target="_blank" rel="external">http://www.test.com/test.php</a></li>
-<li>实现上述效果也可以通过rewrite来实现，代码如下<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">location ^~ /test/</div><div class="line">	&#123;</div><div class="line">	proxy_set_header Host www.test.com;</div><div class="line">	rewrite /test/(.+)$ /$1 break;</div><div class="line">	proxy_pass http://www.test.com;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+						<h4 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h4><p>在实际的应用环境，现有的SVN代码库数据量大，而svnsync却需要先初始化一个空库，然后再从0开始一直同步到相同的版本；<br>而主从服务器之间网络不好，因此需要较长时间或者传输中断。</p>
+<h3 id="配置过程："><a href="#配置过程：" class="headerlink" title="配置过程："></a>配置过程：</h3><ul>
+<li><p>备份主库(master)<br>svnadmin hotcopy path/to/repository path/to/backup –clean-logs<br>推荐使用hotcopy ，另外一种方法：<br>svnadmin dump <a href="http://source-server/svn/source-repo" target="_blank" rel="external">http://source-server/svn/source-repo</a> &gt; source-repo.dump</p>
+</li>
+<li><p>将备份文件拷贝到从服务器上(master)</p>
+</li>
+<li><p>在slave上创建一个mirror库</p>
+<p>  svnadmin create Code<br>  chown -R apache.apache Code<br>  cd Code/hooks<br>  cp -p pre-revprop-change.tmpl pre-revprop-change<br>  chmod+x pre-revporp-change</p>
+<p>  vim pre-revporp-change<br>删除以下内容：<br>  if [ “$ACTION” = “M” -a “$PROPNAME” = “svn:log” ]; then exit 0; fi<br>  echo “Changing revision properties other than svn:log is prohibited” &gt;&amp;2<br>  exit 1</p>
+</li>
+<li><p>设置mirror只对同步用户可写<br>[/]* = r<br>svnsync = rw<br>或者<br>使用start-commit 检查svnsync用户，下面是一个例子，是shell脚本：</p>
+<p>  #!/bin/sh<br>  USER=”$2″<br>  if [ “$USER” = “svnsync” ]; then<br>  exit 0<br>  fi<br>  echo “Only the svnsync user may commit new revisions as this is a read-only, mirror repository.” &gt;&amp;2<br>  exit 1 </p>
 </li>
 </ul>
-<h3 id="proxy-set-header-解析"><a href="#proxy-set-header-解析" class="headerlink" title="proxy_set_header 解析"></a>proxy_set_header 解析</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">proxy_set_header</div><div class="line">Syntax: proxy_set_header field value</div><div class="line">Default: Host $proxy_host / Connection close</div><div class="line">Context: http / server / location</div><div class="line">Reference: proxy_set_header</div></pre></td></tr></table></figure>
 <ul>
-<li><p>当nginx作为反向代理使用，而如果后端服务器有防盗链或根据http请求头中的host字段来进行路由或判断功能的话，如nginx不重写请求头中的host字段，将会导致请求失败【默认反向代理服务器会向后端服务器发送请求，并且请求头中的host字段应为proxy_pass指令设置的服务器】</p>
+<li><p>在master上通过svnsync 初始化(master)<br>svnsync initialize URL_MIRROR_REPO URL_MASTER_REPO –username=svnsync –password=svnsyncpassword<br>svnsync init file:///home/backup/svn/svnsync/Project1/  <a href="http://svntest.subversion.com/repos/Project1" target="_blank" rel="external">http://svntest.subversion.com/repos/Project1</a><br>语法是：svnsync init {你刚创建的库url} {源库url}<br>注意本地url是三个斜杠的：///</p>
+<p>  svnsync init <a href="http://192.168.1.100/svn/Code" target="_blank" rel="external">http://192.168.1.100/svn/Code</a> <a href="http://192.168.1.101/svn/Code" target="_blank" rel="external">http://192.168.1.101/svn/Code</a> –username=svnsync –password=svnsync</p>
 </li>
-<li><p>同理，X_Forward_For字段表示该条http请求是有谁发出的，如果反向代理服务器不重写该请求头的话，那么后端服务器在处理时会认为所有的请求都来在反向代理服务器，如果后端有防攻击策略的话，那么机器就无法访问了。</p>
+<li><p>在slave上备份初始化后的库(slave)<br>  cd /data/backup<br>  mv Code /opt/mirrorbak</p>
 </li>
-<li><p>因此，一般我们用以下nginx中增加以下配置：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">proxy_set_header Host $http_host;</div><div class="line">proxy_set_header X-Forward-For $remote_addr;</div></pre></td></tr></table></figure>
+<li><p>将主库备份文件放到相应位置，并进行部分文件替换(slave)</p>
+<p>  替换钩子文件<br>  cd Code/hooks<br>  cp -p /opt/mirrorbak/hooks/pre-revporp-change .<br>  替换uuid<br>  cd ../db/<br>  cp -p /opt/mirrorbak/hooks/db/uuid .</p>
+<p>  替换初始版本日志<br>  cd revprops/0/<br>  cp -p /opt/mirrorbak/db/revprops/0/0 .</p>
+<p>  更改仓库目录属主<br>  chown -R apache.apache /data/backup/Code</p>
+</li>
+<li><p>复制sync-last-merged-rev（最后一次同步）版本号(master)<br>  获取当前版本号，eg:7289<br>  cat Code/db/current<br>  将当前版本好复制到slave<br>  svn propset –revprop -r0 svn:sync-last-merged-rev 7289 <a href="http://192.168.1.100/svn/Code" target="_blank" rel="external">http://192.168.1.100/svn/Code</a><br>  执行一次同步<br>  svnsync sync <a href="http://192.168.1.100/svn/Code" target="_blank" rel="external">http://192.168.1.100/svn/Code</a></p>
+</li>
+<li><p>配置实时同步<br>  在主库的hooks目录下开启post-commit<br>  mv post-commit.tmpl post-commit<br>  chmod +x post-commit<br>  svnsync synchronize <a href="http://192.168.1.100/svn/Code" target="_blank" rel="external">http://192.168.1.100/svn/Code</a> –username=svnsync –password=svnsync &amp;<br>  exit 0 </p>
+</li>
+<li><p>配置slave只让sync用户提交</p>
+<p>  pre-revprop-change<br>  if [ “$USER” = “svnsync” ]; then<br>  exit 0<br>  fi<br>  echo “Only the svnsync user may change revision properties as this is a read-only, mirror repository.” &gt;&amp;2<br>  exit 1 </p>
 </li>
 </ul>
-<p>需要注意的是：如果Host请求头部没有出现在请求头中，则$http_host值为空，但是$host值为主域名。因此，一般而言，会用$host代替$http_host变量，从而避免http请求中丢失Host头部的情况下Host不被重写的失误。</p>
-<h3 id="proxy-pass-与-tomcat-session丢失"><a href="#proxy-pass-与-tomcat-session丢失" class="headerlink" title="proxy_pass 与 tomcat session丢失"></a>proxy_pass 与 tomcat session丢失</h3><p>闲言少叙，直接看nginx修改前后的配置文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">location  / &#123;</div><div class="line">       proxy_pass http://10.44.15.43:8080/MP/;</div><div class="line">       proxy_redirect off;</div><div class="line">       proxy_set_header Host $host;</div><div class="line">       proxy_set_header X-Real-IP       $remote_addr;</div><div class="line">       proxy_set_header X-Forwarded-For  $proxy_add_x_forwarded_for;</div><div class="line">       &#125;</div></pre></td></tr></table></figure></p>
-<p>修改后的配置文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">location  / &#123;</div><div class="line">    proxy_pass http://10.44.15.43:8080/MP/;</div><div class="line">    proxy_redirect off;</div><div class="line">    proxy_set_header Host $host;</div><div class="line">    proxy_set_header X-Real-IP       $remote_addr;</div><div class="line">    proxy_set_header X-Forwarded-For  $proxy_add_x_forwarded_for;</div><div class="line">    proxy_set_header   Cookie $http_cookie;                 </div><div class="line">    add_header From admin.weiwei.com.cn;</div><div class="line">    proxy_cookie_path /MP/ /;</div><div class="line">    chunked_transfer_encoding       off;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-<p>问题分析：原来配置会导致cookie存储的位置不是基于“/”那么在第二次访问的时候会从新创建session，因此session中的信息丢失，因此修改cookeie的存储路径解决问题。</p>
 <hr>
 <p>您的鼓励是我写作最大的动力</p>
 <p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>

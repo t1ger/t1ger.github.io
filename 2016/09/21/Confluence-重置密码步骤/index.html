@@ -4,15 +4,15 @@
   <meta charset="utf-8">
   <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
   
-  <title>nginx proxy_pass常用知识点解析 | t1ger的茶馆</title>
+  <title>Confluence 重置密码步骤 | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
   
-  <meta name="description" content="nginx proxy_pass 知识点">
+  <meta name="description" content="https://t1ger.github.io/">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="nginx proxy_pass常用知识点解析"/>
+  <meta property="og:title" content="Confluence 重置密码步骤"/>
   <meta property="og:site_name" content="t1ger的茶馆"/>
 
   
@@ -116,37 +116,69 @@
 			<!-- index -->
 		   
 
-			  		<h2>nginx proxy_pass常用知识点解析</h2>
+			  		<h2>Confluence 重置密码步骤</h2>
 					
 					<div>
-						<span class="post-time">2016-09-08 12:55:45</span>
+						<span class="post-time">2016-09-21 20:07:00</span>
 					</div>	
 					
 
 					<div class="article-content">
-						<h3 id="proxy-pass-指令-解析"><a href="#proxy-pass-指令-解析" class="headerlink" title="proxy_pass 指令/ 解析"></a>proxy_pass 指令<code>/</code> 解析</h3><p>首先，我们先上两个例子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">location ^~ /test/</div><div class="line">	&#123;</div><div class="line">	proxy_pass http://www.test.com;</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">location ^~ /test/</div><div class="line">	&#123;</div><div class="line">	proxy_pass http://www.test.com/;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
-<p>区别只在于proxy_pass转发的路径后是否带 “/“,</p>
+						<p>当我们忘记Confluence密码或者不能作为admin登陆的话，请参考以下方法：</p>
 <ul>
-<li>针对不带<code>/</code>, 假如我们访问的url=<a href="http://www.test.com/test/test.php" target="_blank" rel="external">http://www.test.com/test/test.php</a>,<br>则通过nginx代理后，请求的路径访问地址为<a href="http://www.test.com/test/test.php" target="_blank" rel="external">http://www.test.com/test/test.php</a></li>
-<li>针对带<code>/</code>, 假如我们访问的url=<a href="http://www.test.com/test/test.php" target="_blank" rel="external">http://www.test.com/test/test.php</a>,<br>则通过nginx代理后，请求的路径访问地址为<a href="http://www.test.com/test.php" target="_blank" rel="external">http://www.test.com/test.php</a></li>
-<li>实现上述效果也可以通过rewrite来实现，代码如下<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">location ^~ /test/</div><div class="line">	&#123;</div><div class="line">	proxy_set_header Host www.test.com;</div><div class="line">	rewrite /test/(.+)$ /$1 break;</div><div class="line">	proxy_pass http://www.test.com;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
-</li>
+<li><p>首先，你的有mysql或者其他数据库的权限啦，找到admin权限的用户</p>
+<pre><code>select u.id, u.user_name, u.active from cwd_user u
+join cwd_membership m on u.id=m.child_user_id join cwd_group g on m.parent_id=g.id join cwd_directory d on d.id=g.directory_id
+where g.group_name = &apos;confluence-administrators&apos; and d.directory_name=&apos;Confluence Internal Directory&apos;;
+确保找到的用户处于激活状态
+UPDATE cwd_user
+SET active = &apos;T&apos;
+WHERE user_name =&apos;&lt;user_name&gt;&apos;;
+</code></pre></li>
+<li><p>如果没有local admin存在，那我们只好自己建立了。</p>
+<pre><code>insert into cwd_user(id, user_name, lower_user_name, active, created_date, updated_date, first_name, lower_first_name, last_name, lower_last_name, display_name, lower_display_name, email_address, lower_email_address, directory_id, credential) values (1212121, &apos;admin&apos;, &apos;admin&apos;, &apos;T&apos;, &apos;2009-11-26 17:42:08&apos;, &apos;2009-11-26 17:42:08&apos;, &apos;A. D.&apos;, &apos;a. d.&apos;, &apos;Ministrator&apos;, &apos;ministrator&apos;, &apos;A. D. Ministrator&apos;, &apos;a. d. ministrator&apos;, &apos;admin@example.com&apos;, &apos;admin@example.com&apos;, (select id from cwd_directory where directory_name=&apos;Confluence Internal Directory&apos;), &apos;x61Ey612Kl2gpFL56FT9weDnpSo4AV8j8+qx2AuTHdRyY036xxzTTrw10Wq3+4qQyB+XURPWx1ONxp3Y3pB37A==&apos;);
+
+insert into user_mapping values (&apos;2c9681954172cf560000000000000001&apos;, &apos;admin&apos;, &apos;admin&apos;);
+
+添加新组
+
+insert into cwd_group(id, group_name, lower_group_name, active, local, created_date, updated_date, description, group_type, directory_id)
+values ( &apos;888888&apos;,&apos;confluence-administrators&apos;,&apos;confluence-administrators&apos;,&apos;T&apos;,&apos;F&apos;,&apos;2011-03-21 12:20:29&apos;,&apos;2011-03-21 12:20:29&apos;,NULL,&apos;GROUP&apos;,(select id from cwd_directory where directory_name=&apos;Confluence Internal Directory&apos;));
+insert into cwd_group(id, group_name, lower_group_name, active, local, created_date, updated_date, description, group_type, directory_id)
+values ( &apos;999999&apos;,&apos;confluence-users&apos;,&apos;confluence-users&apos;,&apos;T&apos;,&apos;F&apos;,&apos;2011-03-21 12:20:29&apos;,&apos;2011-03-21 12:20:29&apos;,NULL,&apos;GROUP&apos;,(select id from cwd_directory where directory_name=&apos;Confluence Internal Directory&apos;));
+
+添加组关系
+insert into cwd_membership (id, parent_id, child_user_id) values (888888, (select id from cwd_group where group_name=&apos;confluence-users&apos; and directory_id=(select id from cwd_directory where directory_name=&apos;Confluence Internal Directory&apos;)), 1212121);
+insert into cwd_membership (id, parent_id, child_user_id) values (999999, (select id from cwd_group where group_name=&apos;confluence-administrators&apos; and directory_id=(select id from cwd_directory where directory_name=&apos;Confluence Internal Directory&apos;)), 1212121);
+
+如果你用的是oracle数据库，请用 sysdate 代替 created_date.
+</code></pre></li>
+<li><p>替换admin密码，加密后的密码如下<br>  x61Ey612Kl2gpFL56FT9weDnpSo4AV8j8+qx2AuTHdRyY036xxzTTrw10Wq3+4qQyB+XURPWx1ONxp3Y3pB37A==，为了更改密码，我们要关闭Confluence<br>登陆mysql执行</p>
+<pre><code>update cwd_user set credential =
+&apos;x61Ey612Kl2gpFL56FT9weDnpSo4AV8j8+qx2AuTHdRyY036xxzTTrw10Wq3+4qQyB+XURPWx1ONxp3Y3pB37A==&apos;
+where id=&lt;id from Stage 1&gt;;
+</code></pre></li>
 </ul>
-<h3 id="proxy-set-header-解析"><a href="#proxy-set-header-解析" class="headerlink" title="proxy_set_header 解析"></a>proxy_set_header 解析</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">proxy_set_header</div><div class="line">Syntax: proxy_set_header field value</div><div class="line">Default: Host $proxy_host / Connection close</div><div class="line">Context: http / server / location</div><div class="line">Reference: proxy_set_header</div></pre></td></tr></table></figure>
 <ul>
-<li><p>当nginx作为反向代理使用，而如果后端服务器有防盗链或根据http请求头中的host字段来进行路由或判断功能的话，如nginx不重写请求头中的host字段，将会导致请求失败【默认反向代理服务器会向后端服务器发送请求，并且请求头中的host字段应为proxy_pass指令设置的服务器】</p>
-</li>
-<li><p>同理，X_Forward_For字段表示该条http请求是有谁发出的，如果反向代理服务器不重写该请求头的话，那么后端服务器在处理时会认为所有的请求都来在反向代理服务器，如果后端有防攻击策略的话，那么机器就无法访问了。</p>
-</li>
-<li><p>因此，一般我们用以下nginx中增加以下配置：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">proxy_set_header Host $http_host;</div><div class="line">proxy_set_header X-Forward-For $remote_addr;</div></pre></td></tr></table></figure>
-</li>
+<li><p>更改Internal Directory 为第一</p>
+<pre><code>找到directory 名
+
+select d.id, d.directory_name, m.list_index from cwd_directory d join cwd_app_dir_mapping m on d.id=m.directory_id;
+
+交换directory顺序
+
+update cwd_app_dir_mapping set list_index = 0 where directory_id = &lt;Internal Directory id&gt;;
+update cwd_app_dir_mapping set list_index = &lt;Noted Internal Directory list_index&gt; where directory_id = &lt;Directory id that had list_index 0&gt;;
+
+查看是否激活directory
+select id, directory_name, active from cwd_directory where id = &lt;Internal Directory id&gt;;
+
+如果必要，激活
+
+update cwd_directory set active = &apos;T&apos; where id = &lt;Internal Directory id&gt;;
+</code></pre></li>
 </ul>
-<p>需要注意的是：如果Host请求头部没有出现在请求头中，则$http_host值为空，但是$host值为主域名。因此，一般而言，会用$host代替$http_host变量，从而避免http请求中丢失Host头部的情况下Host不被重写的失误。</p>
-<h3 id="proxy-pass-与-tomcat-session丢失"><a href="#proxy-pass-与-tomcat-session丢失" class="headerlink" title="proxy_pass 与 tomcat session丢失"></a>proxy_pass 与 tomcat session丢失</h3><p>闲言少叙，直接看nginx修改前后的配置文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">location  / &#123;</div><div class="line">       proxy_pass http://10.44.15.43:8080/MP/;</div><div class="line">       proxy_redirect off;</div><div class="line">       proxy_set_header Host $host;</div><div class="line">       proxy_set_header X-Real-IP       $remote_addr;</div><div class="line">       proxy_set_header X-Forwarded-For  $proxy_add_x_forwarded_for;</div><div class="line">       &#125;</div></pre></td></tr></table></figure></p>
-<p>修改后的配置文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">location  / &#123;</div><div class="line">    proxy_pass http://10.44.15.43:8080/MP/;</div><div class="line">    proxy_redirect off;</div><div class="line">    proxy_set_header Host $host;</div><div class="line">    proxy_set_header X-Real-IP       $remote_addr;</div><div class="line">    proxy_set_header X-Forwarded-For  $proxy_add_x_forwarded_for;</div><div class="line">    proxy_set_header   Cookie $http_cookie;                 </div><div class="line">    add_header From admin.weiwei.com.cn;</div><div class="line">    proxy_cookie_path /MP/ /;</div><div class="line">    chunked_transfer_encoding       off;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-<p>问题分析：原来配置会导致cookie存储的位置不是基于“/”那么在第二次访问的时候会从新创建session，因此session中的信息丢失，因此修改cookeie的存储路径解决问题。</p>
+<p>重启登陆，打完收工</p>
 <hr>
 <p>您的鼓励是我写作最大的动力</p>
 <p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>

@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-09-14T01:58:32.729Z</updated>
+  <updated>2016-09-21T23:10:33.253Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -16,20 +16,192 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title></title>
-    <link href="https://t1ger.github.io/2016/09/14/google9a8feb742f4276dd/"/>
-    <id>https://t1ger.github.io/2016/09/14/google9a8feb742f4276dd/</id>
-    <published>2016-09-14T01:59:03.060Z</published>
-    <updated>2016-09-14T01:58:32.729Z</updated>
+    <title>Confluence 重置密码步骤</title>
+    <link href="https://t1ger.github.io/2016/09/21/Confluence-%E9%87%8D%E7%BD%AE%E5%AF%86%E7%A0%81%E6%AD%A5%E9%AA%A4/"/>
+    <id>https://t1ger.github.io/2016/09/21/Confluence-重置密码步骤/</id>
+    <published>2016-09-21T11:07:00.000Z</published>
+    <updated>2016-09-21T23:10:33.253Z</updated>
     
-    <content type="html"><![CDATA[google-site-verification: google9a8feb742f4276dd.html]]></content>
+    <content type="html"><![CDATA[<p>当我们忘记Confluence密码或者不能作为admin登陆的话，请参考以下方法：</p>
+<ul>
+<li><p>首先，你的有mysql或者其他数据库的权限啦，找到admin权限的用户</p>
+<pre><code>select u.id, u.user_name, u.active from cwd_user u
+join cwd_membership m on u.id=m.child_user_id join cwd_group g on m.parent_id=g.id join cwd_directory d on d.id=g.directory_id
+where g.group_name = &apos;confluence-administrators&apos; and d.directory_name=&apos;Confluence Internal Directory&apos;;
+确保找到的用户处于激活状态
+UPDATE cwd_user
+SET active = &apos;T&apos;
+WHERE user_name =&apos;&lt;user_name&gt;&apos;;
+</code></pre></li>
+<li><p>如果没有local admin存在，那我们只好自己建立了。</p>
+<pre><code>insert into cwd_user(id, user_name, lower_user_name, active, created_date, updated_date, first_name, lower_first_name, last_name, lower_last_name, display_name, lower_display_name, email_address, lower_email_address, directory_id, credential) values (1212121, &apos;admin&apos;, &apos;admin&apos;, &apos;T&apos;, &apos;2009-11-26 17:42:08&apos;, &apos;2009-11-26 17:42:08&apos;, &apos;A. D.&apos;, &apos;a. d.&apos;, &apos;Ministrator&apos;, &apos;ministrator&apos;, &apos;A. D. Ministrator&apos;, &apos;a. d. ministrator&apos;, &apos;admin@example.com&apos;, &apos;admin@example.com&apos;, (select id from cwd_directory where directory_name=&apos;Confluence Internal Directory&apos;), &apos;x61Ey612Kl2gpFL56FT9weDnpSo4AV8j8+qx2AuTHdRyY036xxzTTrw10Wq3+4qQyB+XURPWx1ONxp3Y3pB37A==&apos;);
+
+insert into user_mapping values (&apos;2c9681954172cf560000000000000001&apos;, &apos;admin&apos;, &apos;admin&apos;);
+
+添加新组
+
+insert into cwd_group(id, group_name, lower_group_name, active, local, created_date, updated_date, description, group_type, directory_id)
+values ( &apos;888888&apos;,&apos;confluence-administrators&apos;,&apos;confluence-administrators&apos;,&apos;T&apos;,&apos;F&apos;,&apos;2011-03-21 12:20:29&apos;,&apos;2011-03-21 12:20:29&apos;,NULL,&apos;GROUP&apos;,(select id from cwd_directory where directory_name=&apos;Confluence Internal Directory&apos;));
+insert into cwd_group(id, group_name, lower_group_name, active, local, created_date, updated_date, description, group_type, directory_id)
+values ( &apos;999999&apos;,&apos;confluence-users&apos;,&apos;confluence-users&apos;,&apos;T&apos;,&apos;F&apos;,&apos;2011-03-21 12:20:29&apos;,&apos;2011-03-21 12:20:29&apos;,NULL,&apos;GROUP&apos;,(select id from cwd_directory where directory_name=&apos;Confluence Internal Directory&apos;));
+
+添加组关系
+insert into cwd_membership (id, parent_id, child_user_id) values (888888, (select id from cwd_group where group_name=&apos;confluence-users&apos; and directory_id=(select id from cwd_directory where directory_name=&apos;Confluence Internal Directory&apos;)), 1212121);
+insert into cwd_membership (id, parent_id, child_user_id) values (999999, (select id from cwd_group where group_name=&apos;confluence-administrators&apos; and directory_id=(select id from cwd_directory where directory_name=&apos;Confluence Internal Directory&apos;)), 1212121);
+
+如果你用的是oracle数据库，请用 sysdate 代替 created_date.
+</code></pre></li>
+<li><p>替换admin密码，加密后的密码如下<br>  x61Ey612Kl2gpFL56FT9weDnpSo4AV8j8+qx2AuTHdRyY036xxzTTrw10Wq3+4qQyB+XURPWx1ONxp3Y3pB37A==，为了更改密码，我们要关闭Confluence<br>登陆mysql执行</p>
+<pre><code>update cwd_user set credential =
+&apos;x61Ey612Kl2gpFL56FT9weDnpSo4AV8j8+qx2AuTHdRyY036xxzTTrw10Wq3+4qQyB+XURPWx1ONxp3Y3pB37A==&apos;
+where id=&lt;id from Stage 1&gt;;
+</code></pre></li>
+</ul>
+<ul>
+<li><p>更改Internal Directory 为第一</p>
+<pre><code>找到directory 名
+
+select d.id, d.directory_name, m.list_index from cwd_directory d join cwd_app_dir_mapping m on d.id=m.directory_id;
+
+交换directory顺序
+
+update cwd_app_dir_mapping set list_index = 0 where directory_id = &lt;Internal Directory id&gt;;
+update cwd_app_dir_mapping set list_index = &lt;Noted Internal Directory list_index&gt; where directory_id = &lt;Directory id that had list_index 0&gt;;
+
+查看是否激活directory
+select id, directory_name, active from cwd_directory where id = &lt;Internal Directory id&gt;;
+
+如果必要，激活
+
+update cwd_directory set active = &apos;T&apos; where id = &lt;Internal Directory id&gt;;
+</code></pre></li>
+</ul>
+<p>重启登陆，打完收工</p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
     
     <summary type="html">
     
-      google-site-verification: google9a8feb742f4276dd.html
+      &lt;p&gt;当我们忘记Confluence密码或者不能作为admin登陆的话，请参考以下方法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;首先，你的有mysql或者其他数据库的权限啦，找到admin权限的用户&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;select u.id, u.user_name, u.
     
     </summary>
     
+    
+      <category term="Confluence openldap" scheme="https://t1ger.github.io/tags/Confluence-openldap/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>openldap集成系列</title>
+    <link href="https://t1ger.github.io/2016/09/16/openldap%E9%9B%86%E6%88%90%E7%B3%BB%E5%88%97/"/>
+    <id>https://t1ger.github.io/2016/09/16/openldap集成系列/</id>
+    <published>2016-09-15T15:31:07.000Z</published>
+    <updated>2016-09-15T14:44:46.111Z</updated>
+    
+    <content type="html"><![CDATA[<p>闲言少叙，先来个svn集成配置</p>
+<pre><code>&lt;Location /svn&gt;
+DAV svn
+SVNParentPath /opt/repo
+#SVNPath /opt/repo
+AuthType Basic
+AuthName &quot;SVN Repo&quot;
+#AuthUserFile /opt/svnconf/svn_access_file
+AuthzLDAPAuthoritative off
+AuthLDAPBindDN &quot;cn=admin,dc=abc,dc=com,dc=cn&quot;
+AuthLDAPBindPassword &quot;abc123&quot;
+AuthBasicProvider ldap
+AuthLDAPURL &quot;ldap://192.168.1.102:389/ou=user,dc=abc,dc=com,dc=cn?cn?sub?(objectClass=*)&quot;
+AuthzSVNAccessFile /opt/svnconf/svn_auth_file
+Require valid-user
+&lt;/Location&gt;
+</code></pre><p>proftp集成配置</p>
+<pre><code>LDAPAttr uid cn
+LDAPServer      ldap://192.168.1.102:389/??sub
+LDAPAuthBinds on
+DAPBindDN      &quot;cn=admin,dc=abc,dc=com,dc=cn&quot; &quot;abc123&quot;
+LDAPUsers       &quot;ou=user,dc=abc,dc=com,dc=cn&quot; (uid=%v)
+LDAPGroups       ou=ftp,ou=permission,dc=abc,dc=com,dc=cn
+</code></pre><p>不断更新中</p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;闲言少叙，先来个svn集成配置&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;lt;Location /svn&amp;gt;
+DAV svn
+SVNParentPath /opt/repo
+#SVNPath /opt/repo
+AuthType Basic
+AuthName &amp;quot;SVN
+    
+    </summary>
+    
+    
+      <category term="openldap linux svn proftp" scheme="https://t1ger.github.io/tags/openldap-linux-svn-proftp/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>svn镜像的快速实现</title>
+    <link href="https://t1ger.github.io/2016/09/15/svn%E9%95%9C%E5%83%8F%E7%9A%84%E5%BF%AB%E9%80%9F%E5%AE%9E%E7%8E%B0/"/>
+    <id>https://t1ger.github.io/2016/09/15/svn镜像的快速实现/</id>
+    <published>2016-09-15T14:19:00.000Z</published>
+    <updated>2016-09-15T14:19:37.398Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h4><p>在实际的应用环境，现有的SVN代码库数据量大，而svnsync却需要先初始化一个空库，然后再从0开始一直同步到相同的版本；<br>而主从服务器之间网络不好，因此需要较长时间或者传输中断。</p>
+<h3 id="配置过程："><a href="#配置过程：" class="headerlink" title="配置过程："></a>配置过程：</h3><ul>
+<li><p>备份主库(master)<br>svnadmin hotcopy path/to/repository path/to/backup –clean-logs<br>推荐使用hotcopy ，另外一种方法：<br>svnadmin dump <a href="http://source-server/svn/source-repo" target="_blank" rel="external">http://source-server/svn/source-repo</a> &gt; source-repo.dump</p>
+</li>
+<li><p>将备份文件拷贝到从服务器上(master)</p>
+</li>
+<li><p>在slave上创建一个mirror库</p>
+<p>  svnadmin create Code<br>  chown -R apache.apache Code<br>  cd Code/hooks<br>  cp -p pre-revprop-change.tmpl pre-revprop-change<br>  chmod+x pre-revporp-change</p>
+<p>  vim pre-revporp-change<br>删除以下内容：<br>  if [ “$ACTION” = “M” -a “$PROPNAME” = “svn:log” ]; then exit 0; fi<br>  echo “Changing revision properties other than svn:log is prohibited” &gt;&amp;2<br>  exit 1</p>
+</li>
+<li><p>设置mirror只对同步用户可写<br>[/]* = r<br>svnsync = rw<br>或者<br>使用start-commit 检查svnsync用户，下面是一个例子，是shell脚本：</p>
+<p>  #!/bin/sh<br>  USER=”$2″<br>  if [ “$USER” = “svnsync” ]; then<br>  exit 0<br>  fi<br>  echo “Only the svnsync user may commit new revisions as this is a read-only, mirror repository.” &gt;&amp;2<br>  exit 1 </p>
+</li>
+</ul>
+<ul>
+<li><p>在master上通过svnsync 初始化(master)<br>svnsync initialize URL_MIRROR_REPO URL_MASTER_REPO –username=svnsync –password=svnsyncpassword<br>svnsync init file:///home/backup/svn/svnsync/Project1/  <a href="http://svntest.subversion.com/repos/Project1" target="_blank" rel="external">http://svntest.subversion.com/repos/Project1</a><br>语法是：svnsync init {你刚创建的库url} {源库url}<br>注意本地url是三个斜杠的：///</p>
+<p>  svnsync init <a href="http://192.168.1.100/svn/Code" target="_blank" rel="external">http://192.168.1.100/svn/Code</a> <a href="http://192.168.1.101/svn/Code" target="_blank" rel="external">http://192.168.1.101/svn/Code</a> –username=svnsync –password=svnsync</p>
+</li>
+<li><p>在slave上备份初始化后的库(slave)<br>  cd /data/backup<br>  mv Code /opt/mirrorbak</p>
+</li>
+<li><p>将主库备份文件放到相应位置，并进行部分文件替换(slave)</p>
+<p>  替换钩子文件<br>  cd Code/hooks<br>  cp -p /opt/mirrorbak/hooks/pre-revporp-change .<br>  替换uuid<br>  cd ../db/<br>  cp -p /opt/mirrorbak/hooks/db/uuid .</p>
+<p>  替换初始版本日志<br>  cd revprops/0/<br>  cp -p /opt/mirrorbak/db/revprops/0/0 .</p>
+<p>  更改仓库目录属主<br>  chown -R apache.apache /data/backup/Code</p>
+</li>
+<li><p>复制sync-last-merged-rev（最后一次同步）版本号(master)<br>  获取当前版本号，eg:7289<br>  cat Code/db/current<br>  将当前版本好复制到slave<br>  svn propset –revprop -r0 svn:sync-last-merged-rev 7289 <a href="http://192.168.1.100/svn/Code" target="_blank" rel="external">http://192.168.1.100/svn/Code</a><br>  执行一次同步<br>  svnsync sync <a href="http://192.168.1.100/svn/Code" target="_blank" rel="external">http://192.168.1.100/svn/Code</a></p>
+</li>
+<li><p>配置实时同步<br>  在主库的hooks目录下开启post-commit<br>  mv post-commit.tmpl post-commit<br>  chmod +x post-commit<br>  svnsync synchronize <a href="http://192.168.1.100/svn/Code" target="_blank" rel="external">http://192.168.1.100/svn/Code</a> –username=svnsync –password=svnsync &amp;<br>  exit 0 </p>
+</li>
+<li><p>配置slave只让sync用户提交</p>
+<p>  pre-revprop-change<br>  if [ “$USER” = “svnsync” ]; then<br>  exit 0<br>  fi<br>  echo “Only the svnsync user may change revision properties as this is a read-only, mirror repository.” &gt;&amp;2<br>  exit 1 </p>
+</li>
+</ul>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;需求&quot;&gt;&lt;a href=&quot;#需求&quot; class=&quot;headerlink&quot; title=&quot;需求&quot;&gt;&lt;/a&gt;需求&lt;/h4&gt;&lt;p&gt;在实际的应用环境，现有的SVN代码库数据量大，而svnsync却需要先初始化一个空库，然后再从0开始一直同步到相同的版本；&lt;br&gt;而主从服务
+    
+    </summary>
+    
+    
+      <category term="svn http linux" scheme="https://t1ger.github.io/tags/svn-http-linux/"/>
     
   </entry>
   
