@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-09-25T07:13:27.274Z</updated>
+  <updated>2016-09-25T14:04:17.516Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,128 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>MySQL复制概述(二)</title>
+    <link href="https://t1ger.github.io/2016/09/25/MySQL%E5%A4%8D%E5%88%B6%E6%A6%82%E8%BF%B0-%E4%BA%8C/"/>
+    <id>https://t1ger.github.io/2016/09/25/MySQL复制概述-二/</id>
+    <published>2016-09-25T08:28:12.000Z</published>
+    <updated>2016-09-25T14:04:17.516Z</updated>
+    
+    <content type="html"><![CDATA[<h5 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h5><p>在上一文章中，我们了解了mysql5.5x系列的mysql复制，这篇文章我们主要介绍mysql5.7版本下的GTID主从复制</p>
+<pre><code>什么是GTID
+GTID = source_id:transaction_id
+开启GTID的必备条件
+gtid_mod=ON
+enforce-gtid-consistency
+log_bin=ON(可选)
+log-slave-updates=ON(可选)
+</code></pre><h6 id="标准安装步骤"><a href="#标准安装步骤" class="headerlink" title="标准安装步骤"></a>标准安装步骤</h6><ul>
+<li>同步所以servers<pre><code>mysql&gt; set @@global.read_only = ON;
+注： 执行前slave务必执行完所以更新
+</code></pre></li>
+<li>关闭所以servers<pre><code>shell&gt; mysqladmin -uusername -p shutdown
+</code></pre></li>
+<li><p>重启服务，并开启GTID</p>
+<pre><code>shell&gt; mysqld --gtid-mode=ON --log-bin --enforce-gtid-consistency &amp;
+</code></pre></li>
+<li><p>执行同步命令</p>
+<pre><code>mysql&gt; change master to
+    master_host = host,
+    master_port = port,
+    master_user = user,
+    master_password = password,
+    master_auto_position = 1;
+mysql&gt; start slave;
+</code></pre></li>
+<li><p>取消master的只读模式</p>
+<pre><code>mysql&gt; set @@global.read_only = OFF;
+</code></pre></li>
+</ul>
+<h6 id="从备份中恢复"><a href="#从备份中恢复" class="headerlink" title="从备份中恢复"></a>从备份中恢复</h6><ul>
+<li><p>备份</p>
+<pre><code>mysqldump --all-databases --single-transaction --trigger --routines --user=root -p &gt;backup.sql
+# grep PURGED backup.sql
+SET @@GLOBAL.GTID_PURGED=&apos;9a511b7b-7059-11e2-9a24-08002762b8af:1-13&apos;;
+</code></pre></li>
+<li><p>在slave上reset master ,导入备份<br>注：如果是逻辑导入，请设置sql_log_bin=off</p>
+<pre><code>mysql&gt; reset master;
+mysql&gt; show global variables like &apos;gtid_executed&apos;;
++---------------+-------+
+| Variable_name | Value |
++---------------+-------+
+| gtid_executed |       |
++---------------+-------+
+mysql&gt; show global variables like &apos;gtid_purged&apos;;
++---------------+-------+
+| Variable_name | Value |
++---------------+-------+
+| gtid_purged   |       |
++---------------+-------+
+mysql&gt; source backup.sql
+
+mysql&gt; show global variables like &apos;gtid_executed&apos;;
++---------------+-------------------------------------------+
+| Variable_name | Value                                     |
++---------------+-------------------------------------------+
+| gtid_executed | 9a511b7b-7059-11e2-9a24-08002762b8af:1-13 |
++---------------+-------------------------------------------+
+mysql&gt; show global variables like &apos;gtid_purged&apos;;
++---------------+-------------------------------------------+
+| Variable_name | Value                                     |
++---------------+-------------------------------------------+
+| gtid_purged   | 9a511b7b-7059-11e2-9a24-08002762b8af:1-13 |
++---------------+-------------------------------------------+
+</code></pre></li>
+<li><p>执行同步命令</p>
+<pre><code>mysql&gt; change master to
+    master_host = host,
+    master_port = port,
+    master_user = user,
+    master_password = password,
+    master_auto_position = 1;
+mysql&gt; start slave;
+</code></pre></li>
+<li><p>主从复制常见错误<br> Slave_IO_Running: No<br> Slave_SQL_Running: Yes<br> Last_IO_Error: Got fatal error 1236 from master when reading data from binary log: ‘The slave is connecting using CHANGE MASTER TO MASTER_AUTO_POSITION = 1, but the master has purged binary logs containing GTIDs that the slave requires.’</p>
+<p> 在master上查看GTID_EXECUTED</p>
+<pre><code>mysql&gt; show global variables like &apos;GTID_EXECUTED&apos;;
++---------------+-------------------------------------------+
+| Variable_name | Value                                     |
++---------------+-------------------------------------------+
+| gtid_executed | 9a511b7b-7059-11e2-9a24-08002762b8af:1-14 |
++---------------+-------------------------------------------+
+</code></pre><p>解决：</p>
+<pre><code>mysql&gt;reset master;
+mysql&gt;show global variables like &apos;GTID_EXECUTED&apos;;
+    +---------------+-------+
+    | Variable_name | Value |
+    +---------------+-------+
+    | gtid_executed |       |
+    +---------------+-------+
+mysql&gt; set global GTID_PURGED=&quot;9a511b7b-7059-11e2-9a24-08002762b8af:1-14&quot;;
+mysql&gt; start slave io_thread;
+mysql&gt; show slave status\G;
+</code></pre></li>
+</ul>
+<ul>
+<li>工具<br><a href="https://www.percona.com/software/mysql-database/percona-xtrabackup" target="_blank" rel="external">Percona XtraBackup</a></li>
+</ul>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h5 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h5&gt;&lt;p&gt;在上一文章中，我们了解了mysql5.5x系列的mysql复制，这篇文章我们主要介绍mysql5.7版本下的GTID主从复制&lt;/p&gt;
+&lt;pr
+    
+    </summary>
+    
+    
+      <category term="mysql linux" scheme="https://t1ger.github.io/tags/mysql-linux/"/>
+    
+  </entry>
   
   <entry>
     <title>MySQL复制概述(一)</title>
