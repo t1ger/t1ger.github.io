@@ -4,83 +4,14 @@
 
     
   <url>
-    <loc>https://t1ger.github.io/2016/09/25/MySQL%E5%A4%8D%E5%88%B6%E6%A6%82%E8%BF%B0-%E4%BA%8C/</loc>
-    <lastmod>2016-09-25T14:04:17.516Z</lastmod>
+    <loc>https://t1ger.github.io/2016/09/27/how-to-send-a-https-request-in-nodejs/</loc>
+    <lastmod>2016-09-26T15:45:04.004Z</lastmod>
     <data>
         <display>
-        <title>MySQL复制概述(二)</title>
-        <pubTime>2016-09-25T08:28:12.000Z</pubTime>
+        <title>how to send a https request in nodejs</title>
+        <pubTime>2016-09-26T16:20:44.000Z</pubTime>
         
-        <tag>mysql linux</tag>
-         
-         
-           
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://t1ger.github.io/2016/09/25/MySQL%E5%A4%8D%E5%88%B6%E6%A6%82%E8%BF%B0-%E4%B8%80/</loc>
-    <lastmod>2016-09-25T07:13:27.274Z</lastmod>
-    <data>
-        <display>
-        <title>MySQL复制概述(一)</title>
-        <pubTime>2016-09-25T06:25:48.000Z</pubTime>
-        
-        <tag>mysql linux</tag>
-         
-         
-           
-        </display>
-    </data>
-    </url>
-
-    
-    
-  <url>
-    <loc>https://t1ger.github.io/2016/09/21/Confluence-%E9%87%8D%E7%BD%AE%E5%AF%86%E7%A0%81%E6%AD%A5%E9%AA%A4/</loc>
-    <lastmod>2016-09-21T23:10:33.253Z</lastmod>
-    <data>
-        <display>
-        <title>Confluence 重置密码步骤</title>
-        <pubTime>2016-09-21T11:07:00.000Z</pubTime>
-        
-        <tag>Confluence openldap</tag>
-         
-         
-           
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://t1ger.github.io/2016/09/16/openldap%E9%9B%86%E6%88%90%E7%B3%BB%E5%88%97/</loc>
-    <lastmod>2016-09-15T14:44:46.111Z</lastmod>
-    <data>
-        <display>
-        <title>openldap集成系列</title>
-        <pubTime>2016-09-15T15:31:07.000Z</pubTime>
-        
-        <tag>openldap linux svn proftp</tag>
-         
-         
-           
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://t1ger.github.io/2016/09/15/svn%E9%95%9C%E5%83%8F%E7%9A%84%E5%BF%AB%E9%80%9F%E5%AE%9E%E7%8E%B0/</loc>
-    <lastmod>2016-09-15T14:19:37.398Z</lastmod>
-    <data>
-        <display>
-        <title>svn镜像的快速实现</title>
-        <pubTime>2016-09-15T14:19:00.000Z</pubTime>
-        
-        <tag>svn http linux</tag>
+        <tag>nodejs https</tag>
          
          
            
@@ -91,7 +22,7 @@
     
   <url>
     <loc>https://t1ger.github.io/2016/09/09/%E6%8F%90%E9%AB%98%E5%B7%A5%E4%BD%9C%E6%95%88%E7%8E%87%E4%B9%8Bvim%E7%AF%87/</loc>
-    <lastmod>2016-09-14T14:44:29.895Z</lastmod>
+    <lastmod>2016-09-26T03:52:27.004Z</lastmod>
     <data>
         <display>
         <title>提高工作效率之vim篇</title>
@@ -109,14 +40,14 @@
 
     
   <url>
-    <loc>https://t1ger.github.io/2016/09/13/mysql-%E5%AD%97%E6%AE%B5%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%92%E5%BA%8F%E9%97%AE%E9%A2%98/</loc>
-    <lastmod>2016-09-13T08:43:12.890Z</lastmod>
+    <loc>https://t1ger.github.io/2016/09/25/MySQL%E5%A4%8D%E5%88%B6%E6%A6%82%E8%BF%B0-%E4%BA%8C/</loc>
+    <lastmod>2016-09-26T03:45:53.548Z</lastmod>
     <data>
         <display>
-        <title>mysql 字段自定义排序问题</title>
-        <pubTime>2016-09-13T08:13:27.000Z</pubTime>
+        <title>MySQL复制概述(二)</title>
+        <pubTime>2016-09-25T08:28:12.000Z</pubTime>
         
-        <tag>mysql</tag>
+        <tag>mysql linux</tag>
          
          
            
@@ -127,7 +58,7 @@
     
   <url>
     <loc>https://t1ger.github.io/2016/09/13/%E4%BA%94%E5%88%86%E9%92%9F%E5%BF%AB%E9%80%9F%E4%BA%86%E8%A7%A3-MySQL8%E6%96%B0%E7%89%B9%E6%80%A7/</loc>
-    <lastmod>2016-09-13T03:29:54.744Z</lastmod>
+    <lastmod>2016-09-26T03:45:28.950Z</lastmod>
     <data>
         <display>
         <title>五分钟快速了解 MySQL8新特性</title>
@@ -143,8 +74,42 @@
 
     
   <url>
+    <loc>https://t1ger.github.io/2016/09/16/openldap%E9%9B%86%E6%88%90%E7%B3%BB%E5%88%97/</loc>
+    <lastmod>2016-09-26T03:44:47.690Z</lastmod>
+    <data>
+        <display>
+        <title>openldap集成系列</title>
+        <pubTime>2016-09-15T15:31:07.000Z</pubTime>
+        
+        <tag>openldap linux svn proftp</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://t1ger.github.io/2016/09/15/svn%E9%95%9C%E5%83%8F%E7%9A%84%E5%BF%AB%E9%80%9F%E5%AE%9E%E7%8E%B0/</loc>
+    <lastmod>2016-09-26T03:44:29.940Z</lastmod>
+    <data>
+        <display>
+        <title>svn镜像的快速实现</title>
+        <pubTime>2016-09-15T14:19:00.000Z</pubTime>
+        
+        <tag>svn http linux</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://t1ger.github.io/2016/09/08/nginx-proxy-pass%E5%B8%B8%E7%94%A8%E7%9F%A5%E8%AF%86%E7%82%B9%E8%A7%A3%E6%9E%90/</loc>
-    <lastmod>2016-09-08T07:27:28.824Z</lastmod>
+    <lastmod>2016-09-26T03:44:04.603Z</lastmod>
     <data>
         <display>
         <title>nginx proxy_pass常用知识点解析</title>
@@ -158,4 +123,56 @@
     </data>
     </url>
 
+    
+  <url>
+    <loc>https://t1ger.github.io/2016/09/13/mysql-%E5%AD%97%E6%AE%B5%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%92%E5%BA%8F%E9%97%AE%E9%A2%98/</loc>
+    <lastmod>2016-09-26T03:43:45.693Z</lastmod>
+    <data>
+        <display>
+        <title>mysql 字段自定义排序问题</title>
+        <pubTime>2016-09-13T08:13:27.000Z</pubTime>
+        
+        <tag>mysql</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://t1ger.github.io/2016/09/25/MySQL%E5%A4%8D%E5%88%B6%E6%A6%82%E8%BF%B0-%E4%B8%80/</loc>
+    <lastmod>2016-09-26T03:43:01.160Z</lastmod>
+    <data>
+        <display>
+        <title>MySQL复制概述(一)</title>
+        <pubTime>2016-09-25T06:25:48.000Z</pubTime>
+        
+        <tag>mysql linux</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://t1ger.github.io/2016/09/21/Confluence-%E9%87%8D%E7%BD%AE%E5%AF%86%E7%A0%81%E6%AD%A5%E9%AA%A4/</loc>
+    <lastmod>2016-09-26T03:42:07.066Z</lastmod>
+    <data>
+        <display>
+        <title>Confluence 重置密码步骤</title>
+        <pubTime>2016-09-21T11:07:00.000Z</pubTime>
+        
+        <tag>Confluence openldap</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
 </urlset>

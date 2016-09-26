@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-09-25T14:04:17.516Z</updated>
+  <updated>2016-09-26T15:45:04.004Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -16,11 +16,64 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>how to send a https request in nodejs</title>
+    <link href="https://t1ger.github.io/2016/09/27/how-to-send-a-https-request-in-nodejs/"/>
+    <id>https://t1ger.github.io/2016/09/27/how-to-send-a-https-request-in-nodejs/</id>
+    <published>2016-09-26T16:20:44.000Z</published>
+    <updated>2016-09-26T15:45:04.004Z</updated>
+    
+    <content type="html"><![CDATA[<h6 id="Steps-to-send-a-https-request-to-a-rest-service-in-Node-js"><a href="#Steps-to-send-a-https-request-to-a-rest-service-in-Node-js" class="headerlink" title="Steps to send a https request to a rest service in Node js"></a>Steps to send a https request to a rest service in Node js</h6><ul>
+<li>use request</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">var request = require(&apos;request&apos;);</div><div class="line">	var options = &#123;</div><div class="line">	  url:&apos;https://abc.example.com.cn/In/index.php?m=Info&amp;a=Address&apos;,</div><div class="line">      headers: &#123;</div><div class="line">        &apos;User-Agent&apos;: &apos;request&apos;</div><div class="line">    &#125;,</div><div class="line">    rejectUnauthorized: false</div><div class="line">	&#125;;</div><div class="line"></div><div class="line">	function callback(error, response, body) &#123;</div><div class="line">		if (!error &amp;&amp; response.statusCode == 200) &#123;</div><div class="line">			var info = JSON.parse(body);</div><div class="line">			console.log(info);</div><div class="line">		&#125;else&#123;</div><div class="line">			console.log(error);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	request(options, callback);</div></pre></td></tr></table></figure>
+<ul>
+<li>use https</li>
+</ul>
+<pre><code>var https = require(&apos;https&apos;);
+var options = {
+    host: &apos;abc.example.com.cn&apos;,
+    port: 443,
+    path: &apos;/In/index.php?m=Info&amp;a=Address&apos;,
+    method: &apos;GET&apos;,
+    rejectUnauthorized: false
+    };
+var req = https.request(options, function(res) {
+console.log(&apos;STATUS: &apos; + res.statusCode);
+console.log(&apos;HEADERS: &apos; + JSON.stringify(res.headers));
+res.setEncoding(&apos;utf8&apos;);
+res.on(&apos;data&apos;, function (chunk) {
+    console.log(&apos;BODY: &apos; + chunk);
+});
+});
+req.on(&apos;error&apos;, function(e) {
+console.log(&apos;problem with request: &apos; + e.message);
+});
+// write data to request body
+req.write(&apos;data\n&apos;);
+req.write(&apos;data\n&apos;);
+req.end();
+</code></pre><pre><code>---
+</code></pre><p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      how to send a https request in nodejs
+    
+    </summary>
+    
+    
+      <category term="nodejs https" scheme="https://t1ger.github.io/tags/nodejs-https/"/>
+    
+  </entry>
+  
+  <entry>
     <title>MySQL复制概述(二)</title>
     <link href="https://t1ger.github.io/2016/09/25/MySQL%E5%A4%8D%E5%88%B6%E6%A6%82%E8%BF%B0-%E4%BA%8C/"/>
     <id>https://t1ger.github.io/2016/09/25/MySQL复制概述-二/</id>
     <published>2016-09-25T08:28:12.000Z</published>
-    <updated>2016-09-25T14:04:17.516Z</updated>
+    <updated>2016-09-26T03:45:53.548Z</updated>
     
     <content type="html"><![CDATA[<h5 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h5><p>在上一文章中，我们了解了mysql5.5x系列的mysql复制，这篇文章我们主要介绍mysql5.7版本下的GTID主从复制</p>
 <pre><code>什么是GTID
@@ -30,11 +83,11 @@ gtid_mod=ON
 enforce-gtid-consistency
 log_bin=ON(可选)
 log-slave-updates=ON(可选)
-</code></pre><h6 id="标准安装步骤"><a href="#标准安装步骤" class="headerlink" title="标准安装步骤"></a>标准安装步骤</h6><ul>
-<li>同步所以servers<pre><code>mysql&gt; set @@global.read_only = ON;
+</code></pre><h6 id="a-标准安装步骤"><a href="#a-标准安装步骤" class="headerlink" title="a)标准安装步骤"></a>a)标准安装步骤</h6><ul>
+<li>同步所有servers<pre><code>mysql&gt; set @@global.read_only = ON;
 注： 执行前slave务必执行完所以更新
 </code></pre></li>
-<li>关闭所以servers<pre><code>shell&gt; mysqladmin -uusername -p shutdown
+<li>关闭所有servers<pre><code>shell&gt; mysqladmin -uusername -p shutdown
 </code></pre></li>
 <li><p>重启服务，并开启GTID</p>
 <pre><code>shell&gt; mysqld --gtid-mode=ON --log-bin --enforce-gtid-consistency &amp;
@@ -52,7 +105,7 @@ mysql&gt; start slave;
 <pre><code>mysql&gt; set @@global.read_only = OFF;
 </code></pre></li>
 </ul>
-<h6 id="从备份中恢复"><a href="#从备份中恢复" class="headerlink" title="从备份中恢复"></a>从备份中恢复</h6><ul>
+<h6 id="b-从备份中恢复"><a href="#b-从备份中恢复" class="headerlink" title="b)从备份中恢复"></a>b)从备份中恢复</h6><ul>
 <li><p>备份</p>
 <pre><code>mysqldump --all-databases --single-transaction --trigger --routines --user=root -p &gt;backup.sql
 # grep PURGED backup.sql
@@ -142,7 +195,7 @@ mysql&gt; show slave status\G;
     <link href="https://t1ger.github.io/2016/09/25/MySQL%E5%A4%8D%E5%88%B6%E6%A6%82%E8%BF%B0-%E4%B8%80/"/>
     <id>https://t1ger.github.io/2016/09/25/MySQL复制概述-一/</id>
     <published>2016-09-25T06:25:48.000Z</published>
-    <updated>2016-09-25T07:13:27.274Z</updated>
+    <updated>2016-09-26T03:43:01.160Z</updated>
     
     <content type="html"><![CDATA[<h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><p>master将数据变化记录到bin-log日志中，然后slave服务器通过I/O线程读取master的bin-log日志，并将其写人slave服务器的relay-log日志中，接着sql线程读取relay-log日志，并在slave中执行，从而实现mysql复制。</p>
 <h4 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h4><ul>
@@ -231,7 +284,7 @@ mysql&gt;start slave;
     <link href="https://t1ger.github.io/2016/09/21/Confluence-%E9%87%8D%E7%BD%AE%E5%AF%86%E7%A0%81%E6%AD%A5%E9%AA%A4/"/>
     <id>https://t1ger.github.io/2016/09/21/Confluence-重置密码步骤/</id>
     <published>2016-09-21T11:07:00.000Z</published>
-    <updated>2016-09-21T23:10:33.253Z</updated>
+    <updated>2016-09-26T03:42:07.066Z</updated>
     
     <content type="html"><![CDATA[<p>当我们忘记Confluence密码或者不能作为admin登陆的话，请参考以下方法：</p>
 <ul>
@@ -312,7 +365,7 @@ update cwd_directory set active = &apos;T&apos; where id = &lt;Internal Director
     <link href="https://t1ger.github.io/2016/09/16/openldap%E9%9B%86%E6%88%90%E7%B3%BB%E5%88%97/"/>
     <id>https://t1ger.github.io/2016/09/16/openldap集成系列/</id>
     <published>2016-09-15T15:31:07.000Z</published>
-    <updated>2016-09-15T14:44:46.111Z</updated>
+    <updated>2016-09-26T03:44:47.690Z</updated>
     
     <content type="html"><![CDATA[<p>闲言少叙，先来个svn集成配置</p>
 <pre><code>&lt;Location /svn&gt;
@@ -365,7 +418,7 @@ AuthName &amp;quot;SVN
     <link href="https://t1ger.github.io/2016/09/15/svn%E9%95%9C%E5%83%8F%E7%9A%84%E5%BF%AB%E9%80%9F%E5%AE%9E%E7%8E%B0/"/>
     <id>https://t1ger.github.io/2016/09/15/svn镜像的快速实现/</id>
     <published>2016-09-15T14:19:00.000Z</published>
-    <updated>2016-09-15T14:19:37.398Z</updated>
+    <updated>2016-09-26T03:44:29.940Z</updated>
     
     <content type="html"><![CDATA[<h4 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h4><p>在实际的应用环境，现有的SVN代码库数据量大，而svnsync却需要先初始化一个空库，然后再从0开始一直同步到相同的版本；<br>而主从服务器之间网络不好，因此需要较长时间或者传输中断。</p>
 <h3 id="配置过程："><a href="#配置过程：" class="headerlink" title="配置过程："></a>配置过程：</h3><ul>
@@ -421,7 +474,7 @@ AuthName &amp;quot;SVN
     <link href="https://t1ger.github.io/2016/09/13/mysql-%E5%AD%97%E6%AE%B5%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%92%E5%BA%8F%E9%97%AE%E9%A2%98/"/>
     <id>https://t1ger.github.io/2016/09/13/mysql-字段自定义排序问题/</id>
     <published>2016-09-13T08:13:27.000Z</published>
-    <updated>2016-09-13T08:43:12.890Z</updated>
+    <updated>2016-09-26T03:43:45.693Z</updated>
     
     <content type="html"><![CDATA[<p>今天碰到一个问题，指定mysql字段自定义排序</p>
 <pre><code>SELECT id FROM table  WHERE `id` IN (40593,6352,38120,56049,56050,56051);
@@ -457,7 +510,7 @@ SELECT id FROM table  WHERE `id` IN (40593,6352,38120,56049,56050,56051) order b
     <link href="https://t1ger.github.io/2016/09/13/%E4%BA%94%E5%88%86%E9%92%9F%E5%BF%AB%E9%80%9F%E4%BA%86%E8%A7%A3-MySQL8%E6%96%B0%E7%89%B9%E6%80%A7/"/>
     <id>https://t1ger.github.io/2016/09/13/五分钟快速了解-MySQL8新特性/</id>
     <published>2016-09-13T02:42:57.000Z</published>
-    <updated>2016-09-13T03:29:54.744Z</updated>
+    <updated>2016-09-26T03:45:28.950Z</updated>
     
     <content type="html"><![CDATA[<p>MySQL Community Server 8.0.0 dmr(Development Milestone Release)终于发布了，8.0的发布，可以说是MySQL来到了一个崭新的时代。MySQL终于废弃了MyISAM引擎，完成了MySQL的完美转身。</p>
 <p>MySQL的来历</p>
@@ -498,7 +551,7 @@ SELECT id FROM table  WHERE `id` IN (40593,6352,38120,56049,56050,56051) order b
     <link href="https://t1ger.github.io/2016/09/09/%E6%8F%90%E9%AB%98%E5%B7%A5%E4%BD%9C%E6%95%88%E7%8E%87%E4%B9%8Bvim%E7%AF%87/"/>
     <id>https://t1ger.github.io/2016/09/09/提高工作效率之vim篇/</id>
     <published>2016-09-09T06:50:23.000Z</published>
-    <updated>2016-09-14T14:44:29.895Z</updated>
+    <updated>2016-09-26T03:52:27.004Z</updated>
     
     <content type="html"><![CDATA[<h3 id="启动及关闭-Vi-Vim"><a href="#启动及关闭-Vi-Vim" class="headerlink" title="启动及关闭 Vi/Vim"></a>启动及关闭 Vi/Vim</h3><pre><code>1. vi 打开 Vi/Vim
    vi &lt;file&gt; 打开 Vi/Vim 并加载文件 &lt;file&gt;
@@ -607,8 +660,7 @@ SELECT id FROM table  WHERE `id` IN (40593,6352,38120,56049,56050,56051) order b
     
     <summary type="html">
     
-      &lt;h3 id=&quot;启动及关闭-Vi-Vim&quot;&gt;&lt;a href=&quot;#启动及关闭-Vi-Vim&quot; class=&quot;headerlink&quot; title=&quot;启动及关闭 Vi/Vim&quot;&gt;&lt;/a&gt;启动及关闭 Vi/Vim&lt;/h3&gt;&lt;pre&gt;&lt;code&gt;1. vi 打开 Vi/Vim
-   vi 
+      how to use linux quickly
     
     </summary>
     
@@ -624,7 +676,7 @@ SELECT id FROM table  WHERE `id` IN (40593,6352,38120,56049,56050,56051) order b
     <link href="https://t1ger.github.io/2016/09/08/nginx-proxy-pass%E5%B8%B8%E7%94%A8%E7%9F%A5%E8%AF%86%E7%82%B9%E8%A7%A3%E6%9E%90/"/>
     <id>https://t1ger.github.io/2016/09/08/nginx-proxy-pass常用知识点解析/</id>
     <published>2016-09-08T03:55:45.000Z</published>
-    <updated>2016-09-08T07:27:28.824Z</updated>
+    <updated>2016-09-26T03:44:04.603Z</updated>
     
     <content type="html"><![CDATA[<h3 id="proxy-pass-指令-解析"><a href="#proxy-pass-指令-解析" class="headerlink" title="proxy_pass 指令/ 解析"></a>proxy_pass 指令<code>/</code> 解析</h3><p>首先，我们先上两个例子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">location ^~ /test/</div><div class="line">	&#123;</div><div class="line">	proxy_pass http://www.test.com;</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">location ^~ /test/</div><div class="line">	&#123;</div><div class="line">	proxy_pass http://www.test.com/;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>

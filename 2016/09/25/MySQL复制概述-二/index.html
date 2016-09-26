@@ -9,9 +9,10 @@
   
   <meta name="description" content="https://t1ger.github.io/">
   
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
+  <meta name="keywords" content="mysql5.7,linux,replication,GTID">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
   <meta property="og:title" content="MySQL复制概述(二)"/>
   <meta property="og:site_name" content="t1ger的茶馆"/>
 
@@ -132,11 +133,11 @@ gtid_mod=ON
 enforce-gtid-consistency
 log_bin=ON(可选)
 log-slave-updates=ON(可选)
-</code></pre><h6 id="标准安装步骤"><a href="#标准安装步骤" class="headerlink" title="标准安装步骤"></a>标准安装步骤</h6><ul>
-<li>同步所以servers<pre><code>mysql&gt; set @@global.read_only = ON;
+</code></pre><h6 id="a-标准安装步骤"><a href="#a-标准安装步骤" class="headerlink" title="a)标准安装步骤"></a>a)标准安装步骤</h6><ul>
+<li>同步所有servers<pre><code>mysql&gt; set @@global.read_only = ON;
 注： 执行前slave务必执行完所以更新
 </code></pre></li>
-<li>关闭所以servers<pre><code>shell&gt; mysqladmin -uusername -p shutdown
+<li>关闭所有servers<pre><code>shell&gt; mysqladmin -uusername -p shutdown
 </code></pre></li>
 <li><p>重启服务，并开启GTID</p>
 <pre><code>shell&gt; mysqld --gtid-mode=ON --log-bin --enforce-gtid-consistency &amp;
@@ -154,7 +155,7 @@ mysql&gt; start slave;
 <pre><code>mysql&gt; set @@global.read_only = OFF;
 </code></pre></li>
 </ul>
-<h6 id="从备份中恢复"><a href="#从备份中恢复" class="headerlink" title="从备份中恢复"></a>从备份中恢复</h6><ul>
+<h6 id="b-从备份中恢复"><a href="#b-从备份中恢复" class="headerlink" title="b)从备份中恢复"></a>b)从备份中恢复</h6><ul>
 <li><p>备份</p>
 <pre><code>mysqldump --all-databases --single-transaction --trigger --routines --user=root -p &gt;backup.sql
 # grep PURGED backup.sql
