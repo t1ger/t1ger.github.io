@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
   
-  <title>Archives: 2016/9 | t1ger的茶馆</title>
+  <title>Security on nginx | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
   
-  <meta name="description" content="https://t1ger.github.io/">
+  <meta name="description" content="how to strong Security on nginx">
   
 
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  
+  <meta property="og:title" content="Security on nginx"/>
   <meta property="og:site_name" content="t1ger的茶馆"/>
 
   
@@ -116,70 +116,40 @@
 		<div class="content">
 			<!-- index -->
 		   
-			  	<h2>归档</h2>
-		  		
-	              <p class="archive-item">
-						<a href="/2016/09/28/Security-on-nginx/" class="archive-title">Security on nginx</a><span class="archive post-time">2016-09-28</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/27/how-to-send-a-https-request-in-nodejs/" class="archive-title">how to send a https request in nodejs</a><span class="archive post-time">2016-09-27</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/25/MySQL复制概述-二/" class="archive-title">MySQL复制概述(二)</a><span class="archive post-time">2016-09-25</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/25/MySQL复制概述-一/" class="archive-title">MySQL复制概述(一)</a><span class="archive post-time">2016-09-25</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/21/Confluence-重置密码步骤/" class="archive-title">Confluence 重置密码步骤</a><span class="archive post-time">2016-09-21</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/16/openldap集成系列/" class="archive-title">openldap集成系列</a><span class="archive post-time">2016-09-15</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/15/svn镜像的快速实现/" class="archive-title">svn镜像的快速实现</a><span class="archive post-time">2016-09-15</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/13/mysql-字段自定义排序问题/" class="archive-title">mysql 字段自定义排序问题</a><span class="archive post-time">2016-09-13</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/13/五分钟快速了解-MySQL8新特性/" class="archive-title">五分钟快速了解 MySQL8新特性</a><span class="archive post-time">2016-09-13</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/09/提高工作效率之vim篇/" class="archive-title">提高工作效率之vim篇</a><span class="archive post-time">2016-09-09</span>
-					</p>
-			  	
-			  <!-- post -->
+
+			  		<h2>Security on nginx</h2>
+					
+					<div>
+						<span class="post-time">2016-09-28 14:01:23</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<p>闲言少续，直接上配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">server &#123;</div><div class="line"> </div><div class="line">  listen [::]:443 default_server;</div><div class="line"> </div><div class="line">  ssl on;</div><div class="line">  ssl_certificate_key /etc/ssl/cert/abc.pem;</div><div class="line">  ssl_certificate /etc/ssl/cert/abc.pem;</div><div class="line"> </div><div class="line">  ssl_ciphers &apos;AES128+EECDH:AES128+EDH:!aNULL&apos;;</div><div class="line"> </div><div class="line">  ssl_protocols TLSv1 TLSv1.1 TLSv1.2;</div><div class="line">  ssl_session_cache shared:SSL:10m;</div><div class="line"> </div><div class="line">  ssl_stapling on;</div><div class="line">  ssl_stapling_verify on;</div><div class="line">  resolver 8.8.4.4 8.8.8.8 valid=300s;</div><div class="line">  resolver_timeout 10s;</div><div class="line"> </div><div class="line">  ssl_prefer_server_ciphers on;</div><div class="line">  ssl_dhparam /etc/ssl/certs/dhparam.pem;</div><div class="line"> </div><div class="line">  add_header Strict-Transport-Security max-age=63072000;</div><div class="line">  add_header X-Frame-Options DENY;</div><div class="line">  add_header X-Content-Type-Options nosniff;</div><div class="line"> </div><div class="line">  root /var/www/;</div><div class="line">  index index.html index.htm;</div><div class="line">  server_name abc.org;</div><div class="line"> </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>解析：</p>
+<p>ssl_dhparam /etc/ssl/certs/dhparam.pem; //nginx在DHE密钥交换的时候使用它<br>产生一个更强的DHE参数<br>cd /etc/ssl/certs<br>openssl dhparam -out dhparam.pem 4096</p>
+<p>(SSL 实验室测试(SSL Labs tes))[<a href="https://www.ssllabs.com/ssltest/" target="_blank" rel="external">https://www.ssllabs.com/ssltest/</a>] ,赶紧去测试吧<br><a href="https://cipherli.st/" target="_blank" rel="external">Strong Ciphers </a></p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
 			  
 		</div>
 
 		<!-- pagination -->
 	  
 
-			<div class="btn-group btn-group-justified">
-				
-
-					<a class="btn btn-default disabled" href="/" >上一页</a>
-
-					<a class="btn btn-default" href="/">首页</a>
-
-					<a class="btn btn-default " href="/archives/2016/09/page/2/" >下一页</a>
-
-	    	
-			</div>
-	  
-
 		<div class="comment-section">
   
+  
+
 
 </div>
 	</div>
