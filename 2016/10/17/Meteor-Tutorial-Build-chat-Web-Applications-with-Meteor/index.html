@@ -1,0 +1,221 @@
+	<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
+  
+  <title>Meteor Tutorial: Build chat Web Applications with Meteor | t1ger的茶馆</title>
+  <meta name="author" content="t1ger">
+  
+  <meta name="description" content="Meteor tutorial about web Applications">
+  
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta property="og:title" content="Meteor Tutorial: Build chat Web Applications with Meteor"/>
+  <meta property="og:site_name" content="t1ger的茶馆"/>
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+</head>
+
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">t1ger的茶馆</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="这是一个订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>Meteor Tutorial: Build chat Web Applications with Meteor</h2>
+					
+					<div>
+						<span class="post-time">2016-10-17 12:46:53</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<p>let’s spent a little time to explain the assessment.first,this is my homework about meteor on coursera.I have to complete three task below</p>
+<p>You should download and run the starter application, then test it out by logging in as different users in two different web browsers at the same time, seeing if the users if the users can talk to each other. It creates a set of test user accounts automatically, so you can log in as user1@test.com … user8@test.com with the password test123.</p>
+<p>Task 1: Improve the look and feel</p>
+<p>Adapt the templates and helper functions so that the messaging window displays users’ avatars next to their messages. Feel free to add other enhancements!</p>
+<p>Task 2: Implement data writing security</p>
+<p>Remove the insecure package from the application and implement a Meteor method to allow the insertion of chat items in the Chats collection. Test that you cannot insert items directly any more.</p>
+<p>Task 3: Implement data reading security</p>
+<p>Remove the autopublish package from the application and implement publish and subscribe for Chats. Users should only be able to retrieve chats that have their user id in either the user1Id field or the user2Id field. Test by logging in as different users and checking what you can see</p>
+<p>Challenge: Implement emoticons</p>
+<p>Can you implement emoticon functionality which allows the user to insert graphical emoticons into their message? Emoticons are small icons such as smiley faces which are typical of this kind of application.</p>
+<p>this is html file: minstant.html</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div></pre></td><td class="code"><pre><div class="line">&lt;head&gt;</div><div class="line">  &lt;title&gt;minstant&lt;/title&gt;</div><div class="line">&lt;/head&gt;</div><div class="line"></div><div class="line">&lt;body&gt;</div><div class="line">&lt;/body&gt;</div><div class="line"></div><div class="line">&lt;!-- this is the main template used by iron:router to build the page --&gt;</div><div class="line">&lt;template name=&quot;ApplicationLayout&quot;&gt;</div><div class="line">	&#123;&#123;&gt; yield &quot;header&quot;&#125;&#125;</div><div class="line">	</div><div class="line">	&lt;div class=&quot;container&quot;&gt;</div><div class="line">	&#123;&#123;&gt; yield &quot;main&quot;&#125;&#125;</div><div class="line">	&lt;/div&gt;</div><div class="line">&lt;/template&gt;</div><div class="line"></div><div class="line">&lt;!-- top level template for the nav bar --&gt;</div><div class="line">&lt;template name=&quot;navbar&quot;&gt;</div><div class="line">&lt;nav class=&quot;navbar navbar-default&quot;&gt;</div><div class="line">  &lt;div class=&quot;container-fluid&quot;&gt;</div><div class="line">    &lt;div class=&quot;navbar-header&quot;&gt;</div><div class="line">      &lt;a class=&quot;navbar-brand&quot; href=&quot;/&quot;&gt;</div><div class="line">        Minstant!</div><div class="line">      &lt;/a&gt;</div><div class="line">    &lt;/div&gt;</div><div class="line">    &lt;div class=&quot;nav navbar-nav&quot;&gt;</div><div class="line">    &#123;&#123;&gt; loginButtons&#125;&#125;</div><div class="line">&lt;/div&gt;</div><div class="line">  &lt;/div&gt;</div><div class="line">&lt;/nav&gt;</div><div class="line">&lt;/template&gt;</div><div class="line"></div><div class="line">&lt;!-- Top level template for the lobby page --&gt;</div><div class="line">&lt;template name=&quot;lobby_page&quot;&gt;</div><div class="line">	&#123;&#123;&gt; available_user_list&#125;&#125;</div><div class="line">&lt;/template&gt;</div><div class="line"></div><div class="line">&lt;!-- display a list of users --&gt;</div><div class="line">&lt;template name=&quot;available_user_list&quot;&gt;</div><div class="line">	&lt;h2&gt;Choose someone to chat with:&lt;/h2&gt;</div><div class="line">	&lt;div class=&quot;row&quot;&gt;</div><div class="line">	&#123;&#123;#each users&#125;&#125;</div><div class="line">	&#123;&#123;&gt; available_user&#125;&#125;</div><div class="line">	&#123;&#123;/each&#125;&#125;</div><div class="line">&lt;/div&gt;</div><div class="line">&lt;/template&gt;</div><div class="line"></div><div class="line">&lt;!-- display an individual user --&gt;</div><div class="line">&lt;template name=&quot;available_user&quot;&gt;</div><div class="line">	&lt;div class=&quot;col-md-2&quot;&gt;</div><div class="line">		&lt;div class=&quot;user_avatar&quot;&gt;</div><div class="line">			&#123;&#123;#if isMyUser _id&#125;&#125; </div><div class="line">			&lt;div class=&quot;bg-success&quot;&gt;&#123;&#123;getUsername _id&#125;&#125; (YOU)</div><div class="line">				&lt;br/&gt;</div><div class="line">				&lt;img src=&quot;/&#123;&#123;profile.avatar&#125;&#125;&quot; class=&quot;avatar_img&quot;&gt;			</div><div class="line">			&lt;/div&gt;</div><div class="line">			&#123;&#123;else&#125;&#125;</div><div class="line">			&lt;a href=&quot;/chat/&#123;&#123;_id&#125;&#125;&quot;&gt;</div><div class="line">				&#123;&#123;getUsername _id&#125;&#125;</div><div class="line">				&lt;br/&gt;</div><div class="line">				&lt;img src=&quot;/&#123;&#123;profile.avatar&#125;&#125;&quot; class=&quot;avatar_img&quot;&gt;</div><div class="line">			&lt;/a&gt;</div><div class="line">			&#123;&#123;/if&#125;&#125;</div><div class="line">		&lt;/div&gt;</div><div class="line">	&lt;/div&gt;</div><div class="line">&lt;/template&gt;</div><div class="line"></div><div class="line">&lt;!-- display an individual user avatar --&gt;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">&lt;!-- Top level template for the chat page --&gt;</div><div class="line">&lt;template name=&quot;chat_page&quot;&gt;</div><div class="line">	&lt;h2&gt;Type in the box below to send a message!&lt;/h2&gt;</div><div class="line">	&lt;div class=&quot;row&quot;&gt;</div><div class="line">		&lt;div class=&quot;col-md-12&quot;&gt;</div><div class="line">			&lt;div class=&quot;well well-lg&quot;&gt;</div><div class="line">			&#123;&#123;#each messages&#125;&#125;</div><div class="line"></div><div class="line">			&#123;&#123;&gt; chat_message&#125;&#125;</div><div class="line">			&#123;&#123;/each&#125;&#125;</div><div class="line">			&lt;/div&gt;	</div><div class="line">		&lt;/div&gt;</div><div class="line">	&lt;/div&gt;</div><div class="line">    &lt;div class=&quot;row&quot;&gt;</div><div class="line">		&lt;div class=&quot;col-md-12&quot;&gt;</div><div class="line">			&lt;form class=&quot;js-send-chat&quot;&gt;</div><div class="line">			&lt;input class=&quot;input&quot; type=&quot;text&quot; name=&quot;chat&quot; placeholder=&quot;type a message here...&quot;&gt;</div><div class="line">			&lt;button class=&quot;btn btn-default&quot;&gt;send&lt;/button&gt;</div><div class="line">		&lt;/form&gt;</div><div class="line">		&lt;/div&gt;</div><div class="line">	&lt;/div&gt;</div><div class="line">&lt;/template&gt;</div><div class="line"></div><div class="line">&lt;!-- simple template that displays a message --&gt;</div><div class="line">&lt;template name=&quot;chat_message&quot;&gt;</div><div class="line">	&#123;&#123;#if currentUser&#125;&#125; </div><div class="line">		&lt;img src=&quot;/&#123;&#123;avatar&#125;&#125;&quot; class=&quot;avatar_img&quot;&gt;&#123;&#123;Username&#125;&#125; said: &#123;&#123;text&#125;&#125;</div><div class="line">	&#123;&#123;else&#125;&#125;</div><div class="line">		someone said &#123;&#123;text&#125;&#125;</div><div class="line">	&#123;&#123;/if&#125;&#125;</div><div class="line">	</div><div class="line">	&lt;br&gt;</div><div class="line">&lt;/template&gt;</div></pre></td></tr></table></figure>
+<p>this is css file: minstant.css</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">/* CSS declarations go here */</div><div class="line"></div><div class="line">.user_avatar&#123;</div><div class="line">	min-height:100px;</div><div class="line">	text-align: center;</div><div class="line"></div><div class="line">&#125;</div><div class="line">.avatar_img&#123;</div><div class="line">	height:75px;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>this is js file: minstant.js</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div></pre></td><td class="code"><pre><div class="line">Chats = new Mongo.Collection(&quot;chats&quot;);</div><div class="line"></div><div class="line">if (Meteor.isClient) &#123;</div><div class="line">  // set up the main template the the router will use to build pages</div><div class="line">  Router.configure(&#123;</div><div class="line">    layoutTemplate: &apos;ApplicationLayout&apos;</div><div class="line">  &#125;);</div><div class="line">  // specify the top level route, the page users see when they arrive at the site</div><div class="line">  Router.route(&apos;/&apos;, function () &#123;</div><div class="line">    console.log(&quot;rendering root /&quot;);</div><div class="line">    this.render(&quot;navbar&quot;, &#123;to:&quot;header&quot;&#125;);</div><div class="line">    this.render(&quot;lobby_page&quot;, &#123;to:&quot;main&quot;&#125;);  </div><div class="line">  &#125;);</div><div class="line"></div><div class="line">  // specify a route that allows the current user to chat to another users</div><div class="line">  Router.route(&apos;/chat/:_id&apos;, function () &#123;</div><div class="line">    // the user they want to chat to has id equal to </div><div class="line">    // the id sent in after /chat/... </div><div class="line">    var otherUserId = this.params._id;</div><div class="line">    // find a chat that has two users that match current user id</div><div class="line">    // and the requested user id</div><div class="line">    var filter = &#123;$or:[</div><div class="line">                &#123;user1Id:Meteor.userId(), user2Id:otherUserId&#125;, </div><div class="line">                &#123;user2Id:Meteor.userId(), user1Id:otherUserId&#125;</div><div class="line">                ]&#125;;</div><div class="line">    var chat = Chats.findOne(filter);</div><div class="line">    if (!chat)&#123;// no chat matching the filter - need to insert a new one</div><div class="line">      //chatId = Chats.insert(&#123;user1Id:Meteor.userId(), user2Id:otherUserId&#125;);</div><div class="line">	  chatId = Meteor.call(&quot;createChat&quot;, Meteor.userId(), otherUserId, function (error) &#123;</div><div class="line">      if (error &amp;&amp; error.error === &quot;logged-out&quot;) &#123;</div><div class="line">        // show a nice error message</div><div class="line">        alert(&quot;Please, log in or create an account.&quot;);</div><div class="line">      &#125;</div><div class="line">    &#125;);</div><div class="line">    &#125;</div><div class="line">    else &#123;// there is a chat going already - use that. </div><div class="line">      chatId = chat._id;</div><div class="line">    &#125;</div><div class="line">    if (chatId)&#123;// looking good, save the id to the session</div><div class="line">      Session.set(&quot;chatId&quot;,chatId);</div><div class="line">    &#125;</div><div class="line">    this.render(&quot;navbar&quot;, &#123;to:&quot;header&quot;&#125;);</div><div class="line">    this.render(&quot;chat_page&quot;, &#123;to:&quot;main&quot;&#125;);  </div><div class="line">  &#125;);</div><div class="line">  </div><div class="line">  </div><div class="line">  Meteor.subscribe(&quot;users&quot;);</div><div class="line">  Meteor.subscribe(&quot;chats&quot;);</div><div class="line"></div><div class="line">  ///</div><div class="line">  // helper functions </div><div class="line">  /// </div><div class="line">  Template.available_user_list.helpers(&#123;</div><div class="line">    users:function()&#123;</div><div class="line">      return Meteor.users.find();</div><div class="line">    &#125;</div><div class="line">  &#125;)</div><div class="line"> Template.available_user.helpers(&#123;</div><div class="line">    getUsername:function(userId)&#123;</div><div class="line">      user = Meteor.users.findOne(&#123;_id:userId&#125;);</div><div class="line">      return user.profile.username;</div><div class="line">    &#125;, </div><div class="line">    isMyUser:function(userId)&#123;</div><div class="line">      if (userId == Meteor.userId())&#123;</div><div class="line">        return true;</div><div class="line">      &#125;</div><div class="line">      else &#123;</div><div class="line">        return false;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;)</div><div class="line"></div><div class="line">  Template.chat_page.helpers(&#123;</div><div class="line">    messages:function()&#123;</div><div class="line">      var chat = Chats.findOne(&#123;_id:Session.get(&quot;chatId&quot;)&#125;);</div><div class="line">      return chat.messages;</div><div class="line">    &#125;, </div><div class="line">    other_user:function()&#123;</div><div class="line">      return &quot;&quot;</div><div class="line">    &#125;, </div><div class="line">	</div><div class="line">  &#125;)</div><div class="line">    </div><div class="line"> Template.chat_page.events(&#123;</div><div class="line">  // this event fires when the user sends a message on the chat page</div><div class="line">  &apos;submit .js-send-chat&apos;:function(event)&#123;</div><div class="line">    // stop the form from triggering a page reload</div><div class="line">    event.preventDefault();</div><div class="line">    // see if we can find a chat object in the database</div><div class="line">    // to which we&apos;ll add the message</div><div class="line">    var chat = Chats.findOne(&#123;_id:Session.get(&quot;chatId&quot;)&#125;);</div><div class="line">    if (chat)&#123;// ok - we have a chat to use</div><div class="line">      var msgs = chat.messages; // pull the messages property</div><div class="line">      if (!msgs)&#123;// no messages yet, create a new array</div><div class="line">        msgs = [];</div><div class="line">      &#125;</div><div class="line">      // is a good idea to insert data straight from the form</div><div class="line">      // (i.e. the user) into the database?? certainly not. </div><div class="line">      // push adds the message to the end of the array</div><div class="line">      msgs.push(&#123;text: event.target.chat.value,avatar: Meteor.user().profile.avatar, Username: Meteor.user().profile.username&#125;);</div><div class="line">      // reset the form</div><div class="line">      event.target.chat.value = &quot;&quot;;</div><div class="line">      // put the messages array onto the chat object</div><div class="line">      chat.messages = msgs;</div><div class="line">      // update the chat object in the database.</div><div class="line">	  //Chats.update(chat._id, chat);</div><div class="line">	  Meteor.call(&quot;newMessages&quot;, chat._id, chat);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"> &#125;)</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">// start up script that creates some users for testing</div><div class="line">// users have the username &apos;user1@test.com&apos; .. &apos;user8@test.com&apos;</div><div class="line">// and the password test123 </div><div class="line"></div><div class="line">if (Meteor.isServer) &#123;</div><div class="line">  Meteor.startup(function () &#123;</div><div class="line">    if (!Meteor.users.findOne())&#123;</div><div class="line">      for (var i=1;i&lt;9;i++)&#123;</div><div class="line">        var email = &quot;user&quot;+i+&quot;@test.com&quot;;</div><div class="line">        var username = &quot;user&quot;+i;</div><div class="line">        var avatar = &quot;ava&quot;+i+&quot;.png&quot;</div><div class="line">        console.log(&quot;creating a user with password &apos;test123&apos; and username/ email: &quot;+email);</div><div class="line">        Meteor.users.insert(&#123;profile:&#123;username:username, avatar:avatar&#125;, emails:[&#123;address:email&#125;],services:&#123; password:&#123;&quot;bcrypt&quot; : &quot;$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO&quot;&#125;&#125;&#125;);</div><div class="line">      &#125;</div><div class="line">    &#125; </div><div class="line">  &#125;);</div><div class="line">  </div><div class="line">  Meteor.publish(&quot;chats&quot;,function()&#123;</div><div class="line">		return Chats.find(&#123;$or:[</div><div class="line">              &#123;user1Id:this.userId&#125;,</div><div class="line">              &#123;user2Id:this.userId&#125;</div><div class="line">            ]&#125;);</div><div class="line"> &#125;);</div><div class="line"> </div><div class="line"> Meteor.publish(&quot;users&quot;,function()&#123;</div><div class="line">	 return Meteor.users.find();</div><div class="line"> &#125;); </div><div class="line">    </div><div class="line"> Meteor.methods(&#123;</div><div class="line">	  </div><div class="line">  createChat: function (user1, user2) &#123;</div><div class="line">          //Check user logged. If no userID throw a Meteor error</div><div class="line">    if (!this.userId)&#123;</div><div class="line">      throw new Meteor.Error(&quot;logged-out&quot;, &quot;The user must be logged in to post a comment.&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // start - createChat</div><div class="line">    if (Meteor.users.find(&#123;_id: user1&#125;) &amp;&amp; Meteor.users.find(&#123;_id: user2&#125;)) &#123;</div><div class="line">      Chats.insert(&#123;user1Id:user1, user2Id:user2&#125;, function(err, result)&#123;</div><div class="line">        if (err) &#123;return err;&#125;</div><div class="line">        else &#123;</div><div class="line">          return result;&#125;</div><div class="line">      &#125;);</div><div class="line">    &#125;</div><div class="line">  &#125;, </div><div class="line">    //end - createChat</div><div class="line">  </div><div class="line">	newMessages: function (chatId, messages) &#123;</div><div class="line">    Chats.update(chatId, messages);</div><div class="line">  &#125;</div><div class="line">&#125;) </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+
+		<div class="comment-section">
+  
+  
+
+
+</div>
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+
+<p>
+  由 <a href="https://hexo.io">hexo</a> 强力驱动 |&nbsp;&nbsp;本站总点击 <span id="busuanzi_value_site_pv"></span> 次
+&nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
+</p>
+<p>
+  &copy; 2016 <a href="https://t1ger.github.io"> t1ger </a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
+
+</p>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>
