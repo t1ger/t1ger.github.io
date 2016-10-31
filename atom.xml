@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-10-26T09:56:04.906Z</updated>
+  <updated>2016-10-31T08:25:39.512Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,55 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Pinba Server install on centos6.4</title>
+    <link href="https://t1ger.github.io/2016/10/31/Pinba-Server-install-on-centos6-4/"/>
+    <id>https://t1ger.github.io/2016/10/31/Pinba-Server-install-on-centos6-4/</id>
+    <published>2016-10-31T08:35:24.000Z</published>
+    <updated>2016-10-31T08:25:39.512Z</updated>
+    
+    <content type="html"><![CDATA[<p>Pinba is a MySQL storage engine that acts as a realtime monitoring/statistics server for PHP using MySQL as a read-only interface.</p>
+<p>Pinba 1.1.0<br>Pinboard 1.5.2<br>MySQL: 5.5.50<br>PHP: 5.6</p>
+<p>install MySQL</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">yum install cmake  ncurses-devel</div><div class="line">wget http://downloads.mysql.com/archives/get/file/mysql-5.5.50.tar.gz</div><div class="line">tar xvf mysql-5.5.50.tar.gz </div><div class="line">mysql-5.5.50</div><div class="line">cmake .</div><div class="line">make install</div><div class="line">cd /usr/local/mysql</div><div class="line">chown -R mysql.mysql . </div><div class="line">bin/mysql_install_db --user=mysql</div><div class="line">cp support-files/my-medium.cnf /etc/my.cnf</div><div class="line">cp support-files/mysql.server /etc/init.d/mysql.server</div><div class="line">chmod +x /etc/init.d/mysql.server</div><div class="line">chkconfig mysql.server on</div><div class="line">/etc/init.d/mysql.server start</div></pre></td></tr></table></figure>
+<p>install Pinba</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">yum install Judy.x86_64 protobuf.x86_64 libevent.x86_64 Judy-devel.x86_64 protobuf-devel.x86_64 libevent-devel.x86_64</div><div class="line">wget http://store.alexlinux.com/sources/P/pinba_engine-1.2.0.tar.gz</div><div class="line">tar zxvf pinba_engine-1.2.0.tar.gz</div><div class="line">./configure --with-mysql=../mysql-5.5.50 --libdir=/usr/local/mysql/lib/plugin</div><div class="line">make</div><div class="line">make install</div></pre></td></tr></table></figure>
+<p>install Pinba plugin</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mysql&gt; INSTALL PLUGIN pinba SONAME &apos;libpinba_engine.so&apos;;</div><div class="line">mysql&gt; CREATE DATABASE pinba;</div><div class="line">shell&gt; mysql -D pinba &lt; default_tables.sql</div></pre></td></tr></table></figure>
+<p>create mysql user</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mysql&gt; GRANT ALL PRIVILEGES ON pinba.* TO pinba@&quot;&lt;HOST&gt;&quot;</div><div class="line">       IDENTIFIED BY &quot;&lt;PASSWORD&gt;&quot;;</div></pre></td></tr></table></figure>
+<p>install Pinba extension,defaut for php7,if you like me use php5 need change it to php5<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">shell&gt; git clone https://github.com/tony2001/pinba_extension.git</div><div class="line">shell&gt; cd pinba_extension</div><div class="line">shell&gt; git checkout -b php5 remotes/origin/php5</div><div class="line">shell&gt; phpize</div><div class="line">shell&gt; ./configure</div><div class="line">shell&gt; make</div><div class="line">shell&gt; make install</div></pre></td></tr></table></figure></p>
+<p>install apcu extension:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">shell&gt; wget http://pecl.php.net/get/apcu-4.0.11.tgz</div><div class="line">shell&gt; tar zxvf apcu-4.0.11.tgz</div><div class="line">shell&gt; cd apcu-4.0.11</div><div class="line">shell&gt; phpize</div><div class="line">shell&gt; ./configure --enable-apc-bc</div><div class="line">shell&gt; make</div><div class="line">shell&gt; make install</div></pre></td></tr></table></figure>
+<p>install Composer:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">curl -sS https://getcomposer.org/installer | php</div><div class="line">mv composer.phar /usr/local/bin/composer</div></pre></td></tr></table></figure></p>
+<p>install Pinboard<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">shell&gt; tar zxvf v1.5.2.tar.gz</div><div class="line">shell&gt; cd pinboard-1.5.2</div><div class="line">shell&gt; composer install</div><div class="line">shell&gt; ./console migrations:migrate</div><div class="line">shell&gt; ./console register-crontab</div></pre></td></tr></table></figure></p>
+<p>confirm server if reecive data on port 30002</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">shell&gt; tcpdump -nn -i any udp port 30002</div></pre></td></tr></table></figure>
+<p>nginx configure</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">server &#123;        </div><div class="line">    listen 80;</div><div class="line">    server_name pinboard.me;</div><div class="line">    root /var/www/pinboard/web;</div><div class="line"></div><div class="line">    #site root is redirected to the app boot script</div><div class="line">    location = / &#123;</div><div class="line">        try_files @site @site;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    #all other locations try other files first and go to our front controller if none of them exists</div><div class="line">    location / &#123;</div><div class="line">        try_files $uri $uri/ @site;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    #return 404 for all php files as we do have a front controller</div><div class="line">    location ~ \.php$ &#123;</div><div class="line">        return 404;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    location @site &#123;</div><div class="line">        fastcgi_pass unix:/tmp/php-fpm.sock;</div><div class="line">        include fastcgi_params;</div><div class="line">        fastcgi_param SCRIPT_FILENAME $document_root/index.php;</div><div class="line">        fastcgi_param HTTPS $https if_not_empty;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    location ~ /\.(ht|svn|git) &#123;</div><div class="line">        deny  all;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Now we will see <a href="http://pinboard.me" target="_blank" rel="external">http://pinboard.me</a></p>
+<p>install extension for client :<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">shell&gt; git clone https://github.com/tony2001/pinba_extension.git</div><div class="line">shell&gt; cd pinba_extension</div><div class="line">shell&gt; git checkout -b php5 remotes/origin/php5</div><div class="line">shell&gt; phpize</div><div class="line">shell&gt; ./configure</div><div class="line">shell&gt; make</div><div class="line">shell&gt; make install</div><div class="line">(</div><div class="line">cat &lt;&lt;EOF</div><div class="line">; Load Pinba extension</div><div class="line">extension=pinba.so</div><div class="line">; Enable and configure Pinba extension</div><div class="line">; See http://pinba.org/wiki/Manual:PHP_extension</div><div class="line">pinba.enabled = 1</div><div class="line">pinba.server = 127.0.0.1</div><div class="line">EOF</div><div class="line">) &gt; /etc/php.d/pinba.ini</div></pre></td></tr></table></figure></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Pinba is a MySQL storage engine that acts as a realtime monitoring/statistics server for PHP using MySQL as a read-only interface.&lt;/p&gt;
+&lt;p
+    
+    </summary>
+    
+    
+      <category term="centos" scheme="https://t1ger.github.io/tags/centos/"/>
+    
+      <category term="Pinba" scheme="https://t1ger.github.io/tags/Pinba/"/>
+    
+      <category term="mysql5.5" scheme="https://t1ger.github.io/tags/mysql5-5/"/>
+    
+  </entry>
   
   <entry>
     <title>python属性(property)的理解</title>
@@ -558,62 +607,6 @@ AuthName &amp;quot;SVN
     
     
       <category term="openldap linux svn proftp" scheme="https://t1ger.github.io/tags/openldap-linux-svn-proftp/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>svn镜像的快速实现</title>
-    <link href="https://t1ger.github.io/2016/09/15/svn%E9%95%9C%E5%83%8F%E7%9A%84%E5%BF%AB%E9%80%9F%E5%AE%9E%E7%8E%B0/"/>
-    <id>https://t1ger.github.io/2016/09/15/svn镜像的快速实现/</id>
-    <published>2016-09-15T14:19:00.000Z</published>
-    <updated>2016-09-26T03:44:29.940Z</updated>
-    
-    <content type="html"><![CDATA[<h4 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h4><p>在实际的应用环境，现有的SVN代码库数据量大，而svnsync却需要先初始化一个空库，然后再从0开始一直同步到相同的版本；<br>而主从服务器之间网络不好，因此需要较长时间或者传输中断。</p>
-<h3 id="配置过程："><a href="#配置过程：" class="headerlink" title="配置过程："></a>配置过程：</h3><ul>
-<li><p>备份主库(master)<br>svnadmin hotcopy path/to/repository path/to/backup –clean-logs<br>推荐使用hotcopy ，另外一种方法：<br>svnadmin dump <a href="http://source-server/svn/source-repo" target="_blank" rel="external">http://source-server/svn/source-repo</a> &gt; source-repo.dump</p>
-</li>
-<li><p>将备份文件拷贝到从服务器上(master)</p>
-</li>
-<li><p>在slave上创建一个mirror库</p>
-<p>  svnadmin create Code<br>  chown -R apache.apache Code<br>  cd Code/hooks<br>  cp -p pre-revprop-change.tmpl pre-revprop-change<br>  chmod+x pre-revporp-change</p>
-<p>  vim pre-revporp-change<br>删除以下内容：<br>  if [ “$ACTION” = “M” -a “$PROPNAME” = “svn:log” ]; then exit 0; fi<br>  echo “Changing revision properties other than svn:log is prohibited” &gt;&amp;2<br>  exit 1</p>
-</li>
-<li><p>设置mirror只对同步用户可写<br>[/]* = r<br>svnsync = rw<br>或者<br>使用start-commit 检查svnsync用户，下面是一个例子，是shell脚本：</p>
-<p>  #!/bin/sh<br>  USER=”$2″<br>  if [ “$USER” = “svnsync” ]; then<br>  exit 0<br>  fi<br>  echo “Only the svnsync user may commit new revisions as this is a read-only, mirror repository.” &gt;&amp;2<br>  exit 1 </p>
-</li>
-</ul>
-<ul>
-<li><p>在master上通过svnsync 初始化(master)<br>svnsync initialize URL_MIRROR_REPO URL_MASTER_REPO –username=svnsync –password=svnsyncpassword<br>svnsync init file:///home/backup/svn/svnsync/Project1/  <a href="http://svntest.subversion.com/repos/Project1" target="_blank" rel="external">http://svntest.subversion.com/repos/Project1</a><br>语法是：svnsync init {你刚创建的库url} {源库url}<br>注意本地url是三个斜杠的：///</p>
-<p>  svnsync init <a href="http://192.168.1.100/svn/Code" target="_blank" rel="external">http://192.168.1.100/svn/Code</a> <a href="http://192.168.1.101/svn/Code" target="_blank" rel="external">http://192.168.1.101/svn/Code</a> –username=svnsync –password=svnsync</p>
-</li>
-<li><p>在slave上备份初始化后的库(slave)<br>  cd /data/backup<br>  mv Code /opt/mirrorbak</p>
-</li>
-<li><p>将主库备份文件放到相应位置，并进行部分文件替换(slave)</p>
-<p>  替换钩子文件<br>  cd Code/hooks<br>  cp -p /opt/mirrorbak/hooks/pre-revporp-change .<br>  替换uuid<br>  cd ../db/<br>  cp -p /opt/mirrorbak/hooks/db/uuid .</p>
-<p>  替换初始版本日志<br>  cd revprops/0/<br>  cp -p /opt/mirrorbak/db/revprops/0/0 .</p>
-<p>  更改仓库目录属主<br>  chown -R apache.apache /data/backup/Code</p>
-</li>
-<li><p>复制sync-last-merged-rev（最后一次同步）版本号(master)<br>  获取当前版本号，eg:7289<br>  cat Code/db/current<br>  将当前版本好复制到slave<br>  svn propset –revprop -r0 svn:sync-last-merged-rev 7289 <a href="http://192.168.1.100/svn/Code" target="_blank" rel="external">http://192.168.1.100/svn/Code</a><br>  执行一次同步<br>  svnsync sync <a href="http://192.168.1.100/svn/Code" target="_blank" rel="external">http://192.168.1.100/svn/Code</a></p>
-</li>
-<li><p>配置实时同步<br>  在主库的hooks目录下开启post-commit<br>  mv post-commit.tmpl post-commit<br>  chmod +x post-commit<br>  svnsync synchronize <a href="http://192.168.1.100/svn/Code" target="_blank" rel="external">http://192.168.1.100/svn/Code</a> –username=svnsync –password=svnsync &amp;<br>  exit 0 </p>
-</li>
-<li><p>配置slave只让sync用户提交</p>
-<p>  pre-revprop-change<br>  if [ “$USER” = “svnsync” ]; then<br>  exit 0<br>  fi<br>  echo “Only the svnsync user may change revision properties as this is a read-only, mirror repository.” &gt;&amp;2<br>  exit 1 </p>
-</li>
-</ul>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h4 id=&quot;需求&quot;&gt;&lt;a href=&quot;#需求&quot; class=&quot;headerlink&quot; title=&quot;需求&quot;&gt;&lt;/a&gt;需求&lt;/h4&gt;&lt;p&gt;在实际的应用环境，现有的SVN代码库数据量大，而svnsync却需要先初始化一个空库，然后再从0开始一直同步到相同的版本；&lt;br&gt;而主从服务
-    
-    </summary>
-    
-    
-      <category term="svn http linux" scheme="https://t1ger.github.io/tags/svn-http-linux/"/>
     
   </entry>
   
