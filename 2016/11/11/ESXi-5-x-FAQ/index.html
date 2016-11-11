@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
   
-  <title>关于我 | t1ger的茶馆</title>
+  <title>ESXi-5.x FAQ | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
   
-  <meta name="description" content="https://t1ger.github.io/">
+  <meta name="description" content="vmware faq">
   
 
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta property="og:title" content="关于我"/>
+  <meta property="og:title" content="ESXi-5.x FAQ"/>
   <meta property="og:site_name" content="t1ger的茶馆"/>
 
   
@@ -117,33 +117,52 @@
 			<!-- index -->
 		   
 
-			  		<h2>关于我</h2>
+			  		<h2>ESXi-5.x FAQ</h2>
 					
 					<div>
-						<span class="post-time">2016-09-07 18:57:55</span>
+						<span class="post-time">2016-11-11 09:43:30</span>
 					</div>	
 					
 
 					<div class="article-content">
-						<p>##关于我<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> t1ger = &#123;</div><div class="line">  nickName  : <span class="string">"t1ger"</span>,</div><div class="line">  site : <span class="string">"http://t1ger.github.io"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<!--   
-
-##关于工作
-办公室要大，清闲又多金，如果定期去奇妙的地方旅游并且能报销那就更好了
-
-#关于生活
-面朝大海，春暖花开，百兆宽带，还有外卖 
--->
-<p>##有问题反馈<br>在使用中有任何问题，欢迎反馈给我，可以用以下联系方式跟我交流</p>
+						<p>问题1:远程控制台中键入时出现重复字符<br>解决方法：</p>
 <ul>
-<li>邮件(jinbiaozhao#gmail.com, 把#换成@)</li>
-<li>QQ: 393741403</li>
+<li>关闭虚拟机</li>
+<li>在虚拟机的配置 (.vmx) 文件结尾添加类似如下的一行：keyboard.typematicMinDelay = “2000000”<br>延迟时间单位指定为微秒，因此以上示例中的行将重复时间增加至 2 秒。</li>
+<li>启动此虚拟机<br>如果使用 vSphere Client 进行更改，请执行以下操作：</li>
+<li>关闭虚拟机电源</li>
+<li>右键单击虚拟机，选择编辑设置</li>
+<li>单击选项&gt;常规&gt;配置&gt;配置参数</li>
+<li>单击添加行</li>
+<li>在“名称”下，输入 keyboard.typematicMinDelay 在值字段中输入 2000000</li>
+<li>单击确定</li>
+<li>打开虚拟机电源</li>
 </ul>
-<p>##打赏<br>在爱好的驱动下,写一个<code>免费</code>的东西，有喜悦，也还有汗水，希望能帮到你，同时希望你也支持下。<br>当然，有钱捧个钱场，没钱捧个人场，谢谢各位。</p>
-<p>##关于本站</p>
-<p>若无特殊说明，主站所有文章均为原创文章，并遵循 CC BY-SA 4.0 协议发布。</p>
-
-<p>你可以自由地对博客中内容进行分享、创作演绎直至商业性的使用，但必须在文章末尾或参考文献处注明文章的出处（文章链接）。完整的协议可以参看 <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="external">这里</a>。</p>
+<p>问题2:vmware workstation 迁移至EXSI</p>
+<ul>
+<li>关闭虚拟机</li>
+<li>copy 文件到EXSI服务器</li>
+<li>vmkfstools -i “/vmfs/volumes/Datastore/examplevm/examplevm.vmdk” “/vmfs/volumes/Datastore 2/newexamplevm/newexamplevm.vmdk” -d thin -a buslogic </li>
+<li>在EXSI服务器上编辑该虚拟机，添加磁盘，使用已经存在的虚拟机，即转换后的那个</li>
+<li>启动虚拟机</li>
+</ul>
+<p>问题3:减小 vCenter Server 数据库的大小</p>
+<ul>
+<li>确保已经完好备份 vCenter Server Database</li>
+<li>关闭 VMware VirtualCenter Server 服务及任何其他使用该数据库的服务</li>
+<li>截断 VPX_HIST_STAT1 表及相应的 VPX_SAMPLE_TIME1 表。 截断完成后，验证汇总作业现在是否已成功完成。<br>注意： 在 vCenter Server 5.1 和 5.5 中，表名称为 VPX_HIST_STAT1_n。参考<a href="https://kb.vmware.com/selfservice/microsites/search.do?language=en_US&amp;cmd=displayKC&amp;externalId=2038474" target="_blank" rel="external">Troubleshooting VPX_HIST_STAT table sizes in VMware vCenter Server 5.x</a><br>注意： 要减小 vCenter Server 数据库的大小，还可以删除 VPX_EVENT、VPX_EVENT_ARG 和 VPX_TASK 表中的数据.参考<a href="https://kb.vmware.com/selfservice/search.do?cmd=displayKC&amp;docType=kc&amp;docTypeID=DT_KB_1_1&amp;externalId=1025914" target="_blank" rel="external">Purging old data from the database used by vCenter Server (1025914)</a></li>
+<li>要运行汇总脚本，请执行以下步骤：<br>  a.使用 SQL Management Studio 连接到 vCenter Server 的 SQL 数据库。<br>  b.导航到 SQL Server Agent &gt; 作业。<br>  c.选择各个汇总作业，然后右键单击并选择启动作业于步骤。</li>
+<li>启动 VMware VirtualCenter Server 服务及任何其他在步骤 2 中停止的服务</li>
+</ul>
+<p>问题4:dell服务器故障收集</p>
+<ul>
+<li>开启ssh终端，使用dell Exsi5收集脚本收集。</li>
+</ul>
+<p>ref</p>
+<p><a href="http://kb.vmware.com/selfservice/microsites/search.do?language=en_US&amp;cmd=displayKC&amp;externalId=2075522" target="_blank" rel="external">在远程控制台中键入时出现重复字符</a><br><a href="http://blog.csdn.net/zhgn2/article/details/18603529" target="_blank" rel="external">ESXI 5.5的搭建以及VMware9.0的虚拟机移植</a><br><a href="https://kb.vmware.com/selfservice/microsites/search.do?language=en_US&amp;cmd=displayKC&amp;externalId=1028042" target="_blank" rel="external">Cloning and converting virtual machine disks with vmkfstools</a><br><a href="https://kb.vmware.com/selfservice/microsites/search.do?cmd=displayKC&amp;docType=kc&amp;externalId=2077855" target="_blank" rel="external">当汇总脚本需要很长时间才能运行时减小 vCenter Server 数据库的大小</a><br><a href="ftp://64.199.0.197/" target="_blank" rel="external">dell收集工具exsi5_TTY.sh</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
 
 							<!-- 支付宝打赏图案 -->
       						<div id="donate_guide" class="donate_bar center ">

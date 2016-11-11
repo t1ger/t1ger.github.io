@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-11-04T07:38:35.635Z</updated>
+  <updated>2016-11-11T02:53:05.463Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,66 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>ESXi-5.x FAQ</title>
+    <link href="https://t1ger.github.io/2016/11/11/ESXi-5-x-FAQ/"/>
+    <id>https://t1ger.github.io/2016/11/11/ESXi-5-x-FAQ/</id>
+    <published>2016-11-11T01:43:30.000Z</published>
+    <updated>2016-11-11T02:53:05.463Z</updated>
+    
+    <content type="html"><![CDATA[<p>问题1:远程控制台中键入时出现重复字符<br>解决方法：</p>
+<ul>
+<li>关闭虚拟机</li>
+<li>在虚拟机的配置 (.vmx) 文件结尾添加类似如下的一行：keyboard.typematicMinDelay = “2000000”<br>延迟时间单位指定为微秒，因此以上示例中的行将重复时间增加至 2 秒。</li>
+<li>启动此虚拟机<br>如果使用 vSphere Client 进行更改，请执行以下操作：</li>
+<li>关闭虚拟机电源</li>
+<li>右键单击虚拟机，选择编辑设置</li>
+<li>单击选项&gt;常规&gt;配置&gt;配置参数</li>
+<li>单击添加行</li>
+<li>在“名称”下，输入 keyboard.typematicMinDelay 在值字段中输入 2000000</li>
+<li>单击确定</li>
+<li>打开虚拟机电源</li>
+</ul>
+<p>问题2:vmware workstation 迁移至EXSI</p>
+<ul>
+<li>关闭虚拟机</li>
+<li>copy 文件到EXSI服务器</li>
+<li>vmkfstools -i “/vmfs/volumes/Datastore/examplevm/examplevm.vmdk” “/vmfs/volumes/Datastore 2/newexamplevm/newexamplevm.vmdk” -d thin -a buslogic </li>
+<li>在EXSI服务器上编辑该虚拟机，添加磁盘，使用已经存在的虚拟机，即转换后的那个</li>
+<li>启动虚拟机</li>
+</ul>
+<p>问题3:减小 vCenter Server 数据库的大小</p>
+<ul>
+<li>确保已经完好备份 vCenter Server Database</li>
+<li>关闭 VMware VirtualCenter Server 服务及任何其他使用该数据库的服务</li>
+<li>截断 VPX_HIST_STAT1 表及相应的 VPX_SAMPLE_TIME1 表。 截断完成后，验证汇总作业现在是否已成功完成。<br>注意： 在 vCenter Server 5.1 和 5.5 中，表名称为 VPX_HIST_STAT1_n。参考<a href="https://kb.vmware.com/selfservice/microsites/search.do?language=en_US&amp;cmd=displayKC&amp;externalId=2038474" target="_blank" rel="external">Troubleshooting VPX_HIST_STAT table sizes in VMware vCenter Server 5.x</a><br>注意： 要减小 vCenter Server 数据库的大小，还可以删除 VPX_EVENT、VPX_EVENT_ARG 和 VPX_TASK 表中的数据.参考<a href="https://kb.vmware.com/selfservice/search.do?cmd=displayKC&amp;docType=kc&amp;docTypeID=DT_KB_1_1&amp;externalId=1025914" target="_blank" rel="external">Purging old data from the database used by vCenter Server (1025914)</a></li>
+<li>要运行汇总脚本，请执行以下步骤：<br>  a.使用 SQL Management Studio 连接到 vCenter Server 的 SQL 数据库。<br>  b.导航到 SQL Server Agent &gt; 作业。<br>  c.选择各个汇总作业，然后右键单击并选择启动作业于步骤。</li>
+<li>启动 VMware VirtualCenter Server 服务及任何其他在步骤 2 中停止的服务</li>
+</ul>
+<p>问题4:dell服务器故障收集</p>
+<ul>
+<li>开启ssh终端，使用dell Exsi5收集脚本收集。</li>
+</ul>
+<p>ref</p>
+<p><a href="http://kb.vmware.com/selfservice/microsites/search.do?language=en_US&amp;cmd=displayKC&amp;externalId=2075522" target="_blank" rel="external">在远程控制台中键入时出现重复字符</a><br><a href="http://blog.csdn.net/zhgn2/article/details/18603529" target="_blank" rel="external">ESXI 5.5的搭建以及VMware9.0的虚拟机移植</a><br><a href="https://kb.vmware.com/selfservice/microsites/search.do?language=en_US&amp;cmd=displayKC&amp;externalId=1028042" target="_blank" rel="external">Cloning and converting virtual machine disks with vmkfstools</a><br><a href="https://kb.vmware.com/selfservice/microsites/search.do?cmd=displayKC&amp;docType=kc&amp;externalId=2077855" target="_blank" rel="external">当汇总脚本需要很长时间才能运行时减小 vCenter Server 数据库的大小</a><br><a href="ftp://64.199.0.197/" target="_blank" rel="external">dell收集工具exsi5_TTY.sh</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      vmware faq
+    
+    </summary>
+    
+    
+      <category term="vmware" scheme="https://t1ger.github.io/tags/vmware/"/>
+    
+      <category term="EXSI" scheme="https://t1ger.github.io/tags/EXSI/"/>
+    
+  </entry>
   
   <entry>
     <title>Recent Redis hacking</title>
@@ -510,87 +570,6 @@ mysql&gt;start slave;
     
     
       <category term="mysql linux" scheme="https://t1ger.github.io/tags/mysql-linux/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Confluence 重置密码步骤</title>
-    <link href="https://t1ger.github.io/2016/09/21/Confluence-%E9%87%8D%E7%BD%AE%E5%AF%86%E7%A0%81%E6%AD%A5%E9%AA%A4/"/>
-    <id>https://t1ger.github.io/2016/09/21/Confluence-重置密码步骤/</id>
-    <published>2016-09-21T11:07:00.000Z</published>
-    <updated>2016-09-26T03:42:07.066Z</updated>
-    
-    <content type="html"><![CDATA[<p>当我们忘记Confluence密码或者不能作为admin登陆的话，请参考以下方法：</p>
-<ul>
-<li><p>首先，你的有mysql或者其他数据库的权限啦，找到admin权限的用户</p>
-<pre><code>select u.id, u.user_name, u.active from cwd_user u
-join cwd_membership m on u.id=m.child_user_id join cwd_group g on m.parent_id=g.id join cwd_directory d on d.id=g.directory_id
-where g.group_name = &apos;confluence-administrators&apos; and d.directory_name=&apos;Confluence Internal Directory&apos;;
-确保找到的用户处于激活状态
-UPDATE cwd_user
-SET active = &apos;T&apos;
-WHERE user_name =&apos;&lt;user_name&gt;&apos;;
-</code></pre></li>
-<li><p>如果没有local admin存在，那我们只好自己建立了。</p>
-<pre><code>insert into cwd_user(id, user_name, lower_user_name, active, created_date, updated_date, first_name, lower_first_name, last_name, lower_last_name, display_name, lower_display_name, email_address, lower_email_address, directory_id, credential) values (1212121, &apos;admin&apos;, &apos;admin&apos;, &apos;T&apos;, &apos;2009-11-26 17:42:08&apos;, &apos;2009-11-26 17:42:08&apos;, &apos;A. D.&apos;, &apos;a. d.&apos;, &apos;Ministrator&apos;, &apos;ministrator&apos;, &apos;A. D. Ministrator&apos;, &apos;a. d. ministrator&apos;, &apos;admin@example.com&apos;, &apos;admin@example.com&apos;, (select id from cwd_directory where directory_name=&apos;Confluence Internal Directory&apos;), &apos;x61Ey612Kl2gpFL56FT9weDnpSo4AV8j8+qx2AuTHdRyY036xxzTTrw10Wq3+4qQyB+XURPWx1ONxp3Y3pB37A==&apos;);
-
-insert into user_mapping values (&apos;2c9681954172cf560000000000000001&apos;, &apos;admin&apos;, &apos;admin&apos;);
-
-添加新组
-
-insert into cwd_group(id, group_name, lower_group_name, active, local, created_date, updated_date, description, group_type, directory_id)
-values ( &apos;888888&apos;,&apos;confluence-administrators&apos;,&apos;confluence-administrators&apos;,&apos;T&apos;,&apos;F&apos;,&apos;2011-03-21 12:20:29&apos;,&apos;2011-03-21 12:20:29&apos;,NULL,&apos;GROUP&apos;,(select id from cwd_directory where directory_name=&apos;Confluence Internal Directory&apos;));
-insert into cwd_group(id, group_name, lower_group_name, active, local, created_date, updated_date, description, group_type, directory_id)
-values ( &apos;999999&apos;,&apos;confluence-users&apos;,&apos;confluence-users&apos;,&apos;T&apos;,&apos;F&apos;,&apos;2011-03-21 12:20:29&apos;,&apos;2011-03-21 12:20:29&apos;,NULL,&apos;GROUP&apos;,(select id from cwd_directory where directory_name=&apos;Confluence Internal Directory&apos;));
-
-添加组关系
-insert into cwd_membership (id, parent_id, child_user_id) values (888888, (select id from cwd_group where group_name=&apos;confluence-users&apos; and directory_id=(select id from cwd_directory where directory_name=&apos;Confluence Internal Directory&apos;)), 1212121);
-insert into cwd_membership (id, parent_id, child_user_id) values (999999, (select id from cwd_group where group_name=&apos;confluence-administrators&apos; and directory_id=(select id from cwd_directory where directory_name=&apos;Confluence Internal Directory&apos;)), 1212121);
-
-如果你用的是oracle数据库，请用 sysdate 代替 created_date.
-</code></pre></li>
-<li><p>替换admin密码，加密后的密码如下<br>  x61Ey612Kl2gpFL56FT9weDnpSo4AV8j8+qx2AuTHdRyY036xxzTTrw10Wq3+4qQyB+XURPWx1ONxp3Y3pB37A==，为了更改密码，我们要关闭Confluence<br>登陆mysql执行</p>
-<pre><code>update cwd_user set credential =
-&apos;x61Ey612Kl2gpFL56FT9weDnpSo4AV8j8+qx2AuTHdRyY036xxzTTrw10Wq3+4qQyB+XURPWx1ONxp3Y3pB37A==&apos;
-where id=&lt;id from Stage 1&gt;;
-</code></pre></li>
-</ul>
-<ul>
-<li><p>更改Internal Directory 为第一</p>
-<pre><code>找到directory 名
-
-select d.id, d.directory_name, m.list_index from cwd_directory d join cwd_app_dir_mapping m on d.id=m.directory_id;
-
-交换directory顺序
-
-update cwd_app_dir_mapping set list_index = 0 where directory_id = &lt;Internal Directory id&gt;;
-update cwd_app_dir_mapping set list_index = &lt;Noted Internal Directory list_index&gt; where directory_id = &lt;Directory id that had list_index 0&gt;;
-
-查看是否激活directory
-select id, directory_name, active from cwd_directory where id = &lt;Internal Directory id&gt;;
-
-如果必要，激活
-
-update cwd_directory set active = &apos;T&apos; where id = &lt;Internal Directory id&gt;;
-</code></pre></li>
-</ul>
-<p>重启登陆，打完收工</p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;当我们忘记Confluence密码或者不能作为admin登陆的话，请参考以下方法：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;首先，你的有mysql或者其他数据库的权限啦，找到admin权限的用户&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;select u.id, u.user_name, u.
-    
-    </summary>
-    
-    
-      <category term="Confluence openldap" scheme="https://t1ger.github.io/tags/Confluence-openldap/"/>
     
   </entry>
   
