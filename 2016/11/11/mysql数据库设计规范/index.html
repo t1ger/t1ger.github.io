@@ -126,7 +126,7 @@
 
 					<div class="article-content">
 						<p>写在前面，此文章为转载，略微整理</p>
-<h5 id="一、命名规范"><a href="#一、命名规范" class="headerlink" title="一、命名规范"></a>一、<b>命名规范</b></h5><p>[数据库环境介绍]</p>
+<h4 id="一、命名规范"><a href="#一、命名规范" class="headerlink" title="一、命名规范"></a>一、<b>命名规范</b></h4><p>[数据库环境介绍]</p>
 <ul>
 <li>开发环境(dev)：开发人员可读写，在不影响其他开发同事时可随意修改。</li>
 <li>测试环境(qa)：开发和测试可读写，可通过工具修改表结构</li>
@@ -167,7 +167,7 @@
 <li>对表加新字段，不允许指定字段位置</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">CREATE TABLE `login_user` (</div><div class="line">  `id` int(10) NOT NULL AUTO_INCREMENT,</div><div class="line">  `jid` int(10) unsigned NOT NULL,</div><div class="line">  `user_id` int(10) NOT NULL COMMENT &apos;用户的id&apos;,</div><div class="line">  `username` varchar(50) NOT NULL COMMENT &apos;用户姓名&apos;,</div><div class="line">  `city` smallint(4) NOT NULL COMMENT &apos;城市&apos;,</div><div class="line">  `ip` bigint(14) NOT NULL COMMENT &apos;登陆ip&apos;,</div><div class="line">  `district_id` tinyint(2) NOT NULL COMMENT &apos;所在区域的id&apos;,</div><div class="line">  `district_name` varchar(20) NOT NULL COMMENT &apos;行政区名字&apos;,</div><div class="line">  `street_id` tinyint(2) NOT NULL COMMENT &apos;所在街道(地标)的id&apos;,</div><div class="line">  `street_name` varchar(20) NOT NULL COMMENT &apos;小区名字&apos;,</div><div class="line">  `status` tinyint(2) NOT NULL DEFAULT &apos;1&apos; COMMENT &apos;用户状态:0禁用 1正常&apos;,</div><div class="line">  PRIMARY KEY (`id`),</div><div class="line">  UNIQUE KEY `idx_jid` (`jid`),</div><div class="line">  KEY `user_id_index` (`user_id`)</div><div class="line">) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT=&apos;用户登陆表&apos;</div><div class="line"></div><div class="line"></div><div class="line">ALTER TABLE T_APP_VERSION ADD COLUMN FSECURITY SMALLINT(5) NOT NULL DEFAULT 0 COMMENT &apos;安全扫描结果&apos;;</div></pre></td></tr></table></figure>
-<h6 id="二、表设计原则"><a href="#二、表设计原则" class="headerlink" title="二、表设计原则"></a>二、<b>表设计原则</b></h6><p>[职责分离原则]<br>通常指数据的产生和使用，每个系统相互独立，通常取决于以下几点</p>
+<h4 id="二、表设计原则"><a href="#二、表设计原则" class="headerlink" title="二、表设计原则"></a>二、<b>表设计原则</b></h4><p>[职责分离原则]<br>通常指数据的产生和使用，每个系统相互独立，通常取决于以下几点</p>
 <ul>
 <li>数据的产生：通常谁产生谁负责，维护数据的正个生命周期，产生，修改，销毁等周期。</li>
 <li>使用数据者：谁使用谁维护</li>
@@ -179,13 +179,13 @@
 <li>为了保证生产环境数据处理性能，需要将一些分析相关的数据及结果单独库存储，避免在数据分析的时候导致业务数据吞吐量下降，引起系统问题</li>
 <li>专门用于存放离线报表数据，并提供线上数据查询方法，建议将统计结果，汇总的数据都从在线处理数据库中移走</li>
 </ul>
-<p>原则上要将在线用户请求和后台统计请求分开</p>
-<p>a. 将后台统计与生产库分开(一般使用slave)，缺点是数据量大了玩不转<br>b. 建立离线报表，专门存放统计结果，计算与展示异步处理，缺点是实时业务响应差<br>c. 实时拉取mysql row binlog，做数据的异构处理(tungsten, canal)，将增量结果处理后(storm)，保存在数据库中，基本实时。</p>
+<p>原则上要将在线用户请求和后台统计请求分开:</p>
+<p>a. 将后台统计与生产库分开(一般使用slave)，缺点是数据量大了玩不转。<br>b. 建立离线报表，专门存放统计结果，计算与展示异步处理，缺点是实时业务响应差。<br>c. 实时拉取mysql row binlog，做数据的异构处理(tungsten, canal)，将增量结果处理后(storm)，保存在数据库中，基本实时。</p>
 <p>[事物与日志分离]</p>
 <p>通常用户生成的内容和用户行为的日志要分开，eg:</p>
 <p>游戏DB里存放玩家的基础信息，装备，属性，好友列表等等，这些放到数据库里面。但是玩家的行为日志，比如消耗金币，今天下过哪些副本，买过什么顶级装备，这些属于行为日志，应该单独存放并分析处理。</p>
 <p>对于web用记，有好多用户置顶，刷新，竞价，展示等行为，要求实时并且量很大，一定要和贴子分开。</p>
-<p>行为日志，需要做分析处理，并且由于时效性不宜存储在mysql中，后期维护就是地雷</p>
+<p>行为日志，需要做分析处理，并且由于时效性不宜存储在mysql中，后期维护就是地雷。</p>
 <p>[历史可追溯]</p>
 <p>保障数据可追溯，应当遵循一些简单的约定，事后方便数据的查询和统计：</p>
 <ul>
