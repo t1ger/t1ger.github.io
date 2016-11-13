@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-11-13T13:38:00.083Z</updated>
+  <updated>2016-11-13T13:40:28.626Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -20,9 +20,10 @@
     <link href="https://t1ger.github.io/2016/11/11/%E5%85%B3%E4%BA%8E%E9%AB%98%E5%8F%AF%E7%94%A8%E7%9A%84%E7%B3%BB%E7%BB%9F%E4%B8%80%E7%82%B9%E6%80%9D%E8%80%83/"/>
     <id>https://t1ger.github.io/2016/11/11/关于高可用的系统一点思考/</id>
     <published>2016-11-11T09:42:34.000Z</published>
-    <updated>2016-11-13T13:38:00.083Z</updated>
+    <updated>2016-11-13T13:40:28.626Z</updated>
     
-    <content type="html"><![CDATA[<h4 id="理解高可用系统"><a href="#理解高可用系统" class="headerlink" title="理解高可用系统"></a><b>理解高可用系统</b></h4><p>高可用，顾名思义就是要我们的计算环境(包括软硬件)做到full-time的可用性。通常在需要做好如下设计：</p>
+    <content type="html"><![CDATA[<p>写在前面，此文章为转载，略微整理</p>
+<h4 id="理解高可用系统"><a href="#理解高可用系统" class="headerlink" title="理解高可用系统"></a><b>理解高可用系统</b></h4><p>高可用，顾名思义就是要我们的计算环境(包括软硬件)做到full-time的可用性。通常在需要做好如下设计：</p>
 <ul>
 <li>对软硬件的冗余，以消除单点故障。任何系统都会有一个或多个冗余系统做standby</li>
 <li>对故障的检测和恢复。检测故障以及用备份的节点接管故障点。就是我们常说的failover</li>
