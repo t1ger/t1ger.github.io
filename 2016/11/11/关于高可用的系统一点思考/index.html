@@ -1,0 +1,325 @@
+	<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
+  
+  <title>关于高可用的系统一点思考 | t1ger的茶馆</title>
+  <meta name="author" content="t1ger">
+  
+  <meta name="description" content="think about High Availability">
+  
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta property="og:title" content="关于高可用的系统一点思考"/>
+  <meta property="og:site_name" content="t1ger的茶馆"/>
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+</head>
+
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">t1ger的茶馆</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="这是一个订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>关于高可用的系统一点思考</h2>
+					
+					<div>
+						<span class="post-time">2016-11-11 17:42:34</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<h4 id="理解高可用系统"><a href="#理解高可用系统" class="headerlink" title="理解高可用系统"></a><b>理解高可用系统</b></h4><p>高可用，顾名思义就是要我们的计算环境(包括软硬件)做到full-time的可用性。通常在需要做好如下设计：</p>
+<ul>
+<li>对软硬件的冗余，以消除单点故障。任何系统都会有一个或多个冗余系统做standby</li>
+<li>对故障的检测和恢复。检测故障以及用备份的节点接管故障点。就是我们常说的failover</li>
+<li>需要很可靠的交汇点(CrossOver)。eg. 域名解析、负载均衡等</li>
+</ul>
+<p>说起来很简单，然而，细节决定成败，冗余节点最大的难题就是有状态的节点数据复制和数据一致性的保证(无状态节点冗余相对简单)：</p>
+<ul>
+<li>如果系统的数据镜像到冗余节点是异步的，那么failover的时候就会出现数据差异</li>
+<li>如果系统在数据镜像到冗余节点是同步的，那么会导致冗余节点越多性能越慢。</li>
+</ul>
+<p>所以，很多高可用系统都是在做各种取舍，这需要比对着业务的特点来的，比如银行账号的余额是一个状态型的数据，那么，冗余时就必需做到强一致性，再比如说，订单记录属于追加性的数据，那么在failover的时候，就可以到备机上进行追加，这样就比较简单了。</p>
+<p>下面，总结一下高可用的设计原理：</p>
+<ul>
+<li>要做到数据不丢，就必须持久化</li>
+<li>要做到服务高可用，必须有备用，无论是应用结点还是数据结点</li>
+<li>要做到复制，就会有数据一致性的问题</li>
+<li>我们不可能做到100%的高可用，即我们能做到几个9的SLA</li>
+</ul>
+<h4 id="高可用技术方案的示例"><a href="#高可用技术方案的示例" class="headerlink" title="高可用技术方案的示例"></a><b>高可用技术方案的示例</b></h4><p>简单解释一下MySQL的这几个方案（主要是想表达一个越多的9就越复杂）</p>
+<ul>
+<li>Mysql Repleaction(一般配合keepalived 实现failover) 是传统的异步数据同步或是半同步Semi-Sync(只要有一个slave收到更新就返回成功）这个方式本质上不到2个9)</li>
+<li>MMM/MHA通过MySQL replication技术可以实现两个服务器互为主从，且在任何时候只有一个节点可以被写入，避免了多点写入的数据冲突。同时，当可写的主节点故障时，MMM/MHA套件可以立刻监控到，然后将服务自动切换到另一个主节点，继续提供服务，从而实现MySQL的高可用。这个方案的可用性可以达到99%。备注：MMM项目已于2012停止更新</li>
+<li>DRBD通过底层的磁盘同步技术来解决数据同步的问题，就是RAID 1——把两台以上的主机的硬盘镜像成一个。这个方案不到3个9</li>
+<li>Solaris Clustering/Oracle VM ，这个机制监控了包括硬件、操作系统、网络和数据库。这个方案一般会伴随着节点间的“心跳机制”，而且还会动用到SAN（Storage Area Network）或是本地的分布式存储系统，还会动用虚拟化技术来做虚拟机的迁移以降低宕机时间的概率。这个解决方案完全就是一个“全栈式的解决方案”。这个方案接近4个9</li>
+<li>MySQL Cluster是官方的一个开源方案，其把MySQL的集群分成SQL Node 和Data Node，Data Node是一个自动化sharing和复制的集群NDB，为了更高的可用性，MySQL Cluster采用了“完全同步”的数据复制的机制来冗余数据结点。这个方案接近5个9</li>
+</ul>
+<p>那么，这些2个9，3个9，4个9，5个9是什么意思呢？又是怎么来的呢？请往下看。</p>
+<h4 id="高可用性SLA的定义"><a href="#高可用性SLA的定义" class="headerlink" title="高可用性SLA的定义"></a><b>高可用性SLA的定义</b></h4><p>重点来了，工业界有两种方法来测量SLA</p>
+<ul>
+<li>一个是故障发生到恢复的时间</li>
+<li>另一个是两次故障间的时间</li>
+</ul>
+<p>通常我们采用前者，即故障发生到恢复的时间，也就是服务不可用时间</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">系统可用性</th>
+<th style="text-align:left">宕机时间/年</th>
+<th style="text-align:left">宕机时间/月</th>
+<th style="text-align:left">宕机时间/周</th>
+<th style="text-align:left">宕机时间/天</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">90% (1个9)</td>
+<td style="text-align:left">36.5 天</td>
+<td style="text-align:left">72 小时</td>
+<td style="text-align:left">16.8 小时</td>
+<td style="text-align:left">2.4 小时</td>
+</tr>
+<tr>
+<td style="text-align:left">99% (2个9)</td>
+<td style="text-align:left">3.65 天</td>
+<td style="text-align:left">7.20 小时</td>
+<td style="text-align:left">1.68 小时</td>
+<td style="text-align:left">14.4 分</td>
+</tr>
+<tr>
+<td style="text-align:left">99.9% (3个9)</td>
+<td style="text-align:left">8.76 小时</td>
+<td style="text-align:left">43.8 分</td>
+<td style="text-align:left">10.1 分钟</td>
+<td style="text-align:left">1.44 分</td>
+</tr>
+<tr>
+<td style="text-align:left">99.99% (4个9)</td>
+<td style="text-align:left">52.56 分</td>
+<td style="text-align:left">4.38 分</td>
+<td style="text-align:left">1.01 分钟</td>
+<td style="text-align:left">8.66 秒</td>
+</tr>
+<tr>
+<td style="text-align:left">99.999% (5个9)</td>
+<td style="text-align:left">5.26 分</td>
+<td style="text-align:left">25.9 秒</td>
+<td style="text-align:left">6.05 秒</td>
+<td style="text-align:left">0.87 秒</td>
+</tr>
+</tbody>
+</table>
+<p>比如，99.999%的可用性，一年只能有5分半钟的服务不可用。感觉很难做到吧。<br>到 3 个 9 可以靠堆人，也就是 3 班倒之类的强制值班基本搞定。但是从 3 个 9 往上，就基本超出了人力的范畴，考验的是业务的自愈能力，架构的容灾、容错设计，灾备系统的完善等等。<br>据说Google 内部只有 4 个 9 以上的服务才会配备 SRE，SRE 是必须在接到报警 5 分钟之内上线处理问题的，否则报警系统自动升级到下一个 SRE。如果还没有，直接给老板发报警。</p>
+<p>简而言之，SLA的几个9就是能持续提供可用服务的级别，不过，工业界中，会把服务不可用的因素分成两种：一种是有计划的，一种是无计划的。</p>
+<p>无计划的</p>
+<ul>
+<li>系统级故障-包括主机、操作系统、中间件、数据库、网络、电源以及外围设备</li>
+<li>数据和中介的故障-包括人员误操作、硬盘故障、数据乱了</li>
+<li>外部因素-自然灾害、人为破坏、以及供电问题</li>
+</ul>
+<p>有计划的</p>
+<ul>
+<li>日常任务-备份、容量规划、用户和安全管理，后台批处理应用</li>
+<li>运维相关-数据库维护、应用维护、中间件维护、操作系统维护、网络维护</li>
+<li>升级相关-数据库、应用、中间件、操作系统、网络、包括硬件升级</li>
+</ul>
+<p>有计划的维护因素主要来自于变更管理，避免措施主要有以下几个方面：</p>
+<ul>
+<li>线下测试（Offline Test）</li>
+<li>灰度发布</li>
+<li>服务必须对回滚提供支持</li>
+</ul>
+<p>针对回滚，跟大家分享一下，保证药到病除：</p>
+<p>理由1：我这个数据改动之后格式跟以前的不兼容了，回退也不能正常！<br>秘籍1：设计、开发时候就考虑好兼容性问题！！！比如说数据库改字段的事就不要做，改成另加一个字段就好。数据存储格式就最好采用 protobuf 这种支持数据版本、支持前后兼容性的方案。最差的情况，也要在变更实施『之前』，想清楚数据兼容性的问题。没有回滚脚本，不给更新，起码做到有备而战。</p>
+<p>理由2：我这个变更删掉东西了！回退之后数据也没了！<br>秘籍2：你一定是在逗我。把这个变更打回去，分成两半。第一半禁止访问这个数据。等到发布之后真没问题了，再来发布第二半，第二半真正删掉数据。这样第一半实施之后需要回滚还可以再回去。</p>
+<p>理由3：我这个变更发布了之后, 其他依赖这个系统的人都拿到了错误的数据，再回退也没用了，他们不会再接受老数据了！<br>秘籍3：这种比较常见出现在配置管理、缓存等系统中。对这类问题，最重要的就是，应该开发一种跟版本无关的刷新机制。触发刷新的机制应该独立于发布过程。 要有一个强制刷新数据的手段。</p>
+<p>以上三个秘籍覆盖了100%的回滚兼容性问题，如果有不存在的，请务必告诉我！</p>
+<h4 id="决定高可用的本质原因"><a href="#决定高可用的本质原因" class="headerlink" title="决定高可用的本质原因"></a><b>决定高可用的本质原因</b></h4><p><b>通过上述影响SLA的因素，我们可以看出实现5个9意味着一年的时间只能有5分钟不可用，如果没有一支技术牛逼的团队加上一套自动化的工具，怎么能有高可用系统呢</b></p>
+<p>要实现高可用系统，其中包括但不限于：</p>
+<ul>
+<li>软件的设计、编码、测试、上线和软件配置的水平</li>
+<li>工程师的技术水平</li>
+<li>运维的管理和技术水平</li>
+<li>数据中心的运营管理水平</li>
+<li>依赖于第三方服务的管理水平</li>
+</ul>
+<p>ref<br><a href="http://coolshell.cn/articles/17459.htm" target="_blank" rel="external">关于高可用的系统</a><br><a href="https://blog.coding.net/blog/architecture-concept-and-practice-from-Google" target="_blank" rel="external">来自 Google 的高可用架构理念与实践</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+
+		<div class="comment-section">
+  
+  
+
+
+</div>
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+
+<p>
+  由 <a href="https://hexo.io">hexo</a> 强力驱动 |&nbsp;&nbsp;本站总点击 <span id="busuanzi_value_site_pv"></span> 次
+&nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
+</p>
+<p>
+  &copy; 2016 <a href="https://t1ger.github.io"> t1ger </a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
+
+</p>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>

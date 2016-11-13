@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-11-11T07:42:52.070Z</updated>
+  <updated>2016-11-13T13:38:00.083Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -16,19 +16,157 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>关于高可用的系统一点思考</title>
+    <link href="https://t1ger.github.io/2016/11/11/%E5%85%B3%E4%BA%8E%E9%AB%98%E5%8F%AF%E7%94%A8%E7%9A%84%E7%B3%BB%E7%BB%9F%E4%B8%80%E7%82%B9%E6%80%9D%E8%80%83/"/>
+    <id>https://t1ger.github.io/2016/11/11/关于高可用的系统一点思考/</id>
+    <published>2016-11-11T09:42:34.000Z</published>
+    <updated>2016-11-13T13:38:00.083Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="理解高可用系统"><a href="#理解高可用系统" class="headerlink" title="理解高可用系统"></a><b>理解高可用系统</b></h4><p>高可用，顾名思义就是要我们的计算环境(包括软硬件)做到full-time的可用性。通常在需要做好如下设计：</p>
+<ul>
+<li>对软硬件的冗余，以消除单点故障。任何系统都会有一个或多个冗余系统做standby</li>
+<li>对故障的检测和恢复。检测故障以及用备份的节点接管故障点。就是我们常说的failover</li>
+<li>需要很可靠的交汇点(CrossOver)。eg. 域名解析、负载均衡等</li>
+</ul>
+<p>说起来很简单，然而，细节决定成败，冗余节点最大的难题就是有状态的节点数据复制和数据一致性的保证(无状态节点冗余相对简单)：</p>
+<ul>
+<li>如果系统的数据镜像到冗余节点是异步的，那么failover的时候就会出现数据差异</li>
+<li>如果系统在数据镜像到冗余节点是同步的，那么会导致冗余节点越多性能越慢。</li>
+</ul>
+<p>所以，很多高可用系统都是在做各种取舍，这需要比对着业务的特点来的，比如银行账号的余额是一个状态型的数据，那么，冗余时就必需做到强一致性，再比如说，订单记录属于追加性的数据，那么在failover的时候，就可以到备机上进行追加，这样就比较简单了。</p>
+<p>下面，总结一下高可用的设计原理：</p>
+<ul>
+<li>要做到数据不丢，就必须持久化</li>
+<li>要做到服务高可用，必须有备用，无论是应用结点还是数据结点</li>
+<li>要做到复制，就会有数据一致性的问题</li>
+<li>我们不可能做到100%的高可用，即我们能做到几个9的SLA</li>
+</ul>
+<h4 id="高可用技术方案的示例"><a href="#高可用技术方案的示例" class="headerlink" title="高可用技术方案的示例"></a><b>高可用技术方案的示例</b></h4><p>简单解释一下MySQL的这几个方案（主要是想表达一个越多的9就越复杂）</p>
+<ul>
+<li>Mysql Repleaction(一般配合keepalived 实现failover) 是传统的异步数据同步或是半同步Semi-Sync(只要有一个slave收到更新就返回成功）这个方式本质上不到2个9)</li>
+<li>MMM/MHA通过MySQL replication技术可以实现两个服务器互为主从，且在任何时候只有一个节点可以被写入，避免了多点写入的数据冲突。同时，当可写的主节点故障时，MMM/MHA套件可以立刻监控到，然后将服务自动切换到另一个主节点，继续提供服务，从而实现MySQL的高可用。这个方案的可用性可以达到99%。备注：MMM项目已于2012停止更新</li>
+<li>DRBD通过底层的磁盘同步技术来解决数据同步的问题，就是RAID 1——把两台以上的主机的硬盘镜像成一个。这个方案不到3个9</li>
+<li>Solaris Clustering/Oracle VM ，这个机制监控了包括硬件、操作系统、网络和数据库。这个方案一般会伴随着节点间的“心跳机制”，而且还会动用到SAN（Storage Area Network）或是本地的分布式存储系统，还会动用虚拟化技术来做虚拟机的迁移以降低宕机时间的概率。这个解决方案完全就是一个“全栈式的解决方案”。这个方案接近4个9</li>
+<li>MySQL Cluster是官方的一个开源方案，其把MySQL的集群分成SQL Node 和Data Node，Data Node是一个自动化sharing和复制的集群NDB，为了更高的可用性，MySQL Cluster采用了“完全同步”的数据复制的机制来冗余数据结点。这个方案接近5个9</li>
+</ul>
+<p>那么，这些2个9，3个9，4个9，5个9是什么意思呢？又是怎么来的呢？请往下看。</p>
+<h4 id="高可用性SLA的定义"><a href="#高可用性SLA的定义" class="headerlink" title="高可用性SLA的定义"></a><b>高可用性SLA的定义</b></h4><p>重点来了，工业界有两种方法来测量SLA</p>
+<ul>
+<li>一个是故障发生到恢复的时间</li>
+<li>另一个是两次故障间的时间</li>
+</ul>
+<p>通常我们采用前者，即故障发生到恢复的时间，也就是服务不可用时间</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">系统可用性</th>
+<th style="text-align:left">宕机时间/年</th>
+<th style="text-align:left">宕机时间/月</th>
+<th style="text-align:left">宕机时间/周</th>
+<th style="text-align:left">宕机时间/天</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">90% (1个9)</td>
+<td style="text-align:left">36.5 天</td>
+<td style="text-align:left">72 小时</td>
+<td style="text-align:left">16.8 小时</td>
+<td style="text-align:left">2.4 小时</td>
+</tr>
+<tr>
+<td style="text-align:left">99% (2个9)</td>
+<td style="text-align:left">3.65 天</td>
+<td style="text-align:left">7.20 小时</td>
+<td style="text-align:left">1.68 小时</td>
+<td style="text-align:left">14.4 分</td>
+</tr>
+<tr>
+<td style="text-align:left">99.9% (3个9)</td>
+<td style="text-align:left">8.76 小时</td>
+<td style="text-align:left">43.8 分</td>
+<td style="text-align:left">10.1 分钟</td>
+<td style="text-align:left">1.44 分</td>
+</tr>
+<tr>
+<td style="text-align:left">99.99% (4个9)</td>
+<td style="text-align:left">52.56 分</td>
+<td style="text-align:left">4.38 分</td>
+<td style="text-align:left">1.01 分钟</td>
+<td style="text-align:left">8.66 秒</td>
+</tr>
+<tr>
+<td style="text-align:left">99.999% (5个9)</td>
+<td style="text-align:left">5.26 分</td>
+<td style="text-align:left">25.9 秒</td>
+<td style="text-align:left">6.05 秒</td>
+<td style="text-align:left">0.87 秒</td>
+</tr>
+</tbody>
+</table>
+<p>比如，99.999%的可用性，一年只能有5分半钟的服务不可用。感觉很难做到吧。<br>到 3 个 9 可以靠堆人，也就是 3 班倒之类的强制值班基本搞定。但是从 3 个 9 往上，就基本超出了人力的范畴，考验的是业务的自愈能力，架构的容灾、容错设计，灾备系统的完善等等。<br>据说Google 内部只有 4 个 9 以上的服务才会配备 SRE，SRE 是必须在接到报警 5 分钟之内上线处理问题的，否则报警系统自动升级到下一个 SRE。如果还没有，直接给老板发报警。</p>
+<p>简而言之，SLA的几个9就是能持续提供可用服务的级别，不过，工业界中，会把服务不可用的因素分成两种：一种是有计划的，一种是无计划的。</p>
+<p>无计划的</p>
+<ul>
+<li>系统级故障-包括主机、操作系统、中间件、数据库、网络、电源以及外围设备</li>
+<li>数据和中介的故障-包括人员误操作、硬盘故障、数据乱了</li>
+<li>外部因素-自然灾害、人为破坏、以及供电问题</li>
+</ul>
+<p>有计划的</p>
+<ul>
+<li>日常任务-备份、容量规划、用户和安全管理，后台批处理应用</li>
+<li>运维相关-数据库维护、应用维护、中间件维护、操作系统维护、网络维护</li>
+<li>升级相关-数据库、应用、中间件、操作系统、网络、包括硬件升级</li>
+</ul>
+<p>有计划的维护因素主要来自于变更管理，避免措施主要有以下几个方面：</p>
+<ul>
+<li>线下测试（Offline Test）</li>
+<li>灰度发布</li>
+<li>服务必须对回滚提供支持</li>
+</ul>
+<p>针对回滚，跟大家分享一下，保证药到病除：</p>
+<p>理由1：我这个数据改动之后格式跟以前的不兼容了，回退也不能正常！<br>秘籍1：设计、开发时候就考虑好兼容性问题！！！比如说数据库改字段的事就不要做，改成另加一个字段就好。数据存储格式就最好采用 protobuf 这种支持数据版本、支持前后兼容性的方案。最差的情况，也要在变更实施『之前』，想清楚数据兼容性的问题。没有回滚脚本，不给更新，起码做到有备而战。</p>
+<p>理由2：我这个变更删掉东西了！回退之后数据也没了！<br>秘籍2：你一定是在逗我。把这个变更打回去，分成两半。第一半禁止访问这个数据。等到发布之后真没问题了，再来发布第二半，第二半真正删掉数据。这样第一半实施之后需要回滚还可以再回去。</p>
+<p>理由3：我这个变更发布了之后, 其他依赖这个系统的人都拿到了错误的数据，再回退也没用了，他们不会再接受老数据了！<br>秘籍3：这种比较常见出现在配置管理、缓存等系统中。对这类问题，最重要的就是，应该开发一种跟版本无关的刷新机制。触发刷新的机制应该独立于发布过程。 要有一个强制刷新数据的手段。</p>
+<p>以上三个秘籍覆盖了100%的回滚兼容性问题，如果有不存在的，请务必告诉我！</p>
+<h4 id="决定高可用的本质原因"><a href="#决定高可用的本质原因" class="headerlink" title="决定高可用的本质原因"></a><b>决定高可用的本质原因</b></h4><p><b>通过上述影响SLA的因素，我们可以看出实现5个9意味着一年的时间只能有5分钟不可用，如果没有一支技术牛逼的团队加上一套自动化的工具，怎么能有高可用系统呢</b></p>
+<p>要实现高可用系统，其中包括但不限于：</p>
+<ul>
+<li>软件的设计、编码、测试、上线和软件配置的水平</li>
+<li>工程师的技术水平</li>
+<li>运维的管理和技术水平</li>
+<li>数据中心的运营管理水平</li>
+<li>依赖于第三方服务的管理水平</li>
+</ul>
+<p>ref<br><a href="http://coolshell.cn/articles/17459.htm" target="_blank" rel="external">关于高可用的系统</a><br><a href="https://blog.coding.net/blog/architecture-concept-and-practice-from-Google" target="_blank" rel="external">来自 Google 的高可用架构理念与实践</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      think about High Availability
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
     <title>mysql数据库设计规范</title>
     <link href="https://t1ger.github.io/2016/11/11/mysql%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83/"/>
     <id>https://t1ger.github.io/2016/11/11/mysql数据库设计规范/</id>
     <published>2016-11-11T03:55:39.000Z</published>
-    <updated>2016-11-11T07:42:52.070Z</updated>
+    <updated>2016-11-13T12:40:03.054Z</updated>
     
     <content type="html"><![CDATA[<p>写在前面，此文章为转载，略微整理</p>
 <h4 id="一、命名规范"><a href="#一、命名规范" class="headerlink" title="一、命名规范"></a>一、<b>命名规范</b></h4><p>[数据库环境介绍]</p>
 <ul>
-<li>开发环境(dev)：开发人员可读写，在不影响其他开发同事时可随意修改。</li>
+<li>开发环境(dev)：开发人员可读写，在不影响其他开发同事时可随意修改</li>
 <li>测试环境(qa)：开发和测试可读写，可通过工具修改表结构</li>
 <li>模拟环境(sim): 开发可读写，当有上线请求，会在这个环境预执行，这个环境供部署上线演练和压力测试使用</li>
-<li>生产数据库从库(stage): 只读环境，不允许修改数据，不允许修改表结构；供线上排查问题，数据查询使用。</li>
+<li>生产数据库从库(stage): 只读环境，不允许修改数据，不允许修改表结构；供线上排查问题，数据查询使用</li>
 <li>生产环境(product): 开发不允许直接进行数据库操作，必须通过DBA进行操作并进行记录</li>
 </ul>
 <p>不同环境的机器，需要做到权限明确，读写账户分离，能区分具体业务。eg. r_dev,w_dev </p>
@@ -41,7 +179,7 @@
 <p>[表命名规范]</p>
 <ul>
 <li>具有统一前缀，相关功能表使用相同前缀(前缀名称一般不超过5字)，体现相关业务,建议使用名词</li>
-<li>避免用ORACLE、MySQL的保留字，如desc，关键字如index。</li>
+<li>避免用ORACLE、MySQL的保留字，如desc，关键字如index</li>
 <li>使用英文小写字母、下划线命名，不宜过长(12个字符以内)</li>
 <li>引擎默认使用innodb,日志或报表酌情使用myisam(mysql8.0已经移除)</li>
 <li>必须有主键，建议使用auto_increment的id作为主键（与业务无关）,和业务相关的要做为唯一索引；</li>
@@ -81,7 +219,7 @@
 <p>[事物与日志分离]</p>
 <p>通常用户生成的内容和用户行为的日志要分开，eg:</p>
 <p>游戏DB里存放玩家的基础信息，装备，属性，好友列表等等，这些放到数据库里面。但是玩家的行为日志，比如消耗金币，今天下过哪些副本，买过什么顶级装备，这些属于行为日志，应该单独存放并分析处理。</p>
-<p>对于web用记，有好多用户置顶，刷新，竞价，展示等行为，要求实时并且量很大，一定要和贴子分开。</p>
+<p>对于web，有好多用户置顶，刷新，竞价，展示等行为，要求实时并且量很大，一定要和贴子分开。</p>
 <p>行为日志，需要做分析处理，并且由于时效性不宜存储在mysql中，后期维护就是地雷。</p>
 <p>[历史可追溯]</p>
 <p>保障数据可追溯，应当遵循一些简单的约定，事后方便数据的查询和统计：</p>
@@ -457,128 +595,6 @@ request(options, callback);
     
     
       <category term="nodejs https" scheme="https://t1ger.github.io/tags/nodejs-https/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>MySQL复制概述(二)</title>
-    <link href="https://t1ger.github.io/2016/09/25/MySQL%E5%A4%8D%E5%88%B6%E6%A6%82%E8%BF%B0-%E4%BA%8C/"/>
-    <id>https://t1ger.github.io/2016/09/25/MySQL复制概述-二/</id>
-    <published>2016-09-25T08:28:12.000Z</published>
-    <updated>2016-09-26T03:45:53.548Z</updated>
-    
-    <content type="html"><![CDATA[<h5 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h5><p>在上一文章中，我们了解了mysql5.5x系列的mysql复制，这篇文章我们主要介绍mysql5.7版本下的GTID主从复制</p>
-<pre><code>什么是GTID
-GTID = source_id:transaction_id
-开启GTID的必备条件
-gtid_mod=ON
-enforce-gtid-consistency
-log_bin=ON(可选)
-log-slave-updates=ON(可选)
-</code></pre><h6 id="a-标准安装步骤"><a href="#a-标准安装步骤" class="headerlink" title="a)标准安装步骤"></a>a)标准安装步骤</h6><ul>
-<li>同步所有servers<pre><code>mysql&gt; set @@global.read_only = ON;
-注： 执行前slave务必执行完所以更新
-</code></pre></li>
-<li>关闭所有servers<pre><code>shell&gt; mysqladmin -uusername -p shutdown
-</code></pre></li>
-<li><p>重启服务，并开启GTID</p>
-<pre><code>shell&gt; mysqld --gtid-mode=ON --log-bin --enforce-gtid-consistency &amp;
-</code></pre></li>
-<li><p>执行同步命令</p>
-<pre><code>mysql&gt; change master to
-    master_host = host,
-    master_port = port,
-    master_user = user,
-    master_password = password,
-    master_auto_position = 1;
-mysql&gt; start slave;
-</code></pre></li>
-<li><p>取消master的只读模式</p>
-<pre><code>mysql&gt; set @@global.read_only = OFF;
-</code></pre></li>
-</ul>
-<h6 id="b-从备份中恢复"><a href="#b-从备份中恢复" class="headerlink" title="b)从备份中恢复"></a>b)从备份中恢复</h6><ul>
-<li><p>备份</p>
-<pre><code>mysqldump --all-databases --single-transaction --trigger --routines --user=root -p &gt;backup.sql
-# grep PURGED backup.sql
-SET @@GLOBAL.GTID_PURGED=&apos;9a511b7b-7059-11e2-9a24-08002762b8af:1-13&apos;;
-</code></pre></li>
-<li><p>在slave上reset master ,导入备份<br>注：如果是逻辑导入，请设置sql_log_bin=off</p>
-<pre><code>mysql&gt; reset master;
-mysql&gt; show global variables like &apos;gtid_executed&apos;;
-+---------------+-------+
-| Variable_name | Value |
-+---------------+-------+
-| gtid_executed |       |
-+---------------+-------+
-mysql&gt; show global variables like &apos;gtid_purged&apos;;
-+---------------+-------+
-| Variable_name | Value |
-+---------------+-------+
-| gtid_purged   |       |
-+---------------+-------+
-mysql&gt; source backup.sql
-
-mysql&gt; show global variables like &apos;gtid_executed&apos;;
-+---------------+-------------------------------------------+
-| Variable_name | Value                                     |
-+---------------+-------------------------------------------+
-| gtid_executed | 9a511b7b-7059-11e2-9a24-08002762b8af:1-13 |
-+---------------+-------------------------------------------+
-mysql&gt; show global variables like &apos;gtid_purged&apos;;
-+---------------+-------------------------------------------+
-| Variable_name | Value                                     |
-+---------------+-------------------------------------------+
-| gtid_purged   | 9a511b7b-7059-11e2-9a24-08002762b8af:1-13 |
-+---------------+-------------------------------------------+
-</code></pre></li>
-<li><p>执行同步命令</p>
-<pre><code>mysql&gt; change master to
-    master_host = host,
-    master_port = port,
-    master_user = user,
-    master_password = password,
-    master_auto_position = 1;
-mysql&gt; start slave;
-</code></pre></li>
-<li><p>主从复制常见错误<br> Slave_IO_Running: No<br> Slave_SQL_Running: Yes<br> Last_IO_Error: Got fatal error 1236 from master when reading data from binary log: ‘The slave is connecting using CHANGE MASTER TO MASTER_AUTO_POSITION = 1, but the master has purged binary logs containing GTIDs that the slave requires.’</p>
-<p> 在master上查看GTID_EXECUTED</p>
-<pre><code>mysql&gt; show global variables like &apos;GTID_EXECUTED&apos;;
-+---------------+-------------------------------------------+
-| Variable_name | Value                                     |
-+---------------+-------------------------------------------+
-| gtid_executed | 9a511b7b-7059-11e2-9a24-08002762b8af:1-14 |
-+---------------+-------------------------------------------+
-</code></pre><p>解决：</p>
-<pre><code>mysql&gt;reset master;
-mysql&gt;show global variables like &apos;GTID_EXECUTED&apos;;
-    +---------------+-------+
-    | Variable_name | Value |
-    +---------------+-------+
-    | gtid_executed |       |
-    +---------------+-------+
-mysql&gt; set global GTID_PURGED=&quot;9a511b7b-7059-11e2-9a24-08002762b8af:1-14&quot;;
-mysql&gt; start slave io_thread;
-mysql&gt; show slave status\G;
-</code></pre></li>
-</ul>
-<ul>
-<li>工具<br><a href="https://www.percona.com/software/mysql-database/percona-xtrabackup" target="_blank" rel="external">Percona XtraBackup</a></li>
-</ul>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h5 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h5&gt;&lt;p&gt;在上一文章中，我们了解了mysql5.5x系列的mysql复制，这篇文章我们主要介绍mysql5.7版本下的GTID主从复制&lt;/p&gt;
-&lt;pr
-    
-    </summary>
-    
-    
-      <category term="mysql linux" scheme="https://t1ger.github.io/tags/mysql-linux/"/>
     
   </entry>
   
