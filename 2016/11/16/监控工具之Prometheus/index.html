@@ -1,0 +1,222 @@
+	<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
+  
+  <title>监控工具之Prometheus | t1ger的茶馆</title>
+  <meta name="author" content="t1ger">
+  
+  <meta name="description" content="https://t1ger.github.io/">
+  
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta property="og:title" content="监控工具之Prometheus"/>
+  <meta property="og:site_name" content="t1ger的茶馆"/>
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+</head>
+
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">t1ger的茶馆</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="这是一个订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>监控工具之Prometheus</h2>
+					
+					<div>
+						<span class="post-time">2016-11-16 17:23:56</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<p>Prometheus是一个开源的系统监控和报警的工具包，最初由SoundCloud发布,大多数组件是用go完成的。Prometheus 监控数据通过服务或静态配置来发现<br>，通过pull方式采集时间序列，通过http协议传输，支持通过中介网关的push时间序列的方式，不依赖分布式存储，支持图表和dashboard等多种方式,适用于监控所有时间序列的项目。</p>
+<p>下图是Prometheus和它的组件的整体架构：<br><img src="https://camo.githubusercontent.com/df3e3daf7d6809ba82986eb33664a4283314f7a9/68747470733a2f2f63646e2e7261776769742e636f6d2f70726f6d6574686575732f70726f6d6574686575732f653736316630642f646f63756d656e746174696f6e2f696d616765732f6172636869746563747572652e737667" alt="Prometheus架构"></p>
+<p>Prometheus通过直接或者短时jobs中介网关收集监控数据，在本地存储所有收集到的数据，并且通过定义好的rules产生新的时间序列数据，或者发送警报。Promdash或者其他使用API的clients可以将采集到的数据可视化。</p>
+<p>快速安装配置教程：<br>Prometheus可通过二进制安装或者docker安装，这里我们使用二进制安装<br><a href="https://prometheus.io/download" target="_blank" rel="external">下载最新版本</a> ，然后运行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">tar xvfz prometheus-*.tar.gz</div><div class="line">cd prometheus-*</div><div class="line">./prometheus -config.file=prometheus.yml</div></pre></td></tr></table></figure></p>
+<p>在<a href="http://localhost:9090可以看到状态页。你也可以通过http://localhost:9090/metrics查看监控项" target="_blank" rel="external">http://localhost:9090可以看到状态页。你也可以通过http://localhost:9090/metrics查看监控项</a><br>这里我们以监控mysql为例来说下部署流程<br>修改prometheus.yml，在文件最后添加：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">- job_name: &apos;mysql&apos;</div><div class="line">    # Override the global default and scrape targets from this job every 5 seconds.</div><div class="line">    scrape_interval: 5s</div><div class="line">    # metrics_path defaults to &apos;/metrics&apos;</div><div class="line">    # scheme defaults to &apos;http&apos;.</div><div class="line">    static_configs:</div><div class="line">      - targets: [&apos;localhost:9104&apos;]</div><div class="line">        labels:</div><div class="line">          instance: db1</div></pre></td></tr></table></figure></p>
+<p>重启prometheus服务:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># ./prometheus -config.file=prometheus.yml</div></pre></td></tr></table></figure></p>
+<p>再打开localhost:9090，查看Status -&gt; Targets页面下，就可以看到配置的两个target：一个是prometheus本身，State为UP，另一个是mysql，State为DOWN，因为我们还没有配置监控mysql的服务。</p>
+<p>安装mysql exporter<br>这里可以直接使用docker或者下载二进制包解压<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker pull prom/mysqld-exporter</div></pre></td></tr></table></figure></p>
+<p>mysql exporter 需要连接mysql<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">CREATE USER &apos;mysqlexporter&apos;@&apos;localhost&apos; IDENTIFIED BY &apos;mysqlexporter&apos;;</div><div class="line">GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO &apos;mysqlexporter&apos;@&apos;localhost&apos;</div></pre></td></tr></table></figure></p>
+<p>如果使用docker<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">docker run -d \          </div><div class="line">-p 9104:9104 \        </div><div class="line">-e DATA_SOURCE_NAME=&quot;mysqlexporter:mysqlexporter@(localhost:3306)/data_store&quot; prom/mysqld-exporter</div></pre></td></tr></table></figure></p>
+<p>如果使用二进制包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">tar zxf mysqld_exporter-* -C /usr/local/prometheus_exporters</div><div class="line">cd /usr/local/prometheus_exporters</div><div class="line">$ cat &lt;&lt; EOF &gt; .my.cnf</div><div class="line">[client]</div><div class="line">user=mysqlexporter</div><div class="line">password=mysqlexporter</div><div class="line">EOF</div><div class="line">$ ./mysqld_exporter -config.my-cnf=&quot;.my.cnf&quot;</div></pre></td></tr></table></figure></p>
+<p>我们再次回到Status-&gt;Targets页面，可以看到两个Target的状态已经变成UP了</p>
+<p>ref</p>
+<p><a href="https://prometheus.io/" target="_blank" rel="external">prometheus.io</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+
+		<div class="comment-section">
+  
+  
+
+
+</div>
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+
+<p>
+  由 <a href="https://hexo.io">hexo</a> 强力驱动 |&nbsp;&nbsp;本站总点击 <span id="busuanzi_value_site_pv"></span> 次
+&nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
+</p>
+<p>
+  &copy; 2016 <a href="https://t1ger.github.io"> t1ger </a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
+
+</p>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>
