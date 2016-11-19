@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
   
-  <title>第 2 页 | Archives | t1ger的茶馆</title>
+  <title>docker日常命令 | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
   
   <meta name="description" content="https://t1ger.github.io/">
@@ -13,7 +13,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  
+  <meta property="og:title" content="docker日常命令"/>
   <meta property="og:site_name" content="t1ger的茶馆"/>
 
   
@@ -116,70 +116,69 @@
 		<div class="content">
 			<!-- index -->
 		   
-			  	<h2>归档</h2>
-		  		
-	              <p class="archive-item">
-						<a href="/2016/10/25/python闭包的理解/" class="archive-title">python闭包的理解</a><span class="archive post-time">2016-10-25</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/10/17/Meteor-Tutorial-Build-chat-Web-Applications-with-Meteor/" class="archive-title">Meteor Tutorial: Build chat Web Applications with Meteor</a><span class="archive post-time">2016-10-17</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/28/Security-on-nginx/" class="archive-title">Security on nginx</a><span class="archive post-time">2016-09-28</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/27/how-to-send-a-https-request-in-nodejs/" class="archive-title">how to send a https request in nodejs</a><span class="archive post-time">2016-09-27</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/25/MySQL复制概述-二/" class="archive-title">MySQL复制概述(二)</a><span class="archive post-time">2016-09-25</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/25/MySQL复制概述-一/" class="archive-title">MySQL复制概述(一)</a><span class="archive post-time">2016-09-25</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/21/Confluence-重置密码步骤/" class="archive-title">Confluence 重置密码步骤</a><span class="archive post-time">2016-09-21</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/15/openldap集成系列/" class="archive-title">openldap集成系列</a><span class="archive post-time">2016-09-15</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/15/svn镜像的快速实现/" class="archive-title">svn镜像的快速实现</a><span class="archive post-time">2016-09-15</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2016/09/13/mysql-字段自定义排序问题/" class="archive-title">mysql 字段自定义排序问题</a><span class="archive post-time">2016-09-13</span>
-					</p>
-			  	
-			  <!-- post -->
+
+			  		<h2>docker日常命令</h2>
+					
+					<div>
+						<span class="post-time">2016-11-19 13:35:24</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<ul>
+<li><p>启动容器并启动bash(交互)：<br>docker run -i -t <image_name container_id=""> /bin/bash</image_name></p>
+</li>
+<li><p>启动容器以后台方式运行<br>docker run -d -it <image_name container_id=""></image_name></p>
+</li>
+<li><p>启动容器并映射对外端口<br>docker run -p <host_ip>:<container_ip> <image> <cmd><br>docker run -d -p 80:80 -p 2003:2003 -p 8125:8125/udp -p 8126:8126 –name jlachowski-grafana-dashboard jlachowski/grafana-graphite-statsd</cmd></image></container_ip></host_ip></p>
+</li>
+</ul>
+<ul>
+<li><p>进入容器，同时运行bash<br>docker exec -t -i <id container_name=""> /bin/bash</id></p>
+</li>
+<li><p>查看容器日志和实时输<br>docker logs <id container_name=""><br>docker logs -f <id container_name=""></id></id></p>
+</li>
+<li><p>查看当前运行的container<br>docker ps<br>docker ps |less -S </p>
+</li>
+<li><p>显示容器的进程信息<br>docker top id/container_name</p>
+</li>
+<li><p>在容器中安装新程序<br>docker run image_name yum install packagename -y</p>
+</li>
+<li><p>从容器拷贝文件/目录到本地路径<br>docker cp <id container_name="">:/container_path to_path</id></p>
+</li>
+<li><p>保存对容器的修改<br>docker commit id new_image_name</p>
+</li>
+<li><p>删除单个或所有<br>docker rm id/container_name<br>docker rm `docker ps -a -q`</p>
+</li>
+<li><p>停止、启动、杀死、重启容器<br>docker <stop id="" start="" kill="" restart=""></stop>  id/container_name</p>
+</li>
+</ul>
+<ul>
+<li>操作镜像<br>docker images //列出<br>docker search images //搜索<br>docker pull image_name // 下载<br>docker rmi image_name  // 删除一个或多个<br>docker history image_name //镜像历史<br>docker push new_image_name //发布镜像</li>
+</ul>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
 			  
 		</div>
 
 		<!-- pagination -->
 	  
 
-			<div class="btn-group btn-group-justified">
-				
-
-					<a class="btn btn-default " href="/archives/" >上一页</a>
-
-					<a class="btn btn-default" href="/">首页</a>
-
-					<a class="btn btn-default " href="/archives/page/3/" >下一页</a>
-
-	    	
-			</div>
-	  
-
 		<div class="comment-section">
   
+  
+
 
 </div>
 	</div>
