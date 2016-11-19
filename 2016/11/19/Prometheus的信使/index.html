@@ -1,0 +1,225 @@
+	<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
+  
+  <title>Prometheus的信使 | t1ger的茶馆</title>
+  <meta name="author" content="t1ger">
+  
+  <meta name="description" content="The Alertmanager handles alerts sent by client applications such as the Prometheus server">
+  
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta property="og:title" content="Prometheus的信使"/>
+  <meta property="og:site_name" content="t1ger的茶馆"/>
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+</head>
+
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">t1ger的茶馆</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="这是一个订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>Prometheus的信使</h2>
+					
+					<div>
+						<span class="post-time">2016-11-19 10:27:03</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<p>前言</p>
+<p>今天介绍下Prometheus的好基友Alertmanager，让我们看下官方是怎么介绍的呢</p>
+<p>The Alertmanager handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, and routing them to the correct receiver integrations such as email, PagerDuty, or OpsGenie. It also takes care of silencing and inhibition of alerts</p>
+<p>下面让我们详细解释下</p>
+<p>grouping<br>分组是指当出现问题时，Alertmanager会收到一个单一的通知，比如当系统宕机时，很有可能成百上千的警报会同时生成，这种机制在某节点服务器中断中特别有用。</p>
+<p>inhibition of alerts<br>抑制是指当报警发出后，停止重复发送此警报引发的其他错误的报警机制。<br>场景：<br>当网络交换机节点故障，可以配置Alertmanager忽略由该警报触发而产生的所有其他警报，这可以防止通知数百或数千与此问题不相关的其他警报。</p>
+<p>silencing<br>沉默是一种简单的特定时间静音提醒的机制。一种沉默是通过匹配器来配置，就像路由树一样。传入的警报会匹配RE，如果匹配，将不会为此警报发送通知。</p>
+<p>设置警报和通知的主要步骤</p>
+<ul>
+<li>安装配置Alertmanager</li>
+<li>配置Prometheus通过 -alertmanager.url与Alertmanager通信</li>
+<li>在Prometheus中创建报警规则</li>
+</ul>
+<p>让我们来了解下它的架构吧，如下图:<br><img src="https://raw.githubusercontent.com/prometheus/alertmanager/4e6695682acd2580773a904e4aa2e3b927ee27b7/doc/arch.jpg" alt="Alertmanager架构图"></p>
+<p>这里我简单聊聊配置文件，贴出官网的一个示例，具体详细配置，请移步<a href="https://github.com/prometheus/alertmanager" target="_blank" rel="external">这里</a><br>Alertmanager通过命令行flag和一个配置文件进行配置。命令行flag配置不变的系统参数、配置文件定义的禁止规则、通知路由和通知接收器。<br>Alertmanager在运行时加载配置，如果不能很好的形成新的配置，更改将不会被应用，并记录错误。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div></pre></td><td class="code"><pre><div class="line">global:</div><div class="line">  # The smarthost and SMTP sender used for mail notifications.</div><div class="line">  smtp_smarthost: &apos;localhost:25&apos;</div><div class="line">  smtp_from: &apos;alertmanager@example.org&apos;</div><div class="line"></div><div class="line"># The root route on which each incoming alert enters.</div><div class="line">route:</div><div class="line">  # The root route must not have any matchers as it is the entry point for</div><div class="line">  # all alerts. It needs to have a receiver configured so alerts that do not</div><div class="line">  # match any of the sub-routes are sent to someone.</div><div class="line">  receiver: &apos;team-X-mails&apos;</div><div class="line"></div><div class="line">  # The labels by which incoming alerts are grouped together. For example,</div><div class="line">  # multiple alerts coming in for cluster=A and alertname=LatencyHigh would</div><div class="line">  # be batched into a single group.</div><div class="line">  group_by: [&apos;alertname&apos;, &apos;cluster&apos;]</div><div class="line"></div><div class="line">  # When a new group of alerts is created by an incoming alert, wait at</div><div class="line">  # least &apos;group_wait&apos; to send the initial notification.</div><div class="line">  # This way ensures that you get multiple alerts for the same group that start</div><div class="line">  # firing shortly after another are batched together on the first</div><div class="line">  # notification.</div><div class="line">  group_wait: 30s</div><div class="line"></div><div class="line">  # When the first notification was sent, wait &apos;group_interval&apos; to send a batch</div><div class="line">  # of new alerts that started firing for that group.</div><div class="line">  group_interval: 5m</div><div class="line"></div><div class="line">  # If an alert has successfully been sent, wait &apos;repeat_interval&apos; to</div><div class="line">  # resend them.</div><div class="line">  repeat_interval: 3h</div><div class="line"></div><div class="line">  # All the above attributes are inherited by all child routes and can </div><div class="line">  # overwritten on each.</div><div class="line"></div><div class="line">  # The child route trees.</div><div class="line">  routes:</div><div class="line">  # This routes performs a regular expression match on alert labels to</div><div class="line">  # catch alerts that are related to a list of services.</div><div class="line">  - match_re:</div><div class="line">      service: ^(foo1|foo2|baz)$</div><div class="line">    receiver: team-X-mails</div><div class="line"></div><div class="line">    # The service has a sub-route for critical alerts, any alerts</div><div class="line">    # that do not match, i.e. severity != critical, fall-back to the</div><div class="line">    # parent node and are sent to &apos;team-X-mails&apos;</div><div class="line">    routes:</div><div class="line">    - match:</div><div class="line">        severity: critical</div><div class="line">      receiver: team-X-pager</div><div class="line"></div><div class="line">  - match:</div><div class="line">      service: files</div><div class="line">    receiver: team-Y-mails</div><div class="line"></div><div class="line">    routes:</div><div class="line">    - match:</div><div class="line">        severity: critical</div><div class="line">      receiver: team-Y-pager</div><div class="line"></div><div class="line">  # This route handles all alerts coming from a database service. If there&apos;s</div><div class="line">  # no team to handle it, it defaults to the DB team.</div><div class="line">  - match:</div><div class="line">      service: database</div><div class="line"></div><div class="line">    receiver: team-DB-pager</div><div class="line">    # Also group alerts by affected database.</div><div class="line">    group_by: [alertname, cluster, database]</div><div class="line"></div><div class="line">    routes:</div><div class="line">    - match:</div><div class="line">        owner: team-X</div><div class="line">      receiver: team-X-pager</div><div class="line"></div><div class="line">    - match:</div><div class="line">        owner: team-Y</div><div class="line">      receiver: team-Y-pager</div><div class="line"></div><div class="line"></div><div class="line"># Inhibition rules allow to mute a set of alerts given that another alert is</div><div class="line"># firing.</div><div class="line"># We use this to mute any warning-level notifications if the same alert is</div><div class="line"># already critical.</div><div class="line">inhibit_rules:</div><div class="line">- source_match:</div><div class="line">    severity: &apos;critical&apos;</div><div class="line">  target_match:</div><div class="line">    severity: &apos;warning&apos;</div><div class="line">  # Apply inhibition if the alertname is the same.</div><div class="line">  equal: [&apos;alertname&apos;]</div><div class="line"></div><div class="line"></div><div class="line">receivers:</div><div class="line">- name: &apos;team-X-mails&apos;</div><div class="line">  email_configs:</div><div class="line">  - to: &apos;team-X+alerts@example.org&apos;</div><div class="line"></div><div class="line">- name: &apos;team-X-pager&apos;</div><div class="line">  email_configs:</div><div class="line">  - to: &apos;team-X+alerts-critical@example.org&apos;</div><div class="line">  pagerduty_configs:</div><div class="line">  - service_key: &lt;team-X-key&gt;</div><div class="line"></div><div class="line">- name: &apos;team-Y-mails&apos;</div><div class="line">  email_configs:</div><div class="line">  - to: &apos;team-Y+alerts@example.org&apos;</div><div class="line"></div><div class="line">- name: &apos;team-Y-pager&apos;</div><div class="line">  pagerduty_configs:</div><div class="line">  - service_key: &lt;team-Y-key&gt;</div><div class="line"></div><div class="line">- name: &apos;team-DB-pager&apos;</div><div class="line">  pagerduty_configs:</div><div class="line">  - service_key: &lt;team-DB-key&gt;</div></pre></td></tr></table></figure>
+<p>ref<br><a href="https://github.com/prometheus/alertmanager" target="_blank" rel="external">prometheus/alertmanager</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+
+		<div class="comment-section">
+  
+  
+
+
+</div>
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+
+<p>
+  由 <a href="https://hexo.io">hexo</a> 强力驱动 |&nbsp;&nbsp;本站总点击 <span id="busuanzi_value_site_pv"></span> 次
+&nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
+</p>
+<p>
+  &copy; 2016 <a href="https://t1ger.github.io"> t1ger </a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
+
+</p>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>
