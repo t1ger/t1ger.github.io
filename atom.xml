@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-11-20T05:58:44.255Z</updated>
+  <updated>2016-11-22T03:18:00.381Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,66 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Docker初体验-基础入门指北</title>
+    <link href="https://t1ger.github.io/2016/11/21/Docker%E5%88%9D%E4%BD%93%E9%AA%8C-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8%E6%8C%87%E5%8C%97/"/>
+    <id>https://t1ger.github.io/2016/11/21/Docker初体验-基础入门指北/</id>
+    <published>2016-11-21T10:08:35.000Z</published>
+    <updated>2016-11-22T03:18:00.381Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="docker是什么"><a href="#docker是什么" class="headerlink" title="docker是什么"></a><b>docker是什么</b></h4><p>docker是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。容器是完全使用沙箱机制，相互之间不会有任何接口</p>
+<h4 id="docker做什么"><a href="#docker做什么" class="headerlink" title="docker做什么"></a><b>docker做什么</b></h4><p>在docker中，你可以将你的程序分为不同的基础部分，对于每一个基础部分都可以当做一个应用程序来管理<br>docker能够帮助你快速地测试、快速地编码、快速地交付，并且缩短你从编码到运行应用的周期<br>docker使用轻量级的容器虚拟化平台，并且结合工作流和工具，来帮助你管理、部署你的应用程序</p>
+<h4 id="docker-vs-VM"><a href="#docker-vs-VM" class="headerlink" title="docker vs VM"></a><b>docker vs VM</b></h4><p>VMs = Server + Host OS + Hypervisor（Type2）+ Guest OS + Bins/Libs +(App A | App A’ | App B)<br>Containers = Server + Host OS + Docker Engine + ((Bins/Libs +App A | App A’) | (Bins/Libs +App B))<br>Docker去除了传统虚机的Guest OS层，免除了对应overhead，Docker Engine 替代了VM中的Guest OS + Hypervisor（Type2)层</p>
+<h4 id="docker架构"><a href="#docker架构" class="headerlink" title="docker架构"></a><b>docker架构</b></h4><p>docker是CS架构，主要由下面三部分组成：<br>docker daemon: 运行在宿主机上，docker守护进程，用户通过docker client(docker命令)与docker daemon交互<br>docker client: docker 命令行工具，是用户使用docker的主要方式，docker client与docker daemon通信并将结果返回给用户，docker client也可以通过socket或者RESTful api访问远程的docker daemon<br>docker hub/registry: 共享和管理docker镜像，用户可以上传或者下载上面的镜像，官方地址为 <a href="https://registry.hub.docker.com" target="_blank" rel="external">https://registry.hub.docker.com</a> ,也可以搭建自己私有的docker registry</p>
+<h4 id="docker技术术语"><a href="#docker技术术语" class="headerlink" title="docker技术术语"></a><b>docker技术术语</b></h4><p>docker的几个技术：namespace,cgroups,veth,bridge,copy-on-write,image,container<br>其中namespace和cgroup是其核心技术,我们主要来介绍这两个</p>
+<h4 id="namespace"><a href="#namespace" class="headerlink" title="namespace"></a><b>namespace</b></h4><p>负责隔离资源，它让进程拥有独立的进程号，网络，文件系统等，不同的namespace下的进程互不可见，目前的Docker可以通过exec子命令直接切换到进程所在的namespace<br>docker使用到的命名空间有:</p>
+<ul>
+<li>pid命名空间: 使用在进程隔离(PID: Process ID)</li>
+<li>net命名空间: 使用在管理网络接口(NET: Networking)</li>
+<li>ipc命名空间: 使用在管理进程间通信资源 (IPC: InterProcess Communication)</li>
+<li>mnt命名空间: 使用在管理挂载点 (MNT: Mount)</li>
+<li>uts命名空间: 使用在隔离内核和版本标识 (UTS: Unix Timesharing System)</li>
+</ul>
+<h4 id="cgroups"><a href="#cgroups" class="headerlink" title="cgroups"></a><b>cgroups</b></h4><p>cgroup负责限制资源,主要体现在cpu、内存、磁盘</p>
+<p><b>CPU子系统</b><br>cgroups提供了三种限制CPU资源的方式：cpuset， cpuquota和cpushares</p>
+<ul>
+<li><p>cpuset可以限制进程使用的cpu核数，通过cpuset/cpuset.cpus来管理，相应的命令如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run --cpuset-cpus 0 -d --name apache apache</div></pre></td></tr></table></figure>
+</li>
+<li><p>cpuquota以时间片的使用率来限制CPU资源，要比cpuset的细粒度大一些，只需要设置一个相对100000的值就可以达到限制一个百分比的效果, 通过 cpu/cpu.cfs_period_us （配置时间片单位，默认为100000）和 cpu/cpu.cfs_quota_us (时间片占比)两个文件来管理,相应的命令如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run --cpu-quota 50000 -d --name apache apache</div></pre></td></tr></table></figure>
+</li>
+<li><p>cpushares根据权重来分配CPU资源，比如如果只有一个进程权重为100，那么进程可以使用100%的CPU资源，如果有两个进程且权重都是100，那么每个进程可以使用50%的CPU资源 , 通过 cpu/cpu.shares 来管理，相应的命令如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run --cpu-shares 1024 -d --name apache apache</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><b>内存子系统</b></p>
+<ul>
+<li>cgroups对内存的限制包括物理内存和swap，当进程使用内存达到上限时会被kill，关于内存限制的文件如下：<br>memory.limit_in_bytes memory.soft_limit_in_bytes memory.memsw.limit_in_byte,需要注意的一点是docker默认会将swap的限制设置为2倍内存，实际使用的内存可能会大于 -m 设置的内存大小,相应的docker命令<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run -m 100m -d --name apache apache</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><b>blkio子系统</b></p>
+<ul>
+<li>blkio子系统的功能是对块设备读写的速率限制,目前 blkio 子系统提供的两种控制策略，一个是权重比例方式的控制，另一个是针对 IO 带宽和 IOPS 的控制.前者是针对blkio.weight 分配权重，后者对blkio.throttle.write_iops_device 进行限制。</li>
+</ul>
+<p>ref </p>
+<p><a href="https://www.baidu.com/link?url=ubhv7epUUNTpytivc7_ikrYX-flsGZHW9gn0REl9273xJa2YpM3kLz2wR6BqkCSMjYMZrXuyJlXQjU1bil4uja&amp;wd=&amp;eqid=e8f57cc000011018000000025833b49b" target="_blank" rel="external">Docker 百度百科</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      how to use docker quickly
+    
+    </summary>
+    
+    
+      <category term="docker" scheme="https://t1ger.github.io/tags/docker/"/>
+    
+  </entry>
   
   <entry>
     <title>dvwa平台测试sql注入</title>
@@ -580,58 +640,6 @@
     
     </summary>
     
-    
-  </entry>
-  
-  <entry>
-    <title>Pinba Server install on centos6.4</title>
-    <link href="https://t1ger.github.io/2016/10/31/Pinba-Server-install-on-centos6-4/"/>
-    <id>https://t1ger.github.io/2016/10/31/Pinba-Server-install-on-centos6-4/</id>
-    <published>2016-10-31T08:35:24.000Z</published>
-    <updated>2016-11-02T06:25:15.498Z</updated>
-    
-    <content type="html"><![CDATA[<p>Pinba is a MySQL storage engine that acts as a realtime monitoring/statistics server for PHP using MySQL as a read-only interface.</p>
-<p>Environment:</p>
-<p>Pinba 1.1.0<br>Pinboard 1.5.2<br>MySQL: 5.5.50<br>PHP: 5.6</p>
-<p>install MySQL:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">yum install cmake  ncurses-devel</div><div class="line">wget http://downloads.mysql.com/archives/get/file/mysql-5.5.50.tar.gz</div><div class="line">tar xvf mysql-5.5.50.tar.gz </div><div class="line">mysql-5.5.50</div><div class="line">cmake .</div><div class="line">make install</div><div class="line">cd /usr/local/mysql</div><div class="line">chown -R mysql.mysql . </div><div class="line">bin/mysql_install_db --user=mysql</div><div class="line">cp support-files/my-medium.cnf /etc/my.cnf</div><div class="line">cp support-files/mysql.server /etc/init.d/mysql.server</div><div class="line">chmod +x /etc/init.d/mysql.server</div><div class="line">chkconfig mysql.server on</div><div class="line">/etc/init.d/mysql.server start</div></pre></td></tr></table></figure>
-<p>install Pinba:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">yum install Judy.x86_64 protobuf.x86_64 libevent.x86_64 Judy-devel.x86_64 protobuf-devel.x86_64 libevent-devel.x86_64</div><div class="line">wget http://store.alexlinux.com/sources/P/pinba_engine-1.2.0.tar.gz</div><div class="line">tar zxvf pinba_engine-1.2.0.tar.gz</div><div class="line">./configure --with-mysql=../mysql-5.5.50 --libdir=/usr/local/mysql/lib/plugin</div><div class="line">make</div><div class="line">make install</div></pre></td></tr></table></figure>
-<p>install Pinba plugin:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mysql&gt; INSTALL PLUGIN pinba SONAME &apos;libpinba_engine.so&apos;;</div><div class="line">mysql&gt; CREATE DATABASE pinba;</div><div class="line">shell&gt; mysql -D pinba &lt; default_tables.sql</div></pre></td></tr></table></figure>
-<p>create mysql user:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mysql&gt; GRANT ALL PRIVILEGES ON pinba.* TO pinba@&quot;&lt;HOST&gt;&quot;</div><div class="line">       IDENTIFIED BY &quot;&lt;PASSWORD&gt;&quot;;</div></pre></td></tr></table></figure>
-<p>install Pinba extension,defaut for php7,if you like me use php5 need change it to php5:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">shell&gt; git clone https://github.com/tony2001/pinba_extension.git</div><div class="line">shell&gt; cd pinba_extension</div><div class="line">shell&gt; git checkout -b php5 remotes/origin/php5</div><div class="line">shell&gt; phpize</div><div class="line">shell&gt; ./configure</div><div class="line">shell&gt; make</div><div class="line">shell&gt; make install</div></pre></td></tr></table></figure></p>
-<p>install apcu extension:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">shell&gt; wget http://pecl.php.net/get/apcu-4.0.11.tgz</div><div class="line">shell&gt; tar zxvf apcu-4.0.11.tgz</div><div class="line">shell&gt; cd apcu-4.0.11</div><div class="line">shell&gt; phpize</div><div class="line">shell&gt; ./configure --enable-apc-bc</div><div class="line">shell&gt; make</div><div class="line">shell&gt; make install</div></pre></td></tr></table></figure>
-<p>install Composer:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">curl -sS https://getcomposer.org/installer | php</div><div class="line">mv composer.phar /usr/local/bin/composer</div></pre></td></tr></table></figure></p>
-<p>install Pinboard:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">shell&gt; tar zxvf v1.5.2.tar.gz</div><div class="line">shell&gt; cd pinboard-1.5.2</div><div class="line">shell&gt; composer install</div><div class="line">shell&gt; ./console migrations:migrate</div><div class="line">shell&gt; ./console register-crontab</div></pre></td></tr></table></figure></p>
-<p>confirm server if reecive data on port 30002:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">shell&gt; tcpdump -nn -i any udp port 30002</div></pre></td></tr></table></figure>
-<p>nginx configure:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">server &#123;        </div><div class="line">    listen 80;</div><div class="line">    server_name pinboard.me;</div><div class="line">    root /var/www/pinboard/web;</div><div class="line"></div><div class="line">    #site root is redirected to the app boot script</div><div class="line">    location = / &#123;</div><div class="line">        try_files @site @site;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    #all other locations try other files first and go to our front controller if none of them exists</div><div class="line">    location / &#123;</div><div class="line">        try_files $uri $uri/ @site;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    #return 404 for all php files as we do have a front controller</div><div class="line">    location ~ \.php$ &#123;</div><div class="line">        return 404;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    location @site &#123;</div><div class="line">        fastcgi_pass unix:/tmp/php-fpm.sock;</div><div class="line">        include fastcgi_params;</div><div class="line">        fastcgi_param SCRIPT_FILENAME $document_root/index.php;</div><div class="line">        fastcgi_param HTTPS $https if_not_empty;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    location ~ /\.(ht|svn|git) &#123;</div><div class="line">        deny  all;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>Now we will see <a href="http://pinboard.me" target="_blank" rel="external">http://pinboard.me</a></p>
-<p>install extension for client:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">shell&gt; git clone https://github.com/tony2001/pinba_extension.git</div><div class="line">shell&gt; cd pinba_extension</div><div class="line">shell&gt; git checkout -b php5 remotes/origin/php5</div><div class="line">shell&gt; phpize</div><div class="line">shell&gt; ./configure</div><div class="line">shell&gt; make</div><div class="line">shell&gt; make install</div><div class="line">(</div><div class="line">cat &lt;&lt;EOF</div><div class="line">; Load Pinba extension</div><div class="line">extension=pinba.so</div><div class="line">; Enable and configure Pinba extension</div><div class="line">; See http://pinba.org/wiki/Manual:PHP_extension</div><div class="line">pinba.enabled = 1</div><div class="line">pinba.server = 127.0.0.1</div><div class="line">EOF</div><div class="line">) &gt; /etc/php.d/pinba.ini</div></pre></td></tr></table></figure></p>
-<p>ref:</p>
-<p><a href="https://github.com/trivoallan/trivoallan.github.com/wiki/HowToPinbaCentOs" target="_blank" rel="external">HowToPinbaCentOs</a><br><a href="https://mrcappuccino.ru/blog/post/pinba-server-installation-on-centos-6" target="_blank" rel="external">install on centos6</a><br><a href="http://www.alexlinux.com/pinba-server-installation-on-centos-7/" target="_blank" rel="external">pinba server installation on CentOS 7</a><br><a href="https://github.com/intaro/pinboard/wiki/Installation" target="_blank" rel="external">pinboard</a><br><a href="https://github.com/tony2001/pinba_engine/wiki" target="_blank" rel="external">pinba</a><br><a href="https://howto.biapy.com/en/debian-gnu-linux/web-applications/monitoring/install-intaro-pinboard-on-debian" target="_blank" rel="external">Install Intaro Pinboard on Debian</a><br><a href="https://recordnotfound.com/pinboard-intaro-25385" target="_blank" rel="external">Intaro Pinboard</a><br><a href="https://github.com/intaro/pinba-bundle" target="_blank" rel="external">PinbaBundle</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;Pinba is a MySQL storage engine that acts as a realtime monitoring/statistics server for PHP using MySQL as a read-only interface.&lt;/p&gt;
-&lt;p
-    
-    </summary>
-    
-    
-      <category term="centos" scheme="https://t1ger.github.io/tags/centos/"/>
-    
-      <category term="Pinba" scheme="https://t1ger.github.io/tags/Pinba/"/>
-    
-      <category term="mysql5.5" scheme="https://t1ger.github.io/tags/mysql5-5/"/>
     
   </entry>
   
