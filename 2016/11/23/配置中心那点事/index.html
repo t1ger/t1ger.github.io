@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
   
-  <title>Docker初体验-基础入门指北 | t1ger的茶馆</title>
+  <title>配置中心那点事 | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
   
-  <meta name="description" content="how to use docker quickly">
+  <meta name="description" content="https://t1ger.github.io/">
   
 
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta property="og:title" content="Docker初体验-基础入门指北"/>
+  <meta property="og:title" content="配置中心那点事"/>
   <meta property="og:site_name" content="t1ger的茶馆"/>
 
   
@@ -117,51 +117,56 @@
 			<!-- index -->
 		   
 
-			  		<h2>Docker初体验-基础入门指北</h2>
+			  		<h2>配置中心那点事</h2>
 					
 					<div>
-						<span class="post-time">2016-11-21 18:08:35</span>
+						<span class="post-time">2016-11-23 13:12:05</span>
 					</div>	
 					
 
 					<div class="article-content">
-						<h4 id="docker是什么"><a href="#docker是什么" class="headerlink" title="docker是什么"></a><b>docker是什么</b></h4><p>docker是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。容器是完全使用沙箱机制，相互之间不会有任何接口</p>
-<h4 id="docker做什么"><a href="#docker做什么" class="headerlink" title="docker做什么"></a><b>docker做什么</b></h4><p>在docker中，你可以将你的程序分为不同的基础部分，对于每一个基础部分都可以当做一个应用程序来管理<br>docker能够帮助你快速地测试、快速地编码、快速地交付，并且缩短你从编码到运行应用的周期<br>docker使用轻量级的容器虚拟化平台，并且结合工作流和工具，来帮助你管理、部署你的应用程序</p>
-<h4 id="docker-vs-VM"><a href="#docker-vs-VM" class="headerlink" title="docker vs VM"></a><b>docker vs VM</b></h4><p>VMs = Server + Host OS + Hypervisor（Type2）+ Guest OS + Bins/Libs +(App A | App A’ | App B)<br>Containers = Server + Host OS + Docker Engine + ((Bins/Libs +App A | App A’) | (Bins/Libs +App B))<br>Docker去除了传统虚机的Guest OS层，免除了对应overhead，Docker Engine 替代了VM中的Guest OS + Hypervisor（Type2)层</p>
-<h4 id="docker架构"><a href="#docker架构" class="headerlink" title="docker架构"></a><b>docker架构</b></h4><p>docker是CS架构，主要由下面三部分组成：<br>docker daemon: 运行在宿主机上，docker守护进程，用户通过docker client(docker命令)与docker daemon交互<br>docker client: docker 命令行工具，是用户使用docker的主要方式，docker client与docker daemon通信并将结果返回给用户，docker client也可以通过socket或者RESTful api访问远程的docker daemon<br>docker hub/registry: 共享和管理docker镜像，用户可以上传或者下载上面的镜像，官方地址为 <a href="https://registry.hub.docker.com" target="_blank" rel="external">https://registry.hub.docker.com</a> ,也可以搭建自己私有的docker registry</p>
-<h4 id="docker技术术语"><a href="#docker技术术语" class="headerlink" title="docker技术术语"></a><b>docker技术术语</b></h4><p>docker的几个技术：namespace,cgroups,veth,bridge,copy-on-write,image,container<br>其中namespace和cgroup是其核心技术,我们主要来介绍这两个</p>
-<h4 id="a-namespace"><a href="#a-namespace" class="headerlink" title="a. namespace"></a><b>a. namespace</b></h4><p>负责隔离资源，它让进程拥有独立的进程号，网络，文件系统等，不同的namespace下的进程互不可见，目前的Docker可以通过exec子命令直接切换到进程所在的namespace<br>docker使用到的命名空间有:</p>
-<ul>
-<li>pid命名空间: 使用在进程隔离(PID: Process ID)</li>
-<li>net命名空间: 使用在管理网络接口(NET: Networking)</li>
-<li>ipc命名空间: 使用在管理进程间通信资源 (IPC: InterProcess Communication)</li>
-<li>mnt命名空间: 使用在管理挂载点 (MNT: Mount)</li>
-<li>uts命名空间: 使用在隔离内核和版本标识 (UTS: Unix Timesharing System)</li>
+						<h4 id="配置中心怎么做"><a href="#配置中心怎么做" class="headerlink" title="配置中心怎么做"></a><b>配置中心怎么做</b></h4><ul>
+<li>配置分发，实现有两种方式<br>推：实时性变更，需要应用和配置中心保持长连接，复杂度高<br>拉：实时性相对差，没有增量更新机制会增加配置中心压力，复杂度低</li>
+<li>订阅和发布<br>支持配置变更通知，如果是推送，server把每次变更实时发送给订阅客户端<br>如果是拉取，则通过比较client和server的数据md5来实现有效变更通知。server会下发数据和md5给client,client请求的时候会带上md5,假如md5变化，则server重新下发，否则无需变更，返回”无变更”</li>
+<li>多环镜、集群配置管理<br>同一份程序在不同的环境（开发，测试，生产）、不同的集群（如不同的数据中心）经常需要有不同的配置，所以需要有完善的环境、集群配置管理</li>
+<li>权限控制和操作审计：配置能改变程序的行为,需要有完善的权限控制，以防错误的配置引起的故障。变更操作都要有审计日志，可以方便的追踪问题</li>
+<li>版本管理<br>所有的配置发布都有版本概念，从而可以方便的支持配置的回滚</li>
+<li>支持灰度发布<br>支持配置的灰度发布，比如点了发布后，只对部分应用实例生效，等观察一段时间没问题后再推给所有应用实例,两种解决方案：<br>a.配置项增加一个host属性，表示这个配置项只“发布”给某些IP<br>b.定义一个优先级，客户端优先加载本地配置文件，这样如果某些机器上的应用需要特殊配置，那么可以采用老的方式上去修改其本地配置文件</li>
+<li>支持降级<br>非核心服务降级开关。发生问题时，降级服务的非核心服务</li>
+<li>同时支持web页面和Restful API接口</li>
+<li>支持多语言，支持php这种无状态语言</li>
+<li>支持容错性，当server出现问题时，不影响client的运行</li>
+<li>支持本地缓存，减少每次获取配置项时与server的网络消耗，仅server更新时通知client</li>
 </ul>
-<h4 id="b-cgroups"><a href="#b-cgroups" class="headerlink" title="b. cgroups"></a><b>b. cgroups</b></h4><p>cgroup负责限制资源,主要体现在cpu、内存、磁盘</p>
-<p><b>CPU子系统</b><br>cgroups提供了三种限制CPU资源的方式：cpuset， cpuquota和cpushares</p>
+<h4 id="客户端怎么支持"><a href="#客户端怎么支持" class="headerlink" title="客户端怎么支持"></a><b>客户端怎么支持</b></h4><ul>
+<li>配合配置中心的推送，在参数变化时调用客户端自行实现的回调接口，不需要重启应用</li>
+<li>支持环境变量，JVM启动参数，配置文件，配置中心等多种来源按优先级互相覆盖，并有接口暴露最后的参数选择</li>
+<li>配置文件中支持多套profile，如开发，单元测试，集成测试，生产</li>
+</ul>
+<h4 id="开源解决方案现状"><a href="#开源解决方案现状" class="headerlink" title="开源解决方案现状"></a><b>开源解决方案现状</b></h4><ul>
+<li>淘宝的<a href="">Diamond</a></li>
+<li>携程开源的<a href="https://github.com/ctripcorp/apollo" target="_blank" rel="external">Applo</a>，支持Java，其他语言通过Http支持</li>
+<li>个人开源的<a href="https://github.com/knightliao/disconf/tree/master/disconf-web" target="_blank" rel="external">disconf</a>，只支持Java＋Spring</li>
+<li>360的<a href="https://github.com/Qihoo360/QConf" target="_blank" rel="external">Qconf</a>，基于zk，特色是基于Agent模式的多语言支持。但服务端也没有界面、灰度、预案什么的，直接通过API操作ZK而已</li>
+<li>个人开源的<a href="https://github.com/hengyunabc/xdiamond" target="_blank" rel="external">xdiamond</a></li>
+<li>个人开源的<a href="https://github.com/cncduLee/zk-ucc" target="_blank" rel="external">zk-ucc</a></li>
+<li>个人开源的<a href="https://github.com/xuxueli/xxl-conf" target="_blank" rel="external">xxlconf</a></li>
+<li>个人开源的<a href="https://github.com/ihaolin/diablo" target="_blank" rel="external">diablo</a></li>
+<li><a href="https://github.com/coreos/etcd" target="_blank" rel="external">etcd</a></li>
+<li><a href="https://zookeeper.apache.org" target="_blank" rel="external">zookeeper</a></li>
+<li><a href="https://www.consul.io/" target="_blank" rel="external">consul</a></li>
+<li><a href="https://github.com/kelseyhightower/confd" target="_blank" rel="external">confd</a></li>
+<li><a href="http://www.cfg4j.org" target="_blank" rel="external">cfg4j</a></li>
+<li><a href="https://github.com/melin/super-diamond" target="_blank" rel="external">super-diamond</a> ,已停止更新</li>
+</ul>
+<p>开源之外呢？<br>应该说最好的配置中心还是在各个互联网公司的基础架构部里，虽然不是完美，虽然修修补补，常见的两种玩法</p>
 <ul>
-<li><p>cpuset可以限制进程使用的cpu核数，通过cpuset/cpuset.cpus来管理，相应的命令如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run --cpuset-cpus 0 -d --name apache apache</div></pre></td></tr></table></figure>
+<li><p>一种玩法是基于zk和etcd，一般支持界面和api,用数据库来保存版本历史，预案，走流程,最后下发到zk或etcd这种有推送能力的存储里（服务注册本身也是用zk或etcd，选型就一块了）。客户端都直接和zk或etcd打交道<br>灰度发布麻烦些，其中一种实现是同时发布一个可接收的IP列表，客户端监听到配置节点变化时，对比一下自己是否属于该列表<br>PHP这种无状态的语言和其他zk/etcd不支持的语言，只好自己在客户端的机器上起一个Agent来监听变化，再写到配置文件或Share Memory了</p>
 </li>
-<li><p>cpuquota以时间片的使用率来限制CPU资源，要比cpuset的细粒度大一些，只需要设置一个相对100000的值就可以达到限制一个百分比的效果, 通过 cpu/cpu.cfs_period_us （配置时间片单位，默认为100000）和 cpu/cpu.cfs_quota_us (时间片占比)两个文件来管理,相应的命令如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run --cpu-quota 50000 -d --name apache apache</div></pre></td></tr></table></figure>
-</li>
-<li><p>cpushares根据权重来分配CPU资源，比如如果只有一个进程权重为100，那么进程可以使用100%的CPU资源，如果有两个进程且权重都是100，那么每个进程可以使用50%的CPU资源 , 通过 cpu/cpu.shares 来管理，相应的命令如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run --cpu-shares 1024 -d --name apache apache</div></pre></td></tr></table></figure>
+<li><p>另一种玩法是基于运维自动化的配置文件的推送，一样有数据库与界面或API来管理配置，下发时生成配置文件，基于各种运维自动化工具如Puppet，Ansible推送到每个客户端。而应用则定时重新读取这个外部的配置文件</p>
 </li>
 </ul>
-<p><b>内存子系统</b></p>
-<ul>
-<li>cgroups对内存的限制包括物理内存和swap，当进程使用内存达到上限时会被kill，关于内存限制的文件如下：<br>memory.limit_in_bytes memory.soft_limit_in_bytes memory.memsw.limit_in_byte,需要注意的一点是docker默认会将swap的限制设置为2倍内存，实际使用的内存可能会大于 -m 设置的内存大小,相应的docker命令<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run -m 100m -d --name apache apache</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p><b>blkio子系统</b></p>
-<ul>
-<li>blkio子系统的功能是对块设备读写的速率限制,目前 blkio 子系统提供的两种控制策略，一个是权重比例方式的控制，另一个是针对 IO 带宽和 IOPS 的控制.前者是针对blkio.weight 分配权重，后者对blkio.throttle.write_iops_device 进行限制。</li>
-</ul>
-<p>ref </p>
-<p><a href="https://www.baidu.com/link?url=ubhv7epUUNTpytivc7_ikrYX-flsGZHW9gn0REl9273xJa2YpM3kLz2wR6BqkCSMjYMZrXuyJlXQjU1bil4uja&amp;wd=&amp;eqid=e8f57cc000011018000000025833b49b" target="_blank" rel="external">Docker 百度百科</a></p>
+<p>ref<br><a href="http://jm.taobao.org/2016/09/28/an-article-about-config-center/" target="_blank" rel="external">一篇好TM长的关于配置中心的文章</a><br><a href="http://calvin1978.blogcn.com/articles/serviceconfig.html" target="_blank" rel="external">服务化体系之－配置中心，在ZK或etcd之外</a><br><a href="http://vernonzheng.com/2015/02/09/%E5%BC%80%E6%BA%90%E5%88%86%E5%B8%83%E5%BC%8F%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E9%80%89%E5%9E%8B/" target="_blank" rel="external">开源分布式配置中心选型</a></p>
 <hr>
 <p>您的鼓励是我写作最大的动力</p>
 <p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
