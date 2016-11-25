@@ -1,0 +1,328 @@
+	<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
+  
+  <title>docker学习笔记之Linux cgroups | t1ger的茶馆</title>
+  <meta name="author" content="t1ger">
+  
+  <meta name="description" content="https://t1ger.github.io/">
+  
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta property="og:title" content="docker学习笔记之Linux cgroups"/>
+  <meta property="og:site_name" content="t1ger的茶馆"/>
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+</head>
+
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">t1ger的茶馆</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="这是一个订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>docker学习笔记之Linux cgroups</h2>
+					
+					<div>
+						<span class="post-time">2016-11-25 14:50:26</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<h4 id="cgroup是什么"><a href="#cgroup是什么" class="headerlink" title="cgroup是什么"></a><b>cgroup是什么</b></h4><p>Linux CGroup全称Linux Control Group,Linux内核的一个功能,用来限制、控制与分离一个进程组群的资源(如CPU、内存、磁盘输入输出等),它最初叫Process Container,由Google工程师(Paul Menage和Rohit Seth)于2006年提出,后来因为Container有多重含义容易引起误解,就在2007年更名为Control Groups,并被整合进Linux内核2.6.24。<br>通俗的来说,cgroups可以限制、记录、隔离进程组所使用的物理资源,为容器实现虚拟化提供了基本保证,是构建Docker等一系列虚拟化管理工具的基石</p>
+<p>本质上来说,cgroups是内核附加在程序上的一系列钩子(hooks),通过程序运行时对资源的调度触发相应的钩子以达到资源追踪和限制的目的<br>对开发者来说,cgroups有如下四个有趣的特点：</p>
+<ul>
+<li>cgroups的API以一个伪文件系统的方式实现,即用户可以通过文件操作实现cgroups的组织管理</li>
+<li>cgroups的组织管理操作单元可以细粒度到线程级别,用户态代码也可以针对系统分配的资源创建和销毁cgroups,从而实现资源再分配和管理</li>
+<li>所有资源管理的功能都以“subsystem(子系统)”的方式实现,接口统一</li>
+<li>子进程创建之初与其父进程处于同一个cgroups的控制组</li>
+</ul>
+<h4 id="cgroup的功能"><a href="#cgroup的功能" class="headerlink" title="cgroup的功能"></a><b>cgroup的功能</b></h4><p>cgroups提供了以下四个功能</p>
+<ul>
+<li>资源限制(Resource Limitation):对进程组使用的资源总额进行限制<br>假如设置了内存上限,一旦超过配额就发出OOM(out of memory)</li>
+<li>优先级分配(Prioritization):通过分配cpu的时间片数据及磁盘io带宽大学,进而控制了进程运行的优先级</li>
+<li>资源统计(Accounting):统计系统资源使用量,比如统计cpu时长,内存用量,可用于计费功能</li>
+<li>进程控制(Control):可以对进程组执行挂起、恢复等操作</li>
+</ul>
+<p>备注:有一段时间,内核开发者甚至把namespace也作为一个cgroups的subsystem加入进来,也就是说cgroups曾经甚至还包含了资源隔离的能力。但是资源隔离会给cgroups带来许多问题,如PID在循环出现的时候cgroup却出现了命名冲突、cgroup创建后进入新的namespace导致脱离了控制等等,所以在2011年就被移除了</p>
+<p>在实践中，SA一般会利用cgroup做下面这些事：</p>
+<ul>
+<li>隔离一个进程集合（比如：nginx的所有进程），并限制他们所消费的资源</li>
+<li>为这组进程 分配其足够使用的内存</li>
+<li>为这组进程分配相应的网络带宽和磁盘存储限制</li>
+<li>限制访问某些设备(通过设置设备的白名单)</li>
+</ul>
+<h4 id="组织结构和规则"><a href="#组织结构和规则" class="headerlink" title="组织结构和规则"></a><b>组织结构和规则</b></h4><p>在传统Unix进程管理,实际上是先启动init进程作为根节点,再由init节点创建子进程作为子节点,而每个子节点由可以创建新的子节点,如此往复,形成一个树状结构<br>cgroup也是类似的树状结构,子节点也从父节点继承属性<br>区别在于,cgroup构成的hierarchy可以允许存在多个,如果进程模型是由init作为根节点构成的一棵树的话,那么cgroups的模型则是由多个hierarchy构成的森林。原因在于,如果只有一个hierarchy,那么所有的task都要受到绑定其上的subsystem的限制,会给那些不需要这些限制的task造成麻烦</p>
+<ul>
+<li>规则1:同一个hierarchy可以附加一个或多个subsystem,cpu和memory的subsystem附加到了一个hierarchy</li>
+<li>规则2:一个subsystem可以附加到多个hierarchy,当且仅当这些hierarchy只有这唯一一个subsystem</li>
+<li>规则3:系统每次新建一个hierarchy时,该系统上的所有task默认构成了这个新建的hierarchy的初始化cgroup,这个cgroup也称为root cgroup。对于你创建的每个hierarchy,task只能存在于其中一个cgroup中,即一个task不能存在于同一个hierarchy的不同cgroup中,但是一个task可以存在在不同hierarchy中的多个cgroup中。如果操作时把一个task添加到同一个hierarchy中的另一个cgroup中,则会从第一个cgroup中移除</li>
+<li>规则4:进程（task）在fork自身时创建的子任务(child task)默认与原task在同一个cgroup中,但是child task允许被移动到不同的cgroup中。即fork完成后,父子进程间是完全独立的</li>
+</ul>
+<h4 id="cgroup工作原理和实现方式"><a href="#cgroup工作原理和实现方式" class="headerlink" title="cgroup工作原理和实现方式"></a><b>cgroup工作原理和实现方式</b></h4><ul>
+<li>cgroup实现结构讲解<br>cgroup的实现本质上是给系统进程挂上钩子(hooks),当task运行的过程中涉及到某个资源时就会触发钩子上所附带的subsystem进行检测,最终根据资源类别的不同使用对应的技术进行资源限制和优先级分配</li>
+</ul>
+<p>Linux中管理task进程的数据结构为task_struct<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">#ifdef CONFIG_CGROUPS </div><div class="line">/* Control Group info protected by css_set_lock */ </div><div class="line">struct css_set *cgroups; </div><div class="line">/* cg_list protected by css_set_lock and tsk-&gt;alloc_lock */ </div><div class="line">struct list_head cg_list; </div><div class="line">#endif</div><div class="line">struct css_set &#123; </div><div class="line">atomic_t refcount;</div><div class="line">struct hlist_node hlist; </div><div class="line">struct list_head tasks; </div><div class="line">struct list_head cg_links; </div><div class="line">struct cgroup_subsys_state *subsys[CGROUP_SUBSYS_COUNT]; </div><div class="line">struct rcu_head rcu_head; </div><div class="line">&#125;;</div><div class="line">struct cgroup_subsys_state &#123; </div><div class="line">struct cgroup *cgroup; </div><div class="line">atomic_t refcnt; </div><div class="line">unsigned long flags; </div><div class="line">struct css_id *id; </div><div class="line">&#125;;</div><div class="line">struct cgroup &#123; </div><div class="line">unsigned long flags; </div><div class="line">atomic_t count; </div><div class="line">struct list_head sibling; </div><div class="line">struct list_head children; </div><div class="line">struct cgroup *parent; </div><div class="line">struct dentry *dentry; </div><div class="line">struct cgroup_subsys_state *subsys[CGROUP_SUBSYS_COUNT]; </div><div class="line">struct cgroupfs_root *root;</div><div class="line">struct cgroup *top_cgroup; </div><div class="line">struct list_head css_sets; </div><div class="line">struct list_head release_list; </div><div class="line">struct list_head pidlists;</div><div class="line">struct mutex pidlist_mutex; </div><div class="line">struct rcu_head rcu_head; </div><div class="line">struct list_head event_list; </div><div class="line">spinlock_t event_list_lock; </div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>在task_struct中,与cgroup相关的字段主要有两个,一个是css_set *cgroups,表示指向css_set（包含进程相关的cgroups信息）的指针,一个task只对应一个css_set结构,但是一个css_set可以被多个task使用。另一个字段是list_head cg_list,是一个链表的头指针,这个链表包含了所有的链到同一个css_set的task进程。每个css_set结构中都包含了一个指向cgroup_subsys_state(包含进程与一个特定子系统相关的信息)的指针数组。cgroup_subsys_state则指向了cgroup结构(包含一个cgroup的所有信息),通过这种方式间接的把一个进程和cgroup联系了起来</p>
+<p>另一方面,cgroup结构体中有一个list_head css_sets字段,它是一个头指针,指向由cg_cgroup_link（包含cgroup与task之间多对多关系的信息）形成的链表。由此获得的每一个cg_cgroup_link都包含了一个指向css_set *cg字段,指向了每一个task的css_set。css_set结构中则包含tasks头指针,指向所有链到此css_set的task进程构成的链表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">struct cg_cgroup_link &#123; </div><div class="line">struct list_head cgrp_link_list; </div><div class="line">struct cgroup *cgrp; </div><div class="line">struct list_head cg_link_list; </div><div class="line">struct css_set *cg; &#125;;</div></pre></td></tr></table></figure>
+<p>css_set中也有指向所有cg_cgroup_link构成链表的头指针,通过这种方式也能定位到所有的cgroup</p>
+<p>为什么要使用cg_cgroup_link结构体呢？<br>因为task与cgroup之间是多对多的关系。在数据库中,如果两张表是多对多的关系,那么如果不加入第三张关系表,就必须为一个字段的不同添加许多行记录,导致大量冗余。通过从主表和副表各拿一个主键新建一张关系表,可以提高数据查询的灵活性和效率。而一个task可能处于不同的cgroup,只要这些cgroup在不同的hierarchy中,并且每个hierarchy挂载的子系统不同:另一方面,一个cgroup中可以有多个task,这是显而易见的,但是这些task因为可能还存在在别的cgroup中,所以它们对应的css_set也不尽相同,所以一个cgroup也可以对应多个·css_set。在系统运行之初,内核的主函数就会对root cgroups和css_set进行初始化,每次task进行fork/exit时,都会附加（attach）/分离（detach）对应的css_set。综上所述,添加cg_cgroup_link主要是出于性能方面的考虑,一是节省了task_struct结构体占用的内存,二是提升了进程fork()/exit()的速度</p>
+<p>当task从一个cgroup中移动到另一个时,它会得到一个新的css_set指针。如果所要加入的cgroup与现有的cgroup子系统相同,那么就重复使用现有的css_set,否则就分配一个新css_set。所有的css_set通过一个哈希表进行存放和查询,hlist_node hlist就指向了css_set_table这个hash表。同时,为了让cgroups便于用户理解和使用,也为了用精简的内核代码为cgroup提供熟悉的权限和命名空间管理,内核开发者们按照Linux 虚拟文件系统转换器（VFS：Virtual Filesystem Switch）的接口实现了一套名为cgroup的文件系统,非常巧妙地用来表示cgroups的hierarchy概念,把各个subsystem的实现都封装到文件系统的各项操作中。定义子系统的结构体是cgroup_subsys,cgroup_subsys中定义了一组函数的接口,让各个子系统自己去实现,类似的思想还被用在了cgroup_subsys_state中,cgroup_subsys_state并没有定义控制信息,只是定义了各个子系统都需要用到的公共信息,由各个子系统各自按需去定义自己的控制信息结构体,最终在自定义的结构体中把cgroup_subsys_state包含进去,然后内核通过container_of等宏定义来获取对应的结构体</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">struct cgroup_subsys &#123; </div><div class="line">struct cgroup_subsys_state *(*create)(struct cgroup_subsys *ss, </div><div class="line">struct cgroup *cgrp); </div><div class="line">int (*pre_destroy)(struct cgroup_subsys *ss, struct cgroup *cgrp); </div><div class="line">void (*destroy)(struct cgroup_subsys *ss, struct cgroup *cgrp); </div><div class="line">int (*can_attach)(struct cgroup_subsys *ss,</div><div class="line"> struct cgroup *cgrp, struct task_struct *tsk, bool threadgroup); </div><div class="line">void (*cancel_attach)(struct cgroup_subsys *ss, </div><div class="line">struct cgroup *cgrp, struct task_struct *tsk, bool threadgroup); </div><div class="line">void (*attach)(struct cgroup_subsys *ss, struct cgroup *cgrp, </div><div class="line">struct cgroup *old_cgrp, struct task_struct *tsk, bool threadgroup); </div><div class="line">void (*fork)(struct cgroup_subsys *ss, struct task_struct *task); </div><div class="line">void (*exit)(struct cgroup_subsys *ss, struct task_struct *task); </div><div class="line">int (*populate)(struct cgroup_subsys *ss, struct cgroup *cgrp); </div><div class="line">void (*post_clone)(struct cgroup_subsys *ss, struct cgroup *cgrp); </div><div class="line">void (*bind)(struct cgroup_subsys *ss, struct cgroup *root);</div><div class="line">int subsys_id; </div><div class="line">int active; </div><div class="line">int disabled; </div><div class="line">int early_init; </div><div class="line">bool use_id; </div><div class="line">#define MAX_CGROUP_TYPE_NAMELEN 32 </div><div class="line">const char *name; </div><div class="line">struct mutex hierarchy_mutex; </div><div class="line">struct lock_class_key subsys_key; </div><div class="line">struct cgroupfs_root *root; </div><div class="line">struct list_head sibling; </div><div class="line">struct idr idr; </div><div class="line">spinlock_t id_lock; </div><div class="line">struct module *module; </div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<ul>
+<li>基于cgroups实现结构的用户层体现</li>
+</ul>
+<p>在实际使用时,需要通过挂载（mount）cgroup文件系统新建一个层级结构,挂载时指定要绑定的子系统,缺省情况下默认绑定系统所有子系统。把cgroup文件系统挂载（mount）上以后,你就可以像操作文件一样对cgroups的hierarchy层级进行浏览和操作管理,包括权限管理、子文件管理等等。除了cgroup文件系统以外,内核没有为cgroups的访问和操作添加任何系统调用。如果新建的层级结构要绑定的子系统与目前已经存在的层级结构完全相同,那么新的挂载会重用原来已经存在的那一套（指向相同的css_set）。否则如果要绑定的子系统已经被别的层级绑定,就会返回挂载失败的错误。如果一切顺利,挂载完成后层级就被激活并与相应子系统关联起来,可以开始使用了</p>
+<p>目前无法将一个新的子系统绑定到激活的层级上,或者从一个激活的层级中解除某个子系统的绑定。<br>当一个顶层的cgroup文件系统被卸载（umount）时,如果其中创建后代cgroup目录,那么就算上层的cgroup被卸载了,层级也是激活状态,其后代cgoup中的配置依旧有效。只有递归式的卸载层级中的所有cgoup,那个层级才会被真正删除</p>
+<p>层级激活后,/proc目录下的每个task PID文件夹下都会新添加一个名为cgroup的文件,列出task所在的层级,对其进行控制的子系统及对应cgroup文件系统的路径。<br>一个cgroup创建完成,不管绑定了何种子系统,其目录下都会生成以下几个文件,用来描述cgroup的相应信息。同样,把相应信息写入这些配置文件就可以生效,内容如下：<br>tasks：这个文件中罗列了所有在该cgroup中task的PID。该文件并不保证task的PID有序,把一个task的PID写到这个文件中就意味着把这个task加入这个cgroup中。<br>cgroup.procs：这个文件罗列所有在该cgroup中的线程组ID。该文件并不保证线程组ID有序和无重复。写一个线程组ID到这个文件就意味着把这个组中所有的线程加到这个cgroup中。<br>notify_on_release：填0或1,表示是否在cgroup中最后一个task退出时通知运行release agent,默认情况下是0,表示不运行。<br>release_agent：指定release agent执行脚本的文件路径,该文件在最顶层cgroup目录中存在,在这个脚本通常用于自动化umount无用的cgroup</p>
+<p>除了上述几个通用的文件以外,绑定特定子系统的目录下也会有其他的文件进行子系统的参数配置。在创建的hierarchy中创建文件夹,就类似于fork中一个后代cgroup,后代cgroup中默认继承原有cgroup中的配置属性,但是你可以根据需求对配置参数进行调整。这样就把一个大的cgroup系统分割成一个个嵌套的、可动态变化的“软分区”</p>
+<h4 id="cgroup的使用方法简介"><a href="#cgroup的使用方法简介" class="headerlink" title="cgroup的使用方法简介"></a><b>cgroup的使用方法简介</b></h4><ul>
+<li><p>安装cgroups工具库<br>安装的过程会自动创建/cgroup目录,如果没有自动创建也不用担心,使用mkdir /cgroup 手动创建即可<br>安装完成后,你就可以使用lssubsys,默认的cgroup配置文件为/etc/cgconfig.conf,但是因为存在使LXC无法运行的bug,所以在新版本中把这个配置移除了</p>
+</li>
+<li><p>查询cgroup及子系统挂载状态<br>在挂载子系统之前,可能你要先检查下目前子系统的挂载状态,如果子系统已经挂载,你就无法把子系统挂载到新的hierarchy,此时就需要先删除相应hierarchy或卸载对应子系统后再挂载。<br>查看所有的cgroup：lscgroup<br>查看所有支持的子系统：lssubsys -a<br>查看所有子系统挂载的位置： lssubsys –m<br>查看单个子系统挂载位置：lssubsys –m memory（以memory为例）</p>
+</li>
+<li>创建hierarchy层级并挂载子系统<br>使用cgroup的最佳方式是为想要管理的每个或每组资源创建单独的cgroup层级结构。而创建hierarchy并不神秘,实际上就是做一个标记,通过挂载一个tmpfs文件系统,并给一个好的名字就可以了</li>
+</ul>
+<p>系统默认挂载的cgroup就会进行如下操作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mount -t tmpfs cgroups /sys/fs/cgroup</div></pre></td></tr></table></figure>
+<p>挂载完成tmpfs后就可以通过mkdir命令创建相应的文件夹<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mkdir /sys/fs/cgroup/cg1</div></pre></td></tr></table></figure></p>
+<p>再把子系统挂载到相应层级上,挂载子系统也使用mount命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mount -t cgroup -o subsystems name /cgroup/name</div></pre></td></tr></table></figure></p>
+<p>name是层级名称。具体我们以挂载cpu和memory的子系统为例<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mount –t cgroup –o cpu,memory cpu_and_mem /sys/fs/cgroup/cg1</div></pre></td></tr></table></figure></p>
+<p>从mount命令开始,-t后面跟的是挂载的文件系统类型,即cgroup文件系统。-o后面跟要挂载的子系统种类如cpu、memory,用逗号隔开,其后的cpu_and_mem不被cgroup代码的解释,但会出现在/proc/mounts里,可以使用任何有用的标识字符串。最后的参数则表示挂载点的目录位置</p>
+<ul>
+<li>卸载cgroup<br>cgroup文件系统虽然支持重新挂载,但是官方不建议使用,重新挂载虽然可以改变绑定的子系统和release agent,但是它要求对应的hierarchy是空的并且release_agent会被传统的fsnotify（内核默认的文件系统通知）代替,这就导致重新挂载很难生效。可以通过卸载,再挂载的方式处理这样的需求</li>
+</ul>
+<p>卸载cgroup非常简单,你可以通过cgdelete命令,也可以通过rmdir</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">rmdir /sys/fs/cgroup/cg1</div></pre></td></tr></table></figure>
+<p>rmdir执行成功的必要条件是cg1下层没有创建其它cgroup,cg1中没有添加任何task,并且它也没有被别的cgroup所引用。<br>cgdelete cpu,memory:/ 使用cgdelete命令可以递归的删除cgroup及其命令下的后代cgroup,并且如果cgroup中有task,那么task会自动移到上一层没有被删除的cgroup中,如果所有的cgroup都被删除了,那task就不被cgroups控制。但是一旦再次创建一个新的cgroup,所有进程都会被放进新的cgroup中</p>
+<ul>
+<li>设置cgroups参数<br>设置cgroups参数非常简单,直接对之前创建的cgroup对应文件夹下的文件写入即可。<br>设置task允许使用的cpu为0和1</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">echo 0-1 &gt; /sys/fs/cgroup/cg1/cpuset.cpus</div></pre></td></tr></table></figure>
+<p>使用cgset命令也可以进行参数设置,对应上述允许使用0和1cpu</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cgset -r cpuset.cpus=0-1 cpu,memory:/</div></pre></td></tr></table></figure>
+<ul>
+<li>添加task到cgroup<br>通过文件操作进行添加<br>echo [PID] &gt; /path/to/cgroup/tasks<br>上述命令就是把进程ID打印到tasks中,如果tasks文件中已经有进程,需要使用”&gt;&gt;”向后添加。<br>通过cgclassify将进程添加到cgroup</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cgclassify -g subsystems:path_to_cgroup pidlist</div></pre></td></tr></table></figure>
+<p>这个命令中,subsystems指的就是子系统(如果使用man命令查看,可能也会使用controllers表示)​​​,如果mount了多个,就是用”,”隔开的子系统名字作为名称,类似cgset命令。<br>通过cgexec直接在cgroup中启动并执行进程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cgexec -g subsystems:path_to_cgroup command arguments</div></pre></td></tr></table></figure>
+<p>command和arguments就表示要在cgroup中执行的命令和参数<br>cgexec常用于执行临时的任务</p>
+<ul>
+<li>权限管理<br>与文件的权限管理类似,通过chown就可以对cgroup文件系统进行权限管理</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">chown uid:gid /path/to/cgroup</div></pre></td></tr></table></figure>
+<h4 id="subsystem的配置参数用法"><a href="#subsystem的配置参数用法" class="headerlink" title="subsystem的配置参数用法"></a><b>subsystem的配置参数用法</b></h4><ul>
+<li>BLOCK IO资源控制<br>限额类。限额类是主要有两种策略,一种是基于完全公平队列调度（CFQ：Completely Fair Queuing）的按权重分配各个cgroup所能占用总体资源的百分比,好处是当资源空闲时可以充分利用,但只能用于最底层节点cgroup的配置；另一种则是设定资源使用上限,这种限额在各个层次的cgroup都可以配置,但这种限制较为生硬,并且容器之间依然会出现资源的竞争。<br>按比例分配块设备IO资源：<br>blkio.weight：填写100-1000的一个整数值,作为相对权重比率,作为通用的设备分配比。<br>blkio.weight_device：针对特定设备的权重比,写入格式为device_types:node_numbers weight,空格前的参数段指定设备,weight参数与blkio.weight相同并覆盖原有的通用分配比。查看一个设备的device_types:node_numbers可以使用：ls -l /dev/DEV,看到的用逗号分隔的两个数字就是。也称之为major_number:minor_number。<br>控制IO读写速度上限：<br>blkio.throttle.read_bps_device：按每秒读取块设备的数据量设定上限,格式device_types:node_numbers bytes_per_second。<br>blkio.throttle.write_bps_device：按每秒写入块设备的数据量设定上限,格式device_types:node_numbers bytes_per_second。<br>blkio.throttle.read_iops_device：按每秒读操作次数设定上限,格式device_types:node_numbers operations_per_second。<br>blkio.throttle.write_iops_device：按每秒写操作次数设定上限,格式device_types:node_numbers operations_per_second。<br>针对特定操作(read, write, sync, 或async)设定读写速度上限。<br>blkio.throttle.io_serviced：针对特定操作按每秒操作次数设定上限,格式device_types:node_numbers operation operations_per_second。<br>blkio.throttle.io_service_bytes：针对特定操作按每秒数据量设定上限,格式device_types:node_numbers operation bytes_per_second。<br>统计与监控。以下内容都是只读的状态报告,通过这些统计项更好地统计、监控进程的io情况。<br>blkio.reset_stats：重置统计信息,写入一个int值即可。<br>blkio.time：统计cgroup对设备的访问时间,按格式device_types:node_numbers milliseconds读取信息即可,以下类似。<br>blkio.io_serviced：统计cgroup对特定设备的IO操作,包括read、write、sync及async次数,格式device_types:node_numbers operation number。<br>blkio.sectors：统计cgroup对设备扇区访问次数,格式 device_types:node_numbers sector_count。<br>blkio.io_service_bytes：统计cgroup对特定设备IO操作,包括read、write、sync及async的数据量,格式device_types:node_numbers operation bytes。<br>blkio.io_queued：统计cgroup的队列中对IO操作,包括read、write、sync及async的请求次数,格式number operation。<br>blkio.io_service_time：统计cgroup对特定设备的IO操作,包括read、write、sync及async时间(单位为ns),格式device_types:node_numbers operation time。<br>blkio.io_merged：统计cgroup 将 BIOS 请求合并到IO操作,包括read、write、sync及async请求的次数,格式number operation。<br>blkio.io_wait_time：统计cgroup在各设​​​备​​​中各类型​​​IO操作,包括read、write、sync及async在队列中的等待时间​(单位ns),格式device_types:node<em>numbers operation time。<br><strong>blkio.</strong>recursive</em>*：各类型的统计都有一个递归版本,Docker中使用的都是这个版本。获取的数据与非递归版本是一样的,但是包括cgroup所有层级的监控数据</li>
+</ul>
+<p>我们的模拟命令如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo dd if=/dev/sda1 of=/dev/null</div></pre></td></tr></table></figure></p>
+<p>通过iotop命令我们可以看到相关的IO速度是55MB/s(vm)<br>之后，我们先创建一个blkio（块设备IO）的cgroup，并把读IO限制到1MB/s，并把前面那个dd命令的pid放进去(注：8:0 是设备号，你可以通过ls -l /dev/sda1获得)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mkdir /sys/fs/cgroup/blkio/cg1</div><div class="line">echo &apos;8:0 1048576&apos;  &gt; /sys/fs/cgroup/blkio/cgl/blkio.throttle.read_bps_device</div><div class="line">echo 8128 &gt; /sys/fs/cgroup/blkio/haoel/tasks</div></pre></td></tr></table></figure></p>
+<p>再用iotop命令，你马上就能看到读速度被限制到了1MB/s左右</p>
+<ul>
+<li>CPU资源控制<br>CPU资源的控制也有两种策略,一种是完全公平调度（CFS：Completely Fair Scheduler）策略,提供了限额和按比例分配两种方式进行资源控制；另一种是实时调度（Real-Time Scheduler）策略,针对实时进程按周期分配固定的运行时间。配置时间都以微秒（µs）为单位,文件名中用us表示。<br>CFS调度策略配置：<br>设定CPU使用周期使用时间上限。<br>cpu.cfs_period_us：设定周期时间,必须与cfs_quota_us配合使用。<br>cpu.cfs_quota_us：设定周期内最多可使用的时间。这里的配置指task对单个cpu的使用上限,若cfs_quota_us是cfs_period_us的两倍,就表示在两个核上完全使用。数值范围为1000-1000,000（微秒）。<br>cpu.stat：统计信息,包含nr_periods（表示经历了几个cfs_period_us周期）、nr_throttled（表示task被限制的次数）及throttled_time（表示task被限制的总时长）。<br>按权重比例设定CPU的分配。<br>cpu.shares：设定一个整数,必须大于等于2,表示相对权重,最后除以权重总和算出相对比例,按比例分配CPU时间。如cgroup A设置100,cgroup B设置300,那么cgroup A中的task运行25%的CPU时间。对于一个4核CPU的系统来说,cgroup A中的task可以100%占有某一个CPU,这个比例是相对整体的一个值。<br>RT调度策略下的配置：<br>实时调度策略与公平调度策略中的按周期分配时间的方法类似,也是在周期内分配一个固定的运行时间。<br>cpu.rt_period_us：设定周期时间。<br>cpu.rt_runtime_us：设定周期中的运行时间</li>
+</ul>
+<p>假设，我们有个非常耗cpu的程序<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">int main(void)</div><div class="line">&#123;</div><div class="line">    int i = 0;</div><div class="line">    for(;;) i++;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>执行后，可以top看到进程pid为3529</p>
+<p>在/sys/fs/cgroup/cpu下建立cg1的group<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">cat /sys/fs/cgroup/cpu/haoel/cpu.cfs_quota_us </div><div class="line">-1</div><div class="line">echo 20000 &gt; /sys/fs/cgroup/cpu/haoel/cpu.cfs_quota_us</div><div class="line"># 将进程的pid加入到cgroup中</div><div class="line">echo 3529 &gt;&gt; /sys/fs/cgroup/cpu/haoel/tasks</div></pre></td></tr></table></figure></p>
+<p>之后，在top中看到cpu下降了20%</p>
+<p>下边代码是一个线程示例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line">#define _GNU_SOURCE         /* See feature_test_macros(7) */</div><div class="line"> </div><div class="line">#include &lt;pthread.h&gt;</div><div class="line">#include &lt;stdio.h&gt;</div><div class="line">#include &lt;stdlib.h&gt;</div><div class="line">#include &lt;sys/stat.h&gt;</div><div class="line">#include &lt;sys/types.h&gt;</div><div class="line">#include &lt;unistd.h&gt;</div><div class="line">#include &lt;sys/syscall.h&gt;</div><div class="line"> </div><div class="line"> </div><div class="line">const int NUM_THREADS = 5;</div><div class="line"> </div><div class="line">void *thread_main(void *threadid)</div><div class="line">&#123;</div><div class="line">    /* 把自己加入cgroup中（syscall(SYS_gettid)为得到线程的系统tid） */</div><div class="line">    char cmd[128];</div><div class="line">    sprintf(cmd, &quot;echo %ld &gt;&gt; /sys/fs/cgroup/cpu/haoel/tasks&quot;, syscall(SYS_gettid));</div><div class="line">    system(cmd); </div><div class="line">    sprintf(cmd, &quot;echo %ld &gt;&gt; /sys/fs/cgroup/cpuset/haoel/tasks&quot;, syscall(SYS_gettid));</div><div class="line">    system(cmd);</div><div class="line"> </div><div class="line">    long tid;</div><div class="line">    tid = (long)threadid;</div><div class="line">    printf(&quot;Hello World! It&apos;s me, thread #%ld, pid #%ld!\n&quot;, tid, syscall(SYS_gettid));</div><div class="line">     </div><div class="line">    int a=0; </div><div class="line">    while(1) &#123;</div><div class="line">        a++;</div><div class="line">    &#125;</div><div class="line">    pthread_exit(NULL);</div><div class="line">&#125;</div><div class="line">int main (int argc, char *argv[])</div><div class="line">&#123;</div><div class="line">    int num_threads;</div><div class="line">    if (argc &gt; 1)&#123;</div><div class="line">        num_threads = atoi(argv[1]);</div><div class="line">    &#125;</div><div class="line">    if (num_threads&lt;=0 || num_threads&gt;=100)&#123;</div><div class="line">        num_threads = NUM_THREADS;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    /* 设置CPU利用率为50% */</div><div class="line">    mkdir(&quot;/sys/fs/cgroup/cpu/haoel&quot;, 755);</div><div class="line">    system(&quot;echo 50000 &gt; /sys/fs/cgroup/cpu/haoel/cpu.cfs_quota_us&quot;);</div><div class="line"> </div><div class="line">    mkdir(&quot;/sys/fs/cgroup/cpuset/haoel&quot;, 755);</div><div class="line">    /* 限制CPU只能使用#2核和#3核 */</div><div class="line">    system(&quot;echo \&quot;2,3\&quot; &gt; /sys/fs/cgroup/cpuset/haoel/cpuset.cpus&quot;);</div><div class="line"> </div><div class="line">    pthread_t* threads = (pthread_t*) malloc (sizeof(pthread_t)*num_threads);</div><div class="line">    int rc;</div><div class="line">    long t;</div><div class="line">    for(t=0; t&lt;num_threads; t++)&#123;</div><div class="line">        printf(&quot;In main: creating thread %ld\n&quot;, t);</div><div class="line">        rc = pthread_create(&amp;threads[t], NULL, thread_main, (void *)t);</div><div class="line">        if (rc)&#123;</div><div class="line">            printf(&quot;ERROR; return code from pthread_create() is %d\n&quot;, rc);</div><div class="line">            exit(-1);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    /* Last thing that main() should do */</div><div class="line">    pthread_exit(NULL);</div><div class="line">    free(threads);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li><p>cpu资源报告<br>这个子系统的配置是cpu子系统的补充,提供CPU资源用量的统计,时间单位都是纳秒。<br>cpuacct.usage：统计cgroup中所有task的cpu使用时长。<br>cpuacct.stat：统计cgroup中所有task的用户态和内核态分别使用cpu的时长。<br>cpuacct.usage_percpu：统计cgroup中所有task使用每个cpu的时长</p>
+</li>
+<li><p>cpu绑定<br>为task分配独立CPU资源的子系统,参数较多,这里只选讲两个必须配置的参数,同时Docker中目前也只用到这两个。<br>cpuset.cpus：在这个文件中填写cgroup可使用的CPU编号,如0-2,16代表 0、1、2和16这4个CPU。<br>cpuset.mems：与CPU类似,表示cgroup可使用的memory node</p>
+</li>
+<li><p>限制task对device的使用<br>设备黑/白名单过滤<br>devices.allow：允许名单,语法type device_types:node_numbers access type。<br>type有三种类型：b（块设备）、c（字符设备）、a（全部设备）<br>access也有三种方式：r（读）、w（写）、m（创建）<br>devices.deny：禁止名单,语法格式同上。<br>统计报告<br>devices.list：报告为这个cgroup中的task设定访问控制的设备</p>
+</li>
+<li><p>暂停/恢复cgroup中的task<br>只有一个属性,表示进程的状态,把task放到freezer所在的cgroup,再把state改为FROZEN,就可以暂停进程。不允许在cgroup处于FROZEN状态时加入进程。<br>freezer.state包括如下三种状态： -FROZEN 停止。-FREEZING 正在停止,这个是只读状态,不能写入这个值。-THAWED 恢复</p>
+</li>
+<li><p>内存资源管理</p>
+</li>
+</ul>
+<p>限额类：<br>memory.limit_bytes：强制限制最大内存使用量,单位有k、m、g三种,填-1则代表无限制。<br>memory.soft_limit_bytes：软限制,只有比强制限制设置的值小时才有意义。当整体内存紧张的情况下,task获取的内存就被限制在软限制额度之内,以保证不会有太多进程因内存挨饿。可以看到,加入了内存的资源限制并不代表没有资源竞争。<br>memory.memsw.limit_bytes：设定最大内存与swap区内存之和的用量限制。<br>报警与自动控制：<br>memory.oom_control：改参数填0或1,0表示开启,当cgroup中的进程使用资源超过界限时立即杀死进程,1表示不启用。默认情况下,包含memory子系统的cgroup都启用。当oom_control不启用时,实际使用内存超过界限时进程会被暂停直到有空闲的内存资源。<br>统计与监控类：<br>memory.usage_bytes：报告该cgroups中进程使用的当前中总内存用量（以字节为单位）。<br>memory.max_usage_bytes：报告该cgroups中进程使用的最大内存使用量。<br>memory.failcnt：报告内存达到在memory.limit_in_bytes设定的限制值次数。<br>memory.stat：包含大量的内存统计数据。<br>cache：页缓存,包括​​tmpfs,单位为字节。<br>rss：匿名和swap,不包括tmpfs,单位为字节。​<br>mapped_file：memory-mapped映射的文件大小,包括tmpfs,单位为字节。<br>pgpgin：存入内存中的页数。<br>pgpgout：从内存中读出页数。<br>swap：swap用量,单位为字节。<br>active_anon：在活跃的最近最少使用（least-recently-used,LRU）列表中的匿名和swap缓存,包括tmpfs,单位为字节。<br>inactive_anon：不活跃的LRU列表中的匿名和swap缓存,包括tmpfs,单位为字节。<br>active_file：活跃LRU列表中的file-backed内存,以字节为单位。<br>inactive_file：不活跃LRU列表中的file-backed内存,以字节为单位。<br>unevictable：无法再生的内存,以字节为单位。<br>hierarchical_memory_limit：包含memory cgroup的层级的内存限制,单位为字节。<br>hierarchical_memsw_limit：包含memory cgroup的层级的内存加swap限制,单位为字节</p>
+<p>下面是一个限制内存的示例(代码是个死循环，其它不断的分配内存，每次512个字节，每次休息一秒)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">#include &lt;stdio.h&gt;</div><div class="line">#include &lt;stdlib.h&gt;</div><div class="line">#include &lt;string.h&gt;</div><div class="line">#include &lt;sys/types.h&gt;</div><div class="line">#include &lt;unistd.h&gt;</div><div class="line"> </div><div class="line">int main(void)</div><div class="line">&#123;</div><div class="line">    int size = 0;</div><div class="line">    int chunk_size = 512;</div><div class="line">    void *p = NULL;</div><div class="line"> </div><div class="line">    while(1) &#123;</div><div class="line"> </div><div class="line">        if ((p = malloc(p, chunk_size)) == NULL) &#123;</div><div class="line">            printf(&quot;out of memory!!\n&quot;);</div><div class="line">            break;</div><div class="line">        &#125;</div><div class="line">        memset(p, 1, chunk_size);</div><div class="line">        size += chunk_size;</div><div class="line">        printf(&quot;[%d] - memory is allocated [%8d] bytes \n&quot;, getpid(), size);</div><div class="line">        sleep(1);</div><div class="line">    &#125;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>之后，我们在另一个终端</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># 创建memory cgroup</div><div class="line">$ mkdir /sys/fs/cgroup/memory/haoel</div><div class="line">$ echo 64k &gt; /sys/fs/cgroup/memory/haoel/memory.limit_in_bytes</div><div class="line"> </div><div class="line"># 把上面的进程的pid加入这个cgroup</div><div class="line">$ echo [pid] &gt; /sys/fs/cgroup/memory/haoel/tasks</div></pre></td></tr></table></figure>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a><b>总结</b></h4><p>内核对cgroups的支持已经较为完善,但是依旧有许多工作需要完善。如网络方面目前是通过TC（Traffic Controller）来控制,未来需要统一整合；资源限制并没有解决资源竞争,在各自限制之内的进程依旧存在资源竞争,优先级调度方面依旧有很大的改进空间</p>
+<p>ref</p>
+<p><a href="http://70data.net/1131.html" target="_blank" rel="external">Docker学习笔记-Linux cgroups</a><br><a href="https://access.redhat.com/documentation/zh-CN/Red_Hat_Enterprise_Linux/6/html-single/Resource_Management_Guide/index.html" target="_blank" rel="external">Reahat Resource Management Guide</a><br><a href="http://coolshell.cn/articles/17049.html" target="_blank" rel="external">Docker基础技术：Linux CGroup</a></p>
+<p>t1ger整理于2016.11.25</p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+
+		<div class="comment-section">
+  
+  
+
+
+</div>
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+
+<p>
+  由 <a href="https://hexo.io">hexo</a> 强力驱动 |&nbsp;&nbsp;本站总点击 <span id="busuanzi_value_site_pv"></span> 次
+&nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
+</p>
+<p>
+  &copy; 2016 <a href="https://t1ger.github.io"> t1ger </a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
+
+</p>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>
