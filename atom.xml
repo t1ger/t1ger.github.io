@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-11-28T06:37:34.947Z</updated>
+  <updated>2016-11-28T09:51:37.909Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,156 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>docker学习笔记-DeviceMapper</title>
+    <link href="https://t1ger.github.io/2016/11/28/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-DeviceMapper/"/>
+    <id>https://t1ger.github.io/2016/11/28/docker学习笔记-DeviceMapper/</id>
+    <published>2016-11-28T08:09:12.000Z</published>
+    <updated>2016-11-28T09:51:37.909Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="DeviceMapper简介"><a href="#DeviceMapper简介" class="headerlink" title="DeviceMapper简介"></a><b>DeviceMapper简介</b></h4><p>DeviceMapper自Linux 2.6被引入成为了Linux最重要的一个技术。它在内核中支持逻辑卷管理的通用设备映射机制，它为实现用于存储资源管理的块设备驱动提供了一个高度模块化的内核架构，它包含三个重要的对象概念，Mapped Device、Mapping Table、Target device</p>
+<p>Mapped Device是一个逻辑抽象，可以理解成为内核向外提供的逻辑设备，它通过Mapping Table描述的映射关系和Target Device建立映射。Target device表示的是Mapped Device所映射的物理空间段，对Mapped Device所表示的逻辑设备来说，就是该逻辑设备映射到的一个物理设备</p>
+<p>Mapping Table里有Mapped Device逻辑的起始地址、范围、和表示在Target Device所在物理设备的地址偏移量以及Target 类型等信息（注：这些地址和偏移量都是以磁盘的扇区为单位的，即512个字节大小，所以看到128的时候，其实表示的是128*512=64K）</p>
+<p>DeviceMapper中的逻辑设备Mapped Device不但可以映射一个或多个物理设备Target Device，还可以映射另一个Mapped Device，于是，就是构成了一个迭代或递归的情况，就像文件系统中的目录里除了文件还可以有目录，理论上可以无限嵌套下去</p>
+<p>DeviceMapper在内核中通过一个一个模块化的Target Driver插件实现对IO请求的过滤或者重新定向等工作，当前已经实现的插件包括软 Raid、加密、多路径、镜像、快照等，这体现了在Linux内核设计中策略和机制分离的原则。如下图可以看到DeviceMapper只是一个框架，在这个框架上，可以插入各种各样的策略，在这诸多“插件”中，有一个东西叫Thin Provisioning Snapshot，这是Docker使用DeviceMapper中最重要的模块</p>
+<h4 id="Thin-Provisioning-简介"><a href="#Thin-Provisioning-简介" class="headerlink" title="Thin Provisioning 简介"></a><b>Thin Provisioning 简介</b></h4><p>Thin Provisioning是虚拟化技术中的一种。类似于虚拟内存技术。操作系统给每个进程N多用不完的内址地址（32位下，每个进程可以有最多2GB的内存空间）。但是物理内存是没有那么多的。所以操作系统引入了虚拟内存的设计。逻辑上给无限多的内存，但是实际上是实报实销，达到了内存使用率提高的效果。 第一个是Fat Provisioning。 第二个是Thin Provisioning</p>
+<p>Docker是怎么使用Thin Provisioning这个技术做到像UnionFS那样的分层镜像的呢？答案是，Docker使用了Thin Provisioning的Snapshot的技术,下面我们来介绍一下Thin Provisioning的Snapshot。 先建两个文件，一个是data.img，一个是meta.data.img</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">$ sudo dd if=/dev/zero of=/tmp/data.img bs=1K count=1 seek=10M</div><div class="line">1+0 records in</div><div class="line">1+0 records out</div><div class="line">1024 bytes (1.0 kB) copied, 0.000621428 s, 1.6 MB/s</div><div class="line">$ sudo dd if=/dev/zero of=/tmp/meta.data.img bs=1K count=1 seek=1G</div><div class="line">1+0 records in</div><div class="line">1+0 records out</div><div class="line">1024 bytes (1.0 kB) copied, 0.000140858 s, 7.3 MB/s</div></pre></td></tr></table></figure>
+<p>注意命令中seek选项，其表示为略过of选项指定的输出文件的前10G个output的bloksize的空间后再写入内容。因为bs是1个字节，所以也就是10G的尺寸，但其实在硬盘上是没有占有空间的，占有空间只有1k的内容。当向其写入内容时，才会在硬盘上为其分配空间。可以用ls命令看一下，实际分配了12K和4K</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">sudo ls -lsh /tmp/data.img</div><div class="line">12K -rw-r--r--. 1 root root 11G Aug 25 23:01 /tmp/data.img</div><div class="line">$ sudo ls -slh /tmp/meta.data.img</div><div class="line">4.0K -rw-r--r--. 1 root root 101M Aug 25 23:17 /tmp/meta.data.img</div></pre></td></tr></table></figure>
+<p>为这个文件创建一个loopback设备</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ sudo losetup /dev/loop2015 /tmp/data.img</div><div class="line">$ sudo losetup /dev/loop2016 /tmp/meta.data.img</div><div class="line">$ sudo losetup -a</div><div class="line">/dev/loop2015: [64768]:103991768 (/tmp/data.img)</div><div class="line">/dev/loop2016: [64768]:103991765 (/tmp/meta.data.img)</div></pre></td></tr></table></figure>
+<p>为这个设备建一个Thin Provisioning的Pool，用dmsetup命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo dmsetup create hchen-thin-pool \</div><div class="line">               --table &quot;0 20971522 thin-pool /dev/loop2016 /dev/loop2015 \</div><div class="line">                        128 65536 1 skip_block_zeroing&quot;</div></pre></td></tr></table></figure>
+<p>参数解释如下</p>
+<ul>
+<li>dmsetup create是用来创建thin pool的命令。</li>
+<li>hchen-thin-pool是自定义的一个pool名。</li>
+<li>–table是这个pool的参数设置。<br>0代表起的sector位置。<br>20971522代码结句的sector号，一个sector是512字节，20971522个正好是10GB。<br>/dev/loop2016是meta文件的设备。<br>/dev/loop2015是data文件的设备。<br>128是最小的可分配的sector数。<br>65536是最少可用sector的water mark，也就是一个threshold。<br>1 代表有一个附加参数。<br>skip_block_zeroing是个附加参数，表示略过用0填充的块。</li>
+</ul>
+<p>现在我们可以看到一个Device Mapper的设备了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo ll /dev/mapper/hchen-thin-pool</div><div class="line">lrwxrwxrwx. 1 root root 7 Aug 25 23:24 /dev/mapper/hchen-thin-pool -&gt; ../dm-4</div></pre></td></tr></table></figure>
+<p>接下来创建一个Thin Provisioning的Volume</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ sudo dmsetup message /dev/mapper/hchen-thin-pool 0 &quot;create_thin 0&quot;</div><div class="line">$ sudo dmsetup create hchen-thin-volumn-001 \</div><div class="line">       --table &quot;0 2097152 thin /dev/mapper/hchen-thin-pool 0&quot;</div></pre></td></tr></table></figure>
+<ul>
+<li>第一个命令中的create_thin是关键字，后面的0表示这个Volume的device的id。</li>
+<li>第二个命令是真正的为这个Volumn创建一个可以mount的设备，名字叫hchen-thin-volumn-001。2097152只有1GB。</li>
+</ul>
+<p>在mount之前，我们格式化一下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">$ sudo mkfs.ext4 /dev/mapper/hchen-thin-volumn-001</div><div class="line">mke2fs 1.42.9 (28-Dec-2013)</div><div class="line">Discarding device blocks: done</div><div class="line">Filesystem label=</div><div class="line">OS type: Linux</div><div class="line">Block size=4096 (log=2)</div><div class="line">Fragment size=4096 (log=2)</div><div class="line">Stride=16 blocks, Stripe width=16 blocks</div><div class="line">65536 inodes, 262144 blocks</div><div class="line">13107 blocks (5.00%) reserved for the super user</div><div class="line">First data block=0</div><div class="line">Maximum filesystem blocks=268435456</div><div class="line">8 block groups</div><div class="line">32768 blocks per group, 32768 fragments per group</div><div class="line">8192 inodes per group</div><div class="line">Superblock backups stored on blocks:</div><div class="line">32768, 98304, 163840, 229376</div><div class="line">Allocating group tables: done</div><div class="line">Writing inode tables: done</div><div class="line">Creating journal (8192 blocks): done</div><div class="line">Writing superblocks and filesystem accounting information: done</div></pre></td></tr></table></figure>
+<p>终于可以mount了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ sudo mkdir -p /mnt/base</div><div class="line">$ sudo mount /dev/mapper/hchen-thin-volumn-001 /mnt/base</div><div class="line">$ sudo echo &quot;hello world, I am a base&quot; &gt; /mnt/base/id.txt</div><div class="line">$ sudo cat /mnt/base/id.txt</div><div class="line">hello world, I am a base</div></pre></td></tr></table></figure>
+<p>下面来操作snapshot。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ sudo dmsetup message /dev/mapper/hchen-thin-pool 0 &quot;create_snap 1 0&quot;</div><div class="line">$ sudo dmsetup create mysnap1 \</div><div class="line">                   --table &quot;0 2097152 thin /dev/mapper/hchen-thin-pool 1&quot;</div><div class="line">$ sudo ll /dev/mapper/mysnap1</div><div class="line">lrwxrwxrwx. 1 root root 7 Aug 25 23:49 /dev/mapper/mysnap1 -&gt; ../dm-5</div></pre></td></tr></table></figure>
+<ul>
+<li>第一条命令是向hchen-thin-pool发一个create_snap的消息，后面跟两个id，第一个是新的dev id，第二个是要从哪个已有的dev id上做snapshot。</li>
+<li>第二条命令是创建一个mysnap1的device，并可以被mount</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">$ sudo mkdir -p /mnt/mysnap1</div><div class="line">$ sudo mount /dev/mapper/mysnap1 /mnt/mysnap1</div><div class="line">$ sudo ll /mnt/mysnap1/</div><div class="line">total 20</div><div class="line">-rw-r--r--. 1 root root 25 Aug 25 23:46 id.txt</div><div class="line">drwx------. 2 root root 16384 Aug 25 23:43 lost+found</div><div class="line">$ sudo cat /mnt/mysnap1/id.txt</div><div class="line">hello world, I am a base</div></pre></td></tr></table></figure>
+<p>我们在修改一下/mnt/mysnap1/id.txt，并加上一个snap1.txt的文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">$ sudo echo &quot;I am snap1&quot; &gt;&gt; /mnt/mysnap1/id.txt</div><div class="line">$ sudo echo &quot;I am snap1&quot; &gt; /mnt/mysnap1/snap1.txt</div><div class="line">$ sudo cat /mnt/mysnap1/id.txt</div><div class="line">hello world, I am a base</div><div class="line">I am snap1</div><div class="line">$ sudo cat /mnt/mysnap1/snap1.txt</div><div class="line">I am snap1</div></pre></td></tr></table></figure>
+<p>再看一下/mnt/base，你会发现没有什么变化</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ sudo ls /mnt/base</div><div class="line">id.txt      lost+found</div><div class="line">$ sudo cat /mnt/base/id.txt</div><div class="line">hello world, I am a base</div></pre></td></tr></table></figure>
+<p>似乎已经看到了分层镜像的样子。。。<br>在刚才的snapshot上再建一个snapshot</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">$ sudo dmsetup message /dev/mapper/hchen-thin-pool 0 &quot;create_snap 2 1&quot;</div><div class="line">$ sudo dmsetup create mysnap2 \</div><div class="line">                   --table &quot;0 2097152 thin /dev/mapper/hchen-thin-pool 2&quot;</div><div class="line">$ sudo ll /dev/mapper/mysnap2</div><div class="line">lrwxrwxrwx. 1 root root 7 Aug 25 23:52 /dev/mapper/mysnap1 -&gt; ../dm-7</div><div class="line">$ sudo mkdir -p /mnt/mysnap2</div><div class="line">$ sudo mount /dev/mapper/mysnap2 /mnt/mysnap2</div><div class="line">$ sudo  ls /mnt/mysnap2</div><div class="line">id.txt  lost+found  snap1.txt</div></pre></td></tr></table></figure>
+<p>看到了分层镜像。这里需要补充的理论知识</p>
+<ul>
+<li>Snapshot来自LVM（Logic Volumn Manager），它可以在不中断服务的情况下为某个device打一个快照</li>
+<li>Snapshot是Copy-On-Write的，也就是说，只有发生了修改，才会对对应的内存进行拷贝</li>
+</ul>
+<h4 id="docker的loopback设备"><a href="#docker的loopback设备" class="headerlink" title="docker的loopback设备"></a><b>docker的loopback设备</b></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ sudo losetup -a</div><div class="line">/dev/loop0: [64768]:38050288 (/var/lib/docker/devicemapper/devicemapper/data)</div><div class="line">/dev/loop1: [64768]:38050289 (/var/lib/docker/devicemapper/devicemapper/metadata)</div></pre></td></tr></table></figure>
+<p>其中data 100GB，metadata 2.0GB</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ sudo ls -alhs /var/lib/docker/devicemapper/devicemapper</div><div class="line">506M -rw-------. 1 root root 100G Sep 10 20:15 data</div><div class="line">1.1M -rw-------. 1 root root 2.0G Sep 10 20:15 metadata</div></pre></td></tr></table></figure>
+<p>下面是相关的thin-pool。其中，有个当一大串hash串的device是正在启动的容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ sudo ll /dev/mapper/dock*</div><div class="line">lrwxrwxrwx. 1 root root 7 Aug 25 07:57 /dev/mapper/docker-253:0-104108535-pool -&gt; ../dm-2</div><div class="line">lrwxrwxrwx. 1 root root 7 Aug 25 11:13 /dev/mapper/docker-253:0-104108535-deefcd630a60aa5ad3e69249f58a68e717324be4258296653406ff062f605edf -&gt; ../dm-3</div></pre></td></tr></table></figure>
+<p>看一下device id</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo cat /var/lib/docker/devicemapper/metadata/deefcd630a60aa5ad3e69249f58a68e717324be4258296653406ff062f605edf</div><div class="line">&#123;&quot;device_id&quot;:24,&quot;size&quot;:10737418240,&quot;transaction_id&quot;:26,&quot;initialized&quot;:false&#125;</div></pre></td></tr></table></figure>
+<p>device_id是24，size是10737418240，除以512，就是20971520 个 sector，我们用这些信息来做个snapshot看看（注：我用了一个比较大的dev id – 1024）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">sudo dmsetup message &quot;/dev/mapper/docker-253:0-104108535-pool&quot; 0 \</div><div class="line">                                    &quot;create_snap 1024 24&quot;</div><div class="line">$ sudo dmsetup create dockersnap --table \</div><div class="line">                    &quot;0 20971520 thin /dev/mapper/docker-253:0-104108535-pool 1024&quot;</div><div class="line">$ sudo mkdir /mnt/docker</div><div class="line">$ sudo mount /dev/mapper/dockersnap /mnt/docker/</div><div class="line">$ sudo ls /mnt/docker/</div><div class="line">id lost+found rootfs</div><div class="line">$ sudo ls /mnt/docker/rootfs/</div><div class="line">bin dev etc home lib lib64 lost+found media mnt opt proc root run sbin srv sys tmp usr var</div></pre></td></tr></table></figure>
+<p>在docker的容器里用findmnt命令也可以看到相关的mount的情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># findmnt</div><div class="line">TARGET                SOURCE               </div><div class="line">/                 /dev/mapper/docker-253:0-104108535-deefcd630a60[/rootfs]</div><div class="line">/etc/resolv.conf  /dev/mapper/centos-root[/var/lib/docker/containers/deefcd630a60/resolv.conf]</div><div class="line">/etc/hostname     /dev/mapper/centos-root[/var/lib/docker/containers/deefcd630a60/hostname]</div><div class="line">/etc/hosts        /dev/mapper/centos-root[/var/lib/docker/containers/deefcd630a60/hosts]</div></pre></td></tr></table></figure>
+<p>ref</p>
+<p><a href="http://coolshell.cn/articles/17200.html" target="_blank" rel="external">Docker基础技术：DeviceMapper</a><br><a href="http://70data.net/1172.html" target="_blank" rel="external">Docker学习笔记（六）Linux DeviceMapper</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;DeviceMapper简介&quot;&gt;&lt;a href=&quot;#DeviceMapper简介&quot; class=&quot;headerlink&quot; title=&quot;DeviceMapper简介&quot;&gt;&lt;/a&gt;&lt;b&gt;DeviceMapper简介&lt;/b&gt;&lt;/h4&gt;&lt;p&gt;DeviceMapper自Li
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>docker学习笔记-AUFS</title>
+    <link href="https://t1ger.github.io/2016/11/28/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-AUFS/"/>
+    <id>https://t1ger.github.io/2016/11/28/docker学习笔记-AUFS/</id>
+    <published>2016-11-28T06:41:01.000Z</published>
+    <updated>2016-11-28T08:05:11.212Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="AUFS的八卦"><a href="#AUFS的八卦" class="headerlink" title="AUFS的八卦"></a><b>AUFS的八卦</b></h4><p>AUFS最初命名为Another UnionFS，后来改为Alternative UnionFS，后来可能觉得不够霸气，又改为Advance UnionFS。Junjiro Okajima（岡島順治郎）在2006年开发的，AUFS完全重写了早期的UnionFS 1.x，其主要目的是为了可靠性和性能，并且引入了一些新的功能，比如可写分支的负载均衡。AUFS在使用上全兼容UnionFS，而且比之前的UnionFS在稳定性和性能上都要好很多，后来的UnionFS 2.x开始抄AUFS中的功能。因为Linus的原因，没有进到Linux主干里，基本上是因为代码量比较多，而且写得烂（相对于只有3000行的union mount和10000行的UnionFS，以及其它平均下来只有6000行代码左右的VFS，AUFS居然有30000行代码），所以，岡島不断地改进代码质量，不断地提交，不断地被Linus拒掉，所以，到今天AUFS都还进不了Linux主干（今天你可以看到AUFS的代码其实还好了，比起OpenSSL好N倍，要么就是Linus对代码的质量要求非常高，要么就是Linus就是不喜欢AUFS）</p>
+<h4 id="Linux文件系统-vs-AUFS"><a href="#Linux文件系统-vs-AUFS" class="headerlink" title="Linux文件系统 vs AUFS"></a><b>Linux文件系统 vs AUFS</b></h4><p>典型的Linux文件系统有bootfs和rootfs两部分组成<br>bootfs主要包含bootloader和kernel，bootloader主要引导加载kernel,当kernel被加载到内存中后bootfs就被umount了<br>rootfs包含linux系统中的/dev、/proc、/bin、/etc等标准目录和文件</p>
+<p>AUFS是一种Union File System，所谓UnionFS就是把不同物理位置的目录合并mount到同一个目录中。UnionFS的一个最主要的应用是，把一张CD/DVD和一个硬盘目录给联合 mount在一起，然后，你就可以对这个只读的CD/DVD上的文件进行修改（当然,修改的文件存于硬盘上的目录里）</p>
+<p>传统的Linux加载bootfs时会先将rootfs设为read-only，然后在系统自检之后将rootfs从read-only改为read-write，然后就可以在rootfs上进行写和读的操作了。但Docker的镜像却不是这样，它在bootfs自检完毕之后并不会把rootfs的read-only改为read-write。而是利用union mount（UnionFS的一种挂载机制）将一个或多个read-only的rootfs加载到之前的read-only的rootfs层之上。在加载了这么多层的rootfs之后，仍然让它看起来只像是一个文件系统，在Docker的体系里把union mount的这些read-only的rootfs叫做Docker的镜像。但是，此时的每一层rootfs都是read-only的，此时还不能对其进行操作。当创建一个容器，也就是将Docker镜像进行实例化，系统会在一层或是多层read-only的rootfs之上分配一层空的read-write的rootfs</p>
+<p>回到AUFS,让我们来看个示例吧<br>首先，建上两个目录（水果和蔬菜），并在这两个目录中放上一些文件，水果中有苹果和蕃茄，蔬菜有胡萝卜和蕃茄。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">tree</div><div class="line">.</div><div class="line">├── fruits</div><div class="line">│   ├── apple</div><div class="line">│   └── tomato</div><div class="line">└── vegetables</div><div class="line">    ├── carrots</div><div class="line">    └── tomato</div></pre></td></tr></table></figure>
+<p>然后，输入以下命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"># 创建一个mount目录</div><div class="line">$ mkdir mnt</div><div class="line"># 把水果目录和蔬菜目录union mount到 ./mnt目录中</div><div class="line">$ sudo mount -t aufs -o dirs=./fruits:./vegetables none ./mnt</div><div class="line">#  查看./mnt目录</div><div class="line">$ tree ./mnt</div><div class="line">./mnt</div><div class="line">├── apple</div><div class="line">├── carrots</div><div class="line">└── tomato</div></pre></td></tr></table></figure>
+<p>可以看到在./mnt目录下有三个文件，苹果apple、胡萝卜carrots和蕃茄tomato。水果和蔬菜的目录被union到了./mnt目录下了。<br>修改一下其中的文件内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ echo mnt &gt; ./mnt/apple</div><div class="line">$ cat ./mnt/apple</div><div class="line">mnt</div><div class="line">$ cat ./fruits/apple</div><div class="line">mnt</div></pre></td></tr></table></figure>
+<p>可以看到./mnt/apple的内容改了，./fruits/apple的内容也改</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ echo mnt_carrots &gt; ./mnt/carrots</div><div class="line">$ cat ./vegetables/carrots</div><div class="line">$ cat ./fruits/carrots</div><div class="line">mnt_carrots</div></pre></td></tr></table></figure>
+<p>修改了./mnt/carrots的文件内容，./vegetables/carrots并没有变化，反而是./fruits/carrots的目录中出现了carrots文件，其内容是在./mnt/carrots里的内容。<br>在mount aufs命令中，没有指定它vegetables和fruits的目录权限，默认上来说，命令行上第一个(最左边)的目录是可读可写的，后面的全都是只读的</p>
+<p>所以，如果像下面这样指定权限来mount aufs，就会发现有不一样的效果(记得先把上面./fruits/carrots的文件删除了)。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"> sudo mount -t aufs -o dirs=./fruits=rw:./vegetables=rw none ./mnt</div><div class="line">$ echo &quot;mnt_carrots&quot; &gt; ./mnt/carrots</div><div class="line">$ cat ./vegetables/carrots</div><div class="line">mnt_carrots</div><div class="line">$ cat ./fruits/carrots</div><div class="line">cat: ./fruits/carrots: No such file or directory</div></pre></td></tr></table></figure>
+<p>如果要修改./mnt/tomato这个文件，那么究竟是哪个文件会被改写？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ echo &quot;mnt_tomato&quot; &gt; ./mnt/tomato</div><div class="line">$ cat ./fruits/tomato</div><div class="line">mnt_tomato</div><div class="line">$ cat ./vegetables/tomato</div><div class="line">I am a vegetable</div></pre></td></tr></table></figure>
+<p>可见，如果有重复的文件名，在mount命令行上，越往前的就优先级越高。</p>
+<p>关于docker的分层镜像，除了aufs，docker还支持btrfs, devicemapper和vfs，你可以使用-s或–storage-driver=选项来指定相关的镜像存储。在Ubuntu 14.04下，docker默认Ubuntu的aufs。在CentOS7下，用的是devicemapper，可以在下面的目录中查看相关的每个层的镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/var/lib/docker/aufs/diff/&lt;id&gt;</div></pre></td></tr></table></figure>
+<h4 id="AUFS的一些特性"><a href="#AUFS的一些特性" class="headerlink" title="AUFS的一些特性"></a><b>AUFS的一些特性</b></h4><p>AUFS实现了所有Union FS的特性，把多个目录合并为同一目录，并可以按每个需要合并的目录指定相应的权限，实时的添加、删除、修改已经mount好的目录，还可以在多个可写的branch/dir间进行负载均衡<br>被union的目录（分支）的相关权限</p>
+<ul>
+<li>rw表示可写可读read-write</li>
+<li>ro表示read-only，如果你不指权限，那么除了第一个外ro是默认值，对于ro分支，其永远不会收到写操作，也不会收到查找whiteout的操作</li>
+<li>rr表示real-read-only，与read-only不同的是，rr标记的是天生就是只读的分支，这样，AUFS可以提高性能，比如不再设置inotify来检查文件变动通知</li>
+</ul>
+<p>a.术语Branch-就是各个要被union起来的目录</p>
+<ul>
+<li>Branch根据被union的顺序形成一个stack，一般来说最上面的是可写的，下面的都是只读的</li>
+<li>Branch的stack可以在被mount后进行修改，比如：修改顺序，加入新的branch，或是删除其中的branch，或是直接修改branch的权限</li>
+</ul>
+<p>b.术语Opaque-就是不允许任何下层的某个目录显示出来</p>
+<p>c.术语whiteout-一般来说ro的分支都会有wh的属性，比如“[dir]=ro+wh”。所谓whiteout的意思，如果在union中删除的某个文件，实际上是位于一个readonly的分支（目录）上，那么，在mount的union这个目录中将看不到这个文件，但是read-only这个层上无法做任何的修改，所以就需要对这个readonly目录里的文件作whiteout。AUFS的whiteout的实现是通过在上层的可写的目录下建立对应的whiteout隐藏文件来实现的</p>
+<ul>
+<li>在隐藏低层档的情况下，whiteout的名字是’.wh.<filename>’</filename></li>
+<li>在阻止readdir的情况下，名字是’.wh..wh..opq’或者 ’.wh.__dir_opaque’</li>
+</ul>
+<p>假设有三个目录和文件如下所示（test是个空目录）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"># tree</div><div class="line">.</div><div class="line">├── fruits</div><div class="line">│   ├── apple</div><div class="line">│   └── tomato</div><div class="line">├── test</div><div class="line">└── vegetables</div><div class="line">    ├── carrots</div><div class="line">    └── tomato</div></pre></td></tr></table></figure>
+<p>如下mount：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># mkdir mnt</div><div class="line"># mount -t aufs -o dirs=./test=rw:./fruits=ro:./vegetables=ro none ./mnt</div><div class="line"># # ls ./mnt/</div><div class="line">apple carrots tomato</div></pre></td></tr></table></figure>
+<p>现在在权限为rw的test目录下建个whiteout的隐藏文件.wh.apple，会发现./mnt/apple这个文件就消失了:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># touch ./test/.wh.apple</div><div class="line"># ls ./mnt</div><div class="line">carrots  tomato</div></pre></td></tr></table></figure>
+<p>ref</p>
+<p><a href="http://coolshell.cn/articles/17061.html" target="_blank" rel="external">Docker基础技术：AUFS</a><br><a href="http://70data.net/1174.html" target="_blank" rel="external">Docker学习笔记（五）Linux AUFS</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;AUFS的八卦&quot;&gt;&lt;a href=&quot;#AUFS的八卦&quot; class=&quot;headerlink&quot; title=&quot;AUFS的八卦&quot;&gt;&lt;/a&gt;&lt;b&gt;AUFS的八卦&lt;/b&gt;&lt;/h4&gt;&lt;p&gt;AUFS最初命名为Another UnionFS，后来改为Alternative Un
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>docker学习笔记-Linux namespace</title>
@@ -614,187 +764,6 @@
     <summary type="html">
     
       The Alertmanager handles alerts sent by client applications such as the Prometheus server
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>监控工具之Prometheus</title>
-    <link href="https://t1ger.github.io/2016/11/16/%E7%9B%91%E6%8E%A7%E5%B7%A5%E5%85%B7%E4%B9%8BPrometheus/"/>
-    <id>https://t1ger.github.io/2016/11/16/监控工具之Prometheus/</id>
-    <published>2016-11-16T09:23:56.000Z</published>
-    <updated>2016-11-16T15:44:20.262Z</updated>
-    
-    <content type="html"><![CDATA[<p>Prometheus是一个开源的系统监控和报警的工具包，最初由SoundCloud发布,大多数组件是用go完成的。Prometheus 监控数据通过服务或静态配置来发现<br>，通过pull方式采集时间序列，通过http协议传输，支持通过中介网关的push时间序列的方式，不依赖分布式存储，支持图表和dashboard等多种方式,适用于监控所有时间序列的项目。</p>
-<p>下图是Prometheus和它的组件的整体架构：<br><img src="https://camo.githubusercontent.com/df3e3daf7d6809ba82986eb33664a4283314f7a9/68747470733a2f2f63646e2e7261776769742e636f6d2f70726f6d6574686575732f70726f6d6574686575732f653736316630642f646f63756d656e746174696f6e2f696d616765732f6172636869746563747572652e737667" alt="Prometheus架构"></p>
-<p>Prometheus通过直接或者短时jobs中介网关收集监控数据，在本地存储所有收集到的数据，并且通过定义好的rules产生新的时间序列数据，或者发送警报。Promdash或者其他使用API的clients可以将采集到的数据可视化。</p>
-<p>快速安装配置教程：<br>Prometheus可通过二进制安装或者docker安装，这里我们使用二进制安装<br><a href="https://prometheus.io/download" target="_blank" rel="external">下载最新版本</a> ，然后运行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">tar xvfz prometheus-*.tar.gz</div><div class="line">cd prometheus-*</div><div class="line">./prometheus -config.file=prometheus.yml</div></pre></td></tr></table></figure></p>
-<p>在 <a href="http://localhost:9090" target="_blank" rel="external">http://localhost:9090</a> 可以看到状态页。你也可以通过 <a href="http://localhost:9090/metrics" target="_blank" rel="external">http://localhost:9090/metrics</a> 查看监控项<br>这里我们以监控mysql为例来说下部署流程<br>修改prometheus.yml，在文件最后添加：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">- job_name: &apos;mysql&apos;</div><div class="line">    # Override the global default and scrape targets from this job every 5 seconds.</div><div class="line">    scrape_interval: 5s</div><div class="line">    # metrics_path defaults to &apos;/metrics&apos;</div><div class="line">    # scheme defaults to &apos;http&apos;.</div><div class="line">    static_configs:</div><div class="line">      - targets: [&apos;localhost:9104&apos;]</div><div class="line">        labels:</div><div class="line">          instance: db1</div></pre></td></tr></table></figure>
-<p>重启prometheus服务:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"># ./prometheus -config.file=prometheus.yml</div></pre></td></tr></table></figure></p>
-<p>再打开localhost:9090，查看Status -&gt;Targets页面下，就可以看到配置的两个target：一个是prometheus本身，State为UP，另一个是mysql，State为DOWN，因为我们还没有配置监控mysql的服务。</p>
-<p>安装mysql exporter<br>这里可以直接使用docker或者下载二进制包解压<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker pull prom/mysqld-exporter</div></pre></td></tr></table></figure></p>
-<p>mysql exporter 需要连接mysql<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">CREATE USER &apos;mysqlexporter&apos;@&apos;localhost&apos; IDENTIFIED BY &apos;mysqlexporter&apos;;</div><div class="line">GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO &apos;mysqlexporter&apos;@&apos;localhost&apos;</div></pre></td></tr></table></figure></p>
-<p>如果使用docker<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">docker run -d \          </div><div class="line">-p 9104:9104 \        </div><div class="line">-e DATA_SOURCE_NAME=&quot;mysqlexporter:mysqlexporter@(localhost:3306)/data_store&quot; prom/mysqld-exporter</div></pre></td></tr></table></figure></p>
-<p>如果使用二进制包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">tar zxf mysqld_exporter-* -C /usr/local/prometheus_exporters</div><div class="line">cd /usr/local/prometheus_exporters</div><div class="line">$ cat &lt;&lt; EOF &gt; .my.cnf</div><div class="line">[client]</div><div class="line">user=mysqlexporter</div><div class="line">password=mysqlexporter</div><div class="line">EOF</div><div class="line">$ ./mysqld_exporter -config.my-cnf=&quot;.my.cnf&quot;</div></pre></td></tr></table></figure></p>
-<p>我们再次回到Status-&gt;Targets页面，可以看到两个Target的状态已经变成UP了</p>
-<p>ref</p>
-<p><a href="https://prometheus.io/" target="_blank" rel="external">prometheus.io</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;Prometheus是一个开源的系统监控和报警的工具包，最初由SoundCloud发布,大多数组件是用go完成的。Prometheus 监控数据通过服务或静态配置来发现&lt;br&gt;，通过pull方式采集时间序列，通过http协议传输，支持通过中介网关的push时间序列的方式，不
-    
-    </summary>
-    
-    
-      <category term="linux" scheme="https://t1ger.github.io/tags/linux/"/>
-    
-      <category term="google" scheme="https://t1ger.github.io/tags/google/"/>
-    
-      <category term="Prometheus" scheme="https://t1ger.github.io/tags/Prometheus/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>关于高可用的系统一点思考</title>
-    <link href="https://t1ger.github.io/2016/11/11/%E5%85%B3%E4%BA%8E%E9%AB%98%E5%8F%AF%E7%94%A8%E7%9A%84%E7%B3%BB%E7%BB%9F%E4%B8%80%E7%82%B9%E6%80%9D%E8%80%83/"/>
-    <id>https://t1ger.github.io/2016/11/11/关于高可用的系统一点思考/</id>
-    <published>2016-11-11T09:42:34.000Z</published>
-    <updated>2016-11-13T13:40:28.626Z</updated>
-    
-    <content type="html"><![CDATA[<p>写在前面，此文章为转载，略微整理</p>
-<h4 id="理解高可用系统"><a href="#理解高可用系统" class="headerlink" title="理解高可用系统"></a><b>理解高可用系统</b></h4><p>高可用，顾名思义就是要我们的计算环境(包括软硬件)做到full-time的可用性。通常在需要做好如下设计：</p>
-<ul>
-<li>对软硬件的冗余，以消除单点故障。任何系统都会有一个或多个冗余系统做standby</li>
-<li>对故障的检测和恢复。检测故障以及用备份的节点接管故障点。就是我们常说的failover</li>
-<li>需要很可靠的交汇点(CrossOver)。eg. 域名解析、负载均衡等</li>
-</ul>
-<p>说起来很简单，然而，细节决定成败，冗余节点最大的难题就是有状态的节点数据复制和数据一致性的保证(无状态节点冗余相对简单)：</p>
-<ul>
-<li>如果系统的数据镜像到冗余节点是异步的，那么failover的时候就会出现数据差异</li>
-<li>如果系统在数据镜像到冗余节点是同步的，那么会导致冗余节点越多性能越慢。</li>
-</ul>
-<p>所以，很多高可用系统都是在做各种取舍，这需要比对着业务的特点来的，比如银行账号的余额是一个状态型的数据，那么，冗余时就必需做到强一致性，再比如说，订单记录属于追加性的数据，那么在failover的时候，就可以到备机上进行追加，这样就比较简单了。</p>
-<p>下面，总结一下高可用的设计原理：</p>
-<ul>
-<li>要做到数据不丢，就必须持久化</li>
-<li>要做到服务高可用，必须有备用，无论是应用结点还是数据结点</li>
-<li>要做到复制，就会有数据一致性的问题</li>
-<li>我们不可能做到100%的高可用，即我们能做到几个9的SLA</li>
-</ul>
-<h4 id="高可用技术方案的示例"><a href="#高可用技术方案的示例" class="headerlink" title="高可用技术方案的示例"></a><b>高可用技术方案的示例</b></h4><p>简单解释一下MySQL的这几个方案（主要是想表达一个越多的9就越复杂）</p>
-<ul>
-<li>Mysql Repleaction(一般配合keepalived 实现failover) 是传统的异步数据同步或是半同步Semi-Sync(只要有一个slave收到更新就返回成功）这个方式本质上不到2个9)</li>
-<li>MMM/MHA通过MySQL replication技术可以实现两个服务器互为主从，且在任何时候只有一个节点可以被写入，避免了多点写入的数据冲突。同时，当可写的主节点故障时，MMM/MHA套件可以立刻监控到，然后将服务自动切换到另一个主节点，继续提供服务，从而实现MySQL的高可用。这个方案的可用性可以达到99%。备注：MMM项目已于2012停止更新</li>
-<li>DRBD通过底层的磁盘同步技术来解决数据同步的问题，就是RAID 1——把两台以上的主机的硬盘镜像成一个。这个方案不到3个9</li>
-<li>Solaris Clustering/Oracle VM ，这个机制监控了包括硬件、操作系统、网络和数据库。这个方案一般会伴随着节点间的“心跳机制”，而且还会动用到SAN（Storage Area Network）或是本地的分布式存储系统，还会动用虚拟化技术来做虚拟机的迁移以降低宕机时间的概率。这个解决方案完全就是一个“全栈式的解决方案”。这个方案接近4个9</li>
-<li>MySQL Cluster是官方的一个开源方案，其把MySQL的集群分成SQL Node 和Data Node，Data Node是一个自动化sharing和复制的集群NDB，为了更高的可用性，MySQL Cluster采用了“完全同步”的数据复制的机制来冗余数据结点。这个方案接近5个9</li>
-</ul>
-<p>那么，这些2个9，3个9，4个9，5个9是什么意思呢？又是怎么来的呢？请往下看。</p>
-<h4 id="高可用性SLA的定义"><a href="#高可用性SLA的定义" class="headerlink" title="高可用性SLA的定义"></a><b>高可用性SLA的定义</b></h4><p>重点来了，工业界有两种方法来测量SLA</p>
-<ul>
-<li>一个是故障发生到恢复的时间</li>
-<li>另一个是两次故障间的时间</li>
-</ul>
-<p>通常我们采用前者，即故障发生到恢复的时间，也就是服务不可用时间</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">系统可用性</th>
-<th style="text-align:left">宕机时间/年</th>
-<th style="text-align:left">宕机时间/月</th>
-<th style="text-align:left">宕机时间/周</th>
-<th style="text-align:left">宕机时间/天</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">90% (1个9)</td>
-<td style="text-align:left">36.5 天</td>
-<td style="text-align:left">72 小时</td>
-<td style="text-align:left">16.8 小时</td>
-<td style="text-align:left">2.4 小时</td>
-</tr>
-<tr>
-<td style="text-align:left">99% (2个9)</td>
-<td style="text-align:left">3.65 天</td>
-<td style="text-align:left">7.20 小时</td>
-<td style="text-align:left">1.68 小时</td>
-<td style="text-align:left">14.4 分</td>
-</tr>
-<tr>
-<td style="text-align:left">99.9% (3个9)</td>
-<td style="text-align:left">8.76 小时</td>
-<td style="text-align:left">43.8 分</td>
-<td style="text-align:left">10.1 分钟</td>
-<td style="text-align:left">1.44 分</td>
-</tr>
-<tr>
-<td style="text-align:left">99.99% (4个9)</td>
-<td style="text-align:left">52.56 分</td>
-<td style="text-align:left">4.38 分</td>
-<td style="text-align:left">1.01 分钟</td>
-<td style="text-align:left">8.66 秒</td>
-</tr>
-<tr>
-<td style="text-align:left">99.999% (5个9)</td>
-<td style="text-align:left">5.26 分</td>
-<td style="text-align:left">25.9 秒</td>
-<td style="text-align:left">6.05 秒</td>
-<td style="text-align:left">0.87 秒</td>
-</tr>
-</tbody>
-</table>
-<p>比如，99.999%的可用性，一年只能有5分半钟的服务不可用。感觉很难做到吧。<br>到 3 个 9 可以靠堆人，也就是 3 班倒之类的强制值班基本搞定。但是从 3 个 9 往上，就基本超出了人力的范畴，考验的是业务的自愈能力，架构的容灾、容错设计，灾备系统的完善等等。<br>据说Google 内部只有 4 个 9 以上的服务才会配备 SRE，SRE 是必须在接到报警 5 分钟之内上线处理问题的，否则报警系统自动升级到下一个 SRE。如果还没有，直接给老板发报警。</p>
-<p>简而言之，SLA的几个9就是能持续提供可用服务的级别，不过，工业界中，会把服务不可用的因素分成两种：一种是有计划的，一种是无计划的。</p>
-<p>无计划的</p>
-<ul>
-<li>系统级故障-包括主机、操作系统、中间件、数据库、网络、电源以及外围设备</li>
-<li>数据和中介的故障-包括人员误操作、硬盘故障、数据乱了</li>
-<li>外部因素-自然灾害、人为破坏、以及供电问题</li>
-</ul>
-<p>有计划的</p>
-<ul>
-<li>日常任务-备份、容量规划、用户和安全管理，后台批处理应用</li>
-<li>运维相关-数据库维护、应用维护、中间件维护、操作系统维护、网络维护</li>
-<li>升级相关-数据库、应用、中间件、操作系统、网络、包括硬件升级</li>
-</ul>
-<p>有计划的维护因素主要来自于变更管理，避免措施主要有以下几个方面：</p>
-<ul>
-<li>线下测试（Offline Test）</li>
-<li>灰度发布</li>
-<li>服务必须对回滚提供支持</li>
-</ul>
-<p>针对回滚，跟大家分享一下，保证药到病除：</p>
-<p>理由1：我这个数据改动之后格式跟以前的不兼容了，回退也不能正常！<br>秘籍1：设计、开发时候就考虑好兼容性问题！！！比如说数据库改字段的事就不要做，改成另加一个字段就好。数据存储格式就最好采用 protobuf 这种支持数据版本、支持前后兼容性的方案。最差的情况，也要在变更实施『之前』，想清楚数据兼容性的问题。没有回滚脚本，不给更新，起码做到有备而战。</p>
-<p>理由2：我这个变更删掉东西了！回退之后数据也没了！<br>秘籍2：你一定是在逗我。把这个变更打回去，分成两半。第一半禁止访问这个数据。等到发布之后真没问题了，再来发布第二半，第二半真正删掉数据。这样第一半实施之后需要回滚还可以再回去。</p>
-<p>理由3：我这个变更发布了之后, 其他依赖这个系统的人都拿到了错误的数据，再回退也没用了，他们不会再接受老数据了！<br>秘籍3：这种比较常见出现在配置管理、缓存等系统中。对这类问题，最重要的就是，应该开发一种跟版本无关的刷新机制。触发刷新的机制应该独立于发布过程。 要有一个强制刷新数据的手段。</p>
-<p>以上三个秘籍覆盖了100%的回滚兼容性问题，如果有不存在的，请务必告诉我！</p>
-<h4 id="决定高可用的本质原因"><a href="#决定高可用的本质原因" class="headerlink" title="决定高可用的本质原因"></a><b>决定高可用的本质原因</b></h4><p><b>通过上述影响SLA的因素，我们可以看出实现5个9意味着一年的时间只能有5分钟不可用，如果没有一支技术牛逼的团队加上一套自动化的工具，怎么能有高可用系统呢</b></p>
-<p>要实现高可用系统，其中包括但不限于：</p>
-<ul>
-<li>软件的设计、编码、测试、上线和软件配置的水平</li>
-<li>工程师的技术水平</li>
-<li>运维的管理和技术水平</li>
-<li>数据中心的运营管理水平</li>
-<li>依赖于第三方服务的管理水平</li>
-</ul>
-<p>ref<br><a href="http://coolshell.cn/articles/17459.htm" target="_blank" rel="external">关于高可用的系统</a><br><a href="https://blog.coding.net/blog/architecture-concept-and-practice-from-Google" target="_blank" rel="external">来自 Google 的高可用架构理念与实践</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      think about High Availability
     
     </summary>
     
