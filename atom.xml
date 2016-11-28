@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-11-28T06:21:05.173Z</updated>
+  <updated>2016-11-28T06:37:34.947Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="https://t1ger.github.io/2016/11/26/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Linux-namespace/"/>
     <id>https://t1ger.github.io/2016/11/26/docker学习笔记-Linux-namespace/</id>
     <published>2016-11-26T14:34:43.000Z</published>
-    <updated>2016-11-28T06:21:05.173Z</updated>
+    <updated>2016-11-28T06:37:34.947Z</updated>
     
     <content type="html"><![CDATA[<p>Linux Namespace是Linux提供的一种内核级别环境隔离的方法,它有如下分类：</p>
 <ul>
@@ -42,7 +42,7 @@
 <p>a、通过clone()创建新进程的同时创建namespace</p>
 <p>常见调用方式<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">int clone(int (*child_func)(void *), void *child_stack, int flags, void *arg);</div></pre></td></tr></table></figure></p>
 <p>clone()实际上是传统unix系统调用fork()的一种更通用的实现方式，它可以通过flags来控制使用多少功能<br>一共有二十多种CLONE的flag（标志位）参数用来控制clone进程的方方面面<br>参数child_func传入子进程运行的程序主函数<br>参数child<em>stack传入子进程使用的栈空间<br>参数flags表示使用哪些CLONE</em>*标志位<br>参数args则可用于传入用户参数</p>
-<p>b、 查看/proc/[pid]/ns文件从3.8版本的内核开始，用户就可以在/proc/[pid]/ns文件下看到指向不同namespace号的文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">[root@localhost ~]# ls -l /proc/$$/ns</div><div class="line">total 0</div><div class="line">lrwxrwxrwx 1 root root 0 Nov 28 11:18 ipc -&gt; ipc:[4026531839]</div><div class="line">lrwxrwxrwx 1 root root 0 Nov 28 11:18 mnt -&gt; mnt:[4026531840]</div><div class="line">lrwxrwxrwx 1 root root 0 Nov 28 11:18 net -&gt; net:[4026531956]</div><div class="line">lrwxrwxrwx 1 root root 0 Nov 28 11:18 pid -&gt; pid:[4026531836]</div><div class="line">lrwxrwxrwx 1 root root 0 Nov 28 11:18 uts -&gt; uts:[4026531838]</div></pre></td></tr></table></figure></p>
+<p>b、 查看/proc/[pid]/ns文件从3.8版本的内核开始，用户就可以在/proc/[pid]/ns文件下看到指向不同namespace号的文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">[root@localhost ~]# ls -l /proc/$$/ns </div><div class="line">total 0</div><div class="line">lrwxrwxrwx 1 root root 0 Nov 28 11:18 ipc -&gt; ipc:[4026531839]</div><div class="line">lrwxrwxrwx 1 root root 0 Nov 28 11:18 mnt -&gt; mnt:[4026531840]</div><div class="line">lrwxrwxrwx 1 root root 0 Nov 28 11:18 net -&gt; net:[4026531956]</div><div class="line">lrwxrwxrwx 1 root root 0 Nov 28 11:18 pid -&gt; pid:[4026531836]</div><div class="line">lrwxrwxrwx 1 root root 0 Nov 28 11:18 uts -&gt; uts:[4026531838]</div></pre></td></tr></table></figure></p>
 <p>[4026531839]即为namespace号<br>如果两个进程指向的namespace编号相同，就说明他们在同一个namespace下，否则就是在不同namespace里面<br>/proc/[pid]/ns的另外一个作用是，一旦文件被打开，只要打开的文件描述符（fd）存在，那么就算PID所属的所有进程都已经结束，创建的namespace就会一直存在。<br>那如何打开文件描述符呢？把/proc/[pid]/ns目录挂载起来就可以达到这个效果，命令如下</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># touch ~/uts</div><div class="line"># mount --bind /proc/27514/ns/uts ~/uts</div></pre></td></tr></table></figure>
 <p>如果你看到的内容与本文所描述的不符，那么说明你使用的内核在3.8版本以前。该目录下存在的只有ipc、net和uts，并且以硬链接存在</p>
@@ -143,6 +143,9 @@
 <h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a><b>总结</b></h4><p>虽然namespace技术使用起来非常简单，但是要真正把容器做到安全易用却并非易事。PID namespace中，要实现一个完善的init进程来维护好所有进程；network namespace中，还有复杂的路由表和iptables规则没有配置；user namespace中还有很多权限上的问题需要考虑等等。其中有些方面Docker已经做的很好，有些方面也才刚刚开始</p>
 <p>ref </p>
 <p><a href="http://70data.net/1165.html" target="_blank" rel="external">Docker学习笔记（四）Linux namespace</a><br><a href="http://coolshell.cn/articles/17010.html" target="_blank" rel="external">Docker基础技术：Linux Namespace（上）</a><br><a href="http://blog.csdn.net/liumiaocn/article/details/52549595" target="_blank" rel="external">Docker基础: Linux内核命名空间之（3）net namespace</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
 ]]></content>
     
     <summary type="html">
