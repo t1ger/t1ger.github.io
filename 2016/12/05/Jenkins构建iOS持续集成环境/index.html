@@ -1,0 +1,277 @@
+	<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
+  
+  <title>Jenkins构建iOS持续集成环境 | t1ger的茶馆</title>
+  <meta name="author" content="t1ger">
+  
+  <meta name="description" content="https://t1ger.github.io/">
+  
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta property="og:title" content="Jenkins构建iOS持续集成环境"/>
+  <meta property="og:site_name" content="t1ger的茶馆"/>
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+</head>
+
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">t1ger的茶馆</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="这是一个订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>Jenkins构建iOS持续集成环境</h2>
+					
+					<div>
+						<span class="post-time">2016-12-05 11:55:23</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<h5 id="关于持续集成"><a href="#关于持续集成" class="headerlink" title="关于持续集成"></a><b>关于持续集成</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">持续集成是一种软件开发实践,通过每个成员每天至少集成一次，也就意味着每天可能会发生多次集成</div><div class="line">每次集成都通过自动化的构建（包括编译，发布，自动化测试）来验证，从而尽早地发现集成错误</div></pre></td></tr></table></figure>
+<p>常用的持续集成工具</p>
+<ul>
+<li><a href="http://jenkins-ci.org/" target="_blank" rel="external">Jenkins CI</a></li>
+<li><a href="https://travis-ci.com/" target="_blank" rel="external">Travis CI</a></li>
+<li><a href="http://hudson-ci.org/" target="_blank" rel="external">Hudson CI</a></li>
+<li><a href="https://circleci.com/" target="_blank" rel="external">Circle CI</a></li>
+</ul>
+<p>这里我们选择的是jenkins，好吧，安装就不多说了，不了解的同学请移步<a href="https://jenkins.io/doc/book/getting-started/installing/" target="_blank" rel="external">这里</a></p>
+<h5 id="前置说明"><a href="#前置说明" class="headerlink" title="前置说明"></a><b>前置说明</b></h5><ul>
+<li>实现 iOS 项目自动打包，需要有 Mac OSX 环境，Mac OSX 需要安装 Xcode ，并且系统中安装有 Xcode 的命令行工具</li>
+<li>iOS 项目使用 CocoaPods 进行依赖管理，故 Mac OSX 需要安装 CocoaPods</li>
+<li>确保 Jenkins 服务器所在的机器上拥有对应的证书和 Profile 文件(用Xcode必选)</li>
+<li>如果需要静态扫描，可以安装Scan-build，用于静态扫描，请参考<a href="http://clang-analyzer.llvm.org/scan-build.html" target="_blank" rel="external">这里</a></li>
+<li>安装xtool,用于单元测试，具体参见<a href="https://github.com/facebook/xctool" target="_blank" rel="external">这里</a>(可选)</li>
+</ul>
+<h5 id="Jenkins的配置"><a href="#Jenkins的配置" class="headerlink" title="Jenkins的配置"></a><b>Jenkins的配置</b></h5><ul>
+<li>如果是git管理代码，需要安装git插件<br>如果是svn管理代码，需要安装Subversion Plug-in插件</li>
+<li>安装Xcode插件(可选，如使用 Fir.im 的 CLI 可不需要安装 Xcode integration)<br>选择系统管理-&gt;管理插件，在“可选插件”中选中“Xcode integration”安装</li>
+<li>安装签名证书管理插件(可选)<br>iOS打包内测版时，需要发布证书及相关签名文件，因此这两个插件对于管理iOS证书非常方便。<br>在系统管理-&gt;管理插件，在“可选插件”中选中“Credentials Plugin”和“Keychains and Provisioning Profiles Management”安装</li>
+<li>安装Post-Build脚本插件<br>系统管理-&gt;管理插件，在“可选插件”中选中“Post-Build Script Plug-in”安装</li>
+<li>E-mail的设置<br>a. 首先要设置Jenkins的管理员邮箱，在Manage Jenkins-&gt;Configure System的“Jenkins Location”中设置“System Admin e-mail address”为需要的邮箱，也就是Jenkins发送邮件的发件人<br>b. 接下来设置邮件SMTP的相关信息，在“E-mail Notification”区域中，点击“Advanced…”按钮，然后进行设置，首先填写SMTP服务器地址，选中“Use SMTP Authentication”的复选框，然后输入用户名和密码，最后在“Test configuration by sending test e-mail”中输入一个测试邮箱来测试邮件是否能发送成功。如果成功，会有相关提示<br>备注：Jenkins管理员邮箱要与SMTP中设置的发送邮箱为同一个邮箱</li>
+<li><p>Environment Injector Plugin<br>系统管理-&gt;系统设置中可以进行全局配置,可以设置Xcode Builder（钥匙串设置）<br>需要填写的内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Keychain Name：iPhone Distribution:*(dis证书常用名)</div><div class="line">Keychain path：$&#123;HOME&#125;/Library/Keychains/login.keychain(dis证书路径)</div><div class="line">Keychain password：*</div><div class="line">Add to keychain search path after build：Yes</div><div class="line">Default keychain:iPhone Distribution:*</div></pre></td></tr></table></figure>
+</li>
+<li><p>安装FTP插件(可选)<br>系统管理-&gt;管理插件，在“可选插件”中选中“Publish over FTP”安装</p>
+</li>
+<li>description setter plugin：用于在修改Build描述信息，在描述信息中增加显示QRCode（二维码）(可选)</li>
+<li>Gradle plugin Android专用（可选）</li>
+<li>Html publisher plugin 用于展示HTML报表（可选）</li>
+<li>JUnit plugin 用于展示JUnit xml报表（可选）</li>
+</ul>
+<h5 id="自动化构建"><a href="#自动化构建" class="headerlink" title="自动化构建"></a><b>自动化构建</b></h5><ul>
+<li><p>准备工作<br>如果使用git，git仓库的ssh-key已经保存，描述文件和配置证书已经安装在机器上，证书已经设置为总是允许访问<br>在Jenkins中，所有的任务都是以“item”为单位的。接下来我们就新建一个iOS的项目来开始自动化构建。点击“新建”，输入item的名称，选择“构建一个自由风格的软件项目”，然后点击“OK”。<br>对于一个持续集成打包平台，每次打包都由4步组成：触发构建、拉取代码、执行构建、构建后处理。对应的，在每个Job中也对应了这几项的配置。<br>其中执行构建可细化为：Xcode clean、静态扫描、单元测试XCTest、编译、打包等</p>
+</li>
+<li><p>源码管理设置<br>a) 如果是svn:选择svn填好路径，第一次配置会要求输入账户密码，以后就会自动记住了.<br>Check-out Strategy最好选择每次update最新代码前都revert下，而不是“Use ‘svn update’ as much as possible” ，因为我使用的是cocoa pod管理的第三方，每次打包运行pod install会修改了工程配置文件，如果下次自动打包前不先revert再update的话会出现冲突<br>b) 如果是git: 填写git的仓库地址，认证账户，需要构建的分支等,这里有两种情况：<br>第一种如果Repository URL是HTTPS URL形式的，那么Credentials就要采用GitHub用户名密码的校验方式；而且，如果在GitHub中开启了2FA（two-factor authentication），那么还需要在GitHub中创建一个Personal access token，输入密码时将这个Personal access token作为密码进行输入<br>第二种如果Repository URL是SSH URL形式的，那么就需要先在Jenkins所在的服务器上创建一个SSH秘钥对，并将公钥添加到GitHub的SSH keys中，然后在填写Credentials时，选择SSH Username with private key的校验方式，填入GitHub Username、SSH私钥、以及创建SSH秘钥对时设置的Passphrase</p>
+</li>
+<li><p>触发条件设置<br>设置build的触发条件，由于是做Daily Build，所以在“Build Triggers”中，选择“Build periodically”，然后在输入框中输入build的规则，这里假设我们的规则是每个工作日的下午6点25到30分之间进行build，所以在输入框中输入“H(25-30) 18 <em> </em> 1-5”(点击输入框右边的问号，会有详细的规则编写说明)<br>jenkin支持多种类型，常用的有<br>a. 定期进行构建（Build periodically）<br>b. 根据提交进行构建(Build when a change is pushed to GitHub)<br>c. 定期检测代码更新，如有更新则进行构建(Poll SCM)</p>
+</li>
+<li><p>构建环境设置<br>如果使用Xcode,iOS打包需要签名文件和证书，所以这部分我们勾选“Keychains and Code Signing Identities”和“Mobile Provisioning Profiles”。<br>这里我们又需要用到Jenkins的插件，在系统管理页面，选择“Keychains and Provisioning Profiles Management”。<br>进入Keychains and Provisioning Profiles Management页面，点击“浏览”按钮，分别上传自己的keychain和证书。<br>上传成功后，我们再为keychain指明签名文件的名称。点击“Add Code Signing Identity”<br>我们的Adhoc证书和签名文件就已经在Jenkins中配置好了，接下来我们只需要在item设置中指定相关文件即可。<br>回到我们新建的item，找到构建环境,接下来就可以配置xcode了</p>
+</li>
+<li><p>编译设置<br>a. 如果有静态扫描</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scan-build  -o [OUTPUT_PATH] xcodebuild -configuration Debug  -sdk iphonesimulator</div></pre></td></tr></table></figure>
+<p>  静态扫描的结果为index.html，可以通过Html publisher plugin进行展示<br>b. 如果是采用Xcode integration插件进行构建，配置会比较复杂，需要在Jenkins中导入开发证书，并填写多个配置项<br>c. 如果是采用打包脚本进行构建的话，情况就会简单许多。只要在Jenkins所运行的计算机中安装好开发者证书，打包命令在Shell中能正常工作，那么在Jenkins中执行打包脚本也不会有什么问题<br>我们既可以使用Jenkins自带的xcode插件，也可以自己编写脚本来完成。编写脚本时，可以直接使用Xcode的xcodebuild来写，也可以使用Facebook提供的xctool来做<br>这里来介绍Xcode几个选项和附上shell脚本：</p>
+<ul>
+<li>Target：就是我们在项目中建立的Target，如果不清楚有哪些Target的情况下可以到xcodeproj或xcworkspace的目录下运行如下命令<br>xcodebuild -list  即可看到Targets，其中是所有可以用的target</li>
+<li>Clean before build?:这个是在编译前是否clean一次，一般是选择YES。</li>
+<li>Configuration: 对应的是xcodebuild命令里的-configuration的参数，可选项为[Debug、Release]，一般都填Debug，这样就可以将打包后的ipa交付给测试人员测试<br>Pack application and build .ipa?:这个是在结束是是否要产生对应的ipa文件，一般都是打上勾的</li>
+<li>.ipa filename pattern:这个配置项是配置所产生ipa的文件名，其中有一些可用的全局变量<br>其中${VERSION}和${SVN_REVISION}都是可以直接用的环境变量，如果想看还有哪些环境变量而已用可以点击在Execute shell下方有个 “See the list of available environment variables”进行查看</li>
+<li>Output directory:这个配置了ipa的输出目录(默认Build output directory所在路径)</li>
+<li>如果使用脚本，仍然是点击“增加构建步骤”，选择“Execute Shell”<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div></pre></td><td class="code"><pre><div class="line">#&lt;-------------------------------------------------------&gt;  </div><div class="line"># 删除旧源码目录-&gt;新建源码目录-&gt;从svn导出最新代码-&gt;清理旧文件-&gt;清除旧项目-&gt;打包-&gt;上传  </div><div class="line">   </div><div class="line">pwd  </div><div class="line">   </div><div class="line"># 名称配置  </div><div class="line">checkout_name=&quot;checkout&quot;  </div><div class="line">project_name=&quot;Air&quot;  </div><div class="line"># 配置项目版本  </div><div class="line">#targetProject_sdk=&quot;iphoneos8.0&quot;  </div><div class="line">targetProject_destination=&quot;generic/platform=iOS&quot;  </div><div class="line">configuration=&quot;Release&quot;  </div><div class="line">scheme=&quot;$project_name&quot;  </div><div class="line">workspace_name=&quot;$&#123;project_name&#125;.xcworkspace&quot;  </div><div class="line"># 目录配置  </div><div class="line">save_path=&quot;/Users/xiaoming/Desktop/uploadIPA&quot;  </div><div class="line">archive_path=&quot;$save_path/$&#123;project_name&#125;.xcarchive&quot;  </div><div class="line">ipa_path=&quot;$save_path/$&#123;project_name&#125;.ipa&quot;  </div><div class="line">log_path=&quot;$save_path/log.txt&quot;  </div><div class="line"># svn配置  </div><div class="line">svn_path=&quot;http://192.168.1.110/svn/Air/trunk/iOS/Air&quot;  </div><div class="line">checkout_path=&quot;$save_path/$checkout_name&quot;  </div><div class="line">svn_name=&quot;xiaoming&quot;  </div><div class="line">svn_password=&quot;123456&quot;  </div><div class="line"># 配置签名证书、描述文件  </div><div class="line">codeSignIdentity=&quot;iPhoneDeveloper: xiaoming zh (5AB779CDEF)&quot;  </div><div class="line">provision_UUID=&quot;06a7492b-083c-4313-d633-15ef685929g4&quot;  </div><div class="line">provisoning_profile=&quot;AirDevelopProfile&quot;  </div><div class="line"># 配置蒲公英  </div><div class="line">upload_path=&quot;$save_path/$&#123;project_name&#125;.ipa&quot;  </div><div class="line">pgy_userKey=&quot;a512b58c56285d23456e011fgh706509&quot;  </div><div class="line">pgy_apiKey=&quot;ab9c240d2efg9hi17j9642k3l5mnop5q&quot;  </div><div class="line">   </div><div class="line">echo &quot;正在删除旧源码&quot;  </div><div class="line"># 删除旧源码目录  </div><div class="line">[ -e $checkout_path ]&amp;&amp;rm -rf &quot;$checkout_path&quot; &gt;&gt; $log_path  </div><div class="line">   </div><div class="line">echo &quot;正在创建新的源码目录&quot;  </div><div class="line"># 新建源码目录  </div><div class="line">cd &quot;$save_path&quot;&gt;&gt; $log_path  </div><div class="line">pwd  </div><div class="line">mkdir &quot;$checkout_name&quot; &gt;&gt; $log_path  </div><div class="line">   </div><div class="line">echo &quot;正在从svn下载最新的源码&quot;  </div><div class="line"># 从svn导出最新代码  </div><div class="line">svn checkout &quot;$svn_path&quot; &quot;$checkout_path&quot; --username&quot;$svn_name&quot; --password &quot;$svn_password&quot; &gt;&gt; $log_path  </div><div class="line">   </div><div class="line">echo &quot;正在删除旧文件&quot;  </div><div class="line"># 删除旧文件  </div><div class="line">[ -e $log_path ]&amp;&amp;rm -rf &quot;$log_path&quot; &gt;&gt; $log_path  </div><div class="line">[ -e $archive_path ]&amp;&amp;rm -rf &quot;$archive_path&quot; &gt;&gt; $log_path  </div><div class="line">[ -e $ipa_path ]&amp;&amp;rm -rf &quot;$ipa_path&quot; &gt;&gt; $log_path  </div><div class="line">   </div><div class="line">echo &quot;正在清除构建项目缓存&quot;  </div><div class="line"># 重要，执行xcodebuild命令时，必须进入项目目录  </div><div class="line">cd &quot;$checkout_path&quot; &gt;&gt; $log_path  </div><div class="line">pwd  </div><div class="line"># 清理构建目录  </div><div class="line">xcodebuild clean-configuration &quot;$configuration&quot; -alltargets &gt;&gt; $log_path  </div><div class="line">   </div><div class="line">echo &quot;正在打包&quot;  </div><div class="line"># 归档（其他参数不指定的话，默认用的是.xcworkspace或.xcodeproj文件里的配置）  </div><div class="line">xcodebuild archive -workspace&quot;$workspace_name&quot; -scheme &quot;$scheme&quot; -destination&quot;$targetProject_destination&quot; -configuration&quot;$configuration&quot; -archivePath &quot;$archive_path&quot;CODE_SIGN_IDENTITY=&quot;$codeSignIdentity&quot; PROVISIONING_PROFILE=&quot;$provision_UUID&quot;&gt;&gt; $log_path  </div><div class="line">   </div><div class="line">echo &quot;正在导出ipa包&quot;  </div><div class="line"># 导出IPA  </div><div class="line">xcodebuild -exportArchive-exportFormat IPA -archivePath &quot;$archive_path&quot; -exportPath&quot;$ipa_path&quot; -exportProvisioningProfile&quot;$provisoning_profile&quot; &gt;&gt; $log_path  </div><div class="line">   </div><div class="line">echo &quot;正在上传ipa到蒲公英&quot;  </div><div class="line"># 上传IPA到蒲公英  </div><div class="line">curl -F&quot;file=@$upload_path&quot; -F &quot;uKey=$pgy_userKey&quot; -F &quot;_api_key=$pgy_apiKey&quot;https://www.pgyer.com/apiv1/app/upload </div><div class="line">#&lt;-------------------------------------------------------&gt;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>编译后行为设置<br>工程成功编译以后，我们可以设置编译出来的ipa文件(甚至可以直接是ota文件),将其与本次build的相关结果放到一起，提供下载。也可以在build失败时，发送邮件提醒。设置如下:点击“Add post-build action”选择“Archive the artifacts”，在输入框中输入“build/*.ipa”，就可以将编译打包后的ipa文件集成。点击“Add post-build action”选择“E-mail Notification”，在输入框中输入编译失败后邮件的通知者邮箱，如有多个，以空白字符分隔<br>当iOS应用打包好后，我们还想发给其他相关人员安装，包括公司内部的，外网的，都需要。这时我们还需配置OTA服务和内网FTP<br>外网安装App我们需要用到现在市面上比较流行的免费平台,<a href="https://www.pgyer.com/" target="_blank" rel="external">蒲公英</a> 在蒲公英官网设置相关信息后，我们可以写一个简单的脚本，来实现App打包后，上传到蒲公英和公司内网以及邮件提醒相关人员这一系列操作<br>如果用Jenkins的插件配置FTP信息，进入系统管理页面，选择系统设置，找到“Publish over FTP”，填写信息后回到任务配置页面，点击“增加构建后操作步骤”，然后选择“Send build artifacts over FTP”，在填写信息后我们再点击“增加构建后操作步骤”，选择“Execute a set of scripts，执行相关脚本即可</p>
+</li>
+</ul>
+<ul>
+<li><p>单元测试<br>a. 如果使用XCTool</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">XCTOOL_PATH  -workspace [YourProject&apos;s workspace] -scheme [YourSheme] -configuration Debug  -sdk iphonesimulator -launch-timeout 500 -reporter junit: [path/output.xml] test</div><div class="line">注意我们输出报表的格式为JUnit xml；</div></pre></td></tr></table></figure>
+<p>  b. 如果选择xcode自带的XCTest框架（Xcode5之前叫做OCUnit）。创建单元测试Job和自动化构建的Job过程一样，只在触发构建规则，build的脚本和编译后的规则有些不同<br>单元测试的触发规则应该在git仓库的每次有新提交时就触发执行，所以在”Build Triggers”中，选择“Poll SCM”，在规则中写入“H/10 <em> </em> <em> </em>”，意思是每十分钟轮询一次远程仓库，如果有新的提交，则开始构建。可以根据自己需求来设置轮询的时间间隔<br>接下来是在build中输入单元测试脚本。这里需要有一些准备<br>首先，由于Jenkins只接收Junit的单元测试报告，这里要安装一个将脚本执行结果的ocunit格式的测试报告转化为JUnit报告格式的脚本，该项目名叫OCUnit2JUnit<br>需要在当前项目工程中，将项目schemes共享，并上传到远程仓库。在工程中选择“Manage Schemes”在弹出的菜单中勾选“Shared”，然后在git中将相应的shared shceme添加到版本控制中并上传到远程仓库<br>Build”配置中，依然选择“Execute shell”，shell的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">xcodebuild test -scheme testCI -sdk iphonesimulator7.0 -destination OS=7.0,name=&quot;iPhone Retina (4-inch)&quot; -configuration Debug  2&gt;&amp;1 | ocunit2junit</div></pre></td></tr></table></figure>
+<p>  这里的单元测试是在模拟器中进行，如果测试服务器连接着iOS设备，也可以设置在iOS设备中进行，只需修改上述shell的参数即可。<br>最后是编译后行为的设置，这里要将测试报告加入。点击“Add post-build action”选择“Publish JUnit test result report”，输入内容test-reports/*.xml保存设置<br>接下来在单元测试的Job中，点击“Build Now”来测试一下Job的配置，如果配置正确，则会看到模拟器启动，然后运行了一下程序，之后在build的结果里，可以看到相应的测试报告</p>
+</li>
+</ul>
+<h5 id="可能遇到的坑"><a href="#可能遇到的坑" class="headerlink" title="可能遇到的坑"></a><b>可能遇到的坑</b></h5><ul>
+<li>使用jenkins server进行持续集成时会遇到模拟器无法启动的问题<br>使用jenkins server进行持续集成时会遇到模拟器无法启动的问题，因此需要将jenkins模式从LaunchDaemon移到LaunchAgent。具体参见<a href="http://pivotallabs.com/ios-ci-jenkins/" target="_blank" rel="external">这里</a><br>另外，将CreateSession从org.jenkins-ci.plist中移除,参考<a href="http://staxmanade.com/2015/01/setting-jenkins-up-to-run-xctool-and-xcode-simulator-tests/" target="_blank" rel="external">这里</a></li>
+</ul>
+<p>ref<br><a href="http://stackoverflow.com/questions/32504355/error-itms-90339-this-bundle-is-invalid-the-info-plist-contains-an-invalid-ke/32762413#32762413" target="_blank" rel="external">Jenkins 打包生成 ipa</a><br><a href="http://blog.csdn.net/lsgeek/article/details/48130343" target="_blank" rel="external">Jenkins构建iOS持续集成环境</a><br><a href="http://www.jianshu.com/p/c69deb29720d" target="_blank" rel="external">一步一步构建iOS持续集成:Jenkins+GitLab+蒲公英+FTP</a><br><a href="http://blog.csdn.net/gaowenhui2008/article/details/52238462" target="_blank" rel="external">使用Jenkins搭建iOS/Android持续集成打包平台</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+
+		<div class="comment-section">
+  
+  
+
+
+</div>
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+
+<p>
+  由 <a href="https://hexo.io">hexo</a> 强力驱动 |&nbsp;&nbsp;本站总点击 <span id="busuanzi_value_site_pv"></span> 次
+&nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
+</p>
+<p>
+  &copy; 2016 <a href="https://t1ger.github.io"> t1ger </a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
+
+</p>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>
