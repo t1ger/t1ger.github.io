@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-12-06T14:56:14.826Z</updated>
+  <updated>2016-12-09T03:10:15.459Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,58 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>五分钟了解Redis4.0新特性</title>
+    <link href="https://t1ger.github.io/2016/12/09/%E4%BA%94%E5%88%86%E9%92%9F%E4%BA%86%E8%A7%A3Redis4-0%E6%96%B0%E7%89%B9%E6%80%A7/"/>
+    <id>https://t1ger.github.io/2016/12/09/五分钟了解Redis4-0新特性/</id>
+    <published>2016-12-09T03:05:05.000Z</published>
+    <updated>2016-12-09T03:10:15.459Z</updated>
+    
+    <content type="html"><![CDATA[<p>看到redis版本变成4.0，好多同学可能会有疑惑，咋的从3.x直接就跳到4.0了么，这里引用antirez大神的博客来说明原因：<br>Redis 4.0 is not called 3.4 because it is a major release that adds a number<br>of important and non trivial features. Many core functionalities of Redis were<br>seriously reworked.</p>
+<p>这段话大意是说，新版本的 Redis 出现了多项改变， 所以他决定从原来的 3.x 版本直接跳到 4.0 版本， 以此来强调这次更新的变化之大</p>
+<p>闲言少续，我们来看看到底有哪些变化呢</p>
+<ul>
+<li>Redis modules system<br>Redis允许开发者开发modules去扩展Redis功能，这样开发者可以使用新的数据类型，Module api 与Redis内核完全分离，互不干扰</li>
+<li>Partial Replication (PSYNC) version 2<br>Redis解决了旧版本从服务器重启，必须与主服务器重新进行全量复制，在新版中，只要条件允许，主从在处理这种情况时将使用部分复制<br>Redis解决了从服务器在failover后成为新的主节点，在旧版中其他从节点在复制这个新主的时候就必须进行全量复制，新版中将在条件允许的情况下使用部分复制</li>
+<li>Cache eviction improvements<br>添加了Last Frequently Used 缓存驱逐策略，对已有的缓存策略进行了优化。</li>
+<li><p>Lazy freeing of keys<br>在旧版中，使用del、flushdb、flushall删除包含体积较大的键，都可能造成服务器阻塞<br>新版中，增加ulink命令，是del命令的异步版本，将删除制动键的曹组放在后台线程执行，尽可能避免服务器阻塞<br>由于历史原因，del将会继续保留，flushdb和flushall命令都新添加了async选项，带这个选项的数据库删除都将在后台线程进行</p>
+</li>
+<li><p>Mixed RDB-AOF format<br>在开启了这个功能之后， AOF 重写产生的文件将同时包含 RDB 格式的内容和 AOF 格式的内容， 其中 RDB 格式的内容用于记录已有的数据， 而 AOF 格式的内存则用于记录最近发生了变化的数据， 这样 Redis 就可以同时兼有 RDB 持久化和 AOF 持久化的优点 —— 既能够快速地生成重写文件， 也能够在出现问题时， 快速地载入数据</p>
+</li>
+<li><p>A new MEMORY command<br>命令可以用于视察内存使用情况， 并进行相应的内存管理操作<br>redis&gt; MEMORY HELP<br>1) “MEMORY USAGE <key> [SAMPLES <count>] - Estimate memory usage of key”<br>2) “MEMORY STATS                         - Show memory usage details”<br>3) “MEMORY PURGE                         - Ask the allocator to release memory”<br>4) “MEMORY MALLOC-STATS                  - Show allocator internal stats”<br>redis&gt; SET msg “hello world”<br>OK<br>redis&gt; SADD fruits apple banana cherry<br>(integer) 3<br>redis&gt; MEMORY USAGE msg<br>(integer) 62<br>redis&gt; MEMORY USAGE fruits<br>(integer) 375</count></key></p>
+</li>
+<li><p>Redis Cluster support for NAT / Docker. There are new functionalities in order to force cluster instances to announce specific sets of IP address, client and bus ports, to the rest of the cluster, regardless of the auto detected IP. This required a bus protocol change that will force users to mass-restart all the nodes of a Redis 3.2 installation in order to upgrade to 4.0</p>
+</li>
+<li><p>Redis uses now less memory in order to store the same amount of data<br>这里基本都是比较大的特性了，还有些小惊喜等着你哦</p>
+</li>
+<li><p>Improvements to the RDB format to support 64 bit lengths, binary sorted set scores, and more.The RDB file check utility now uses the same code base of the one used by Redis itself in order to load the RDB file in memory.</p>
+</li>
+<li><p>SWAPDB command: ability to completely and immediately (no latency) replace two Redis databases.<br>可以对指定的两个数据库进行互换： 比如说， 通过执行命令 SWAPDB 0 1 ， 我们可以将原来的数据库 0 变成数据库 1 ， 而原来的数据库 1 则变成数据库 0</p>
+</li>
+<li><p>Improvements to <code>dict.c</code>, the Redis hash table implementation.</p>
+</li>
+<li><p>Security improvements mapping POST and Host: commands to QUIT in order to prevent cross protocol scripting attacks.</p>
+</li>
+<li><p>RPUSHX and LPUSHX now accept a variable number of elements.</p>
+</li>
+<li><p>Reporting of additional memory used by copy on write in the INFO output.</p>
+</li>
+<li><p>Serious refactoring of many core parts of Redis.</p>
+</li>
+</ul>
+<p>ref</p>
+<p><a href="https://raw.githubusercontent.com/antirez/redis/4.0/00-RELEASENOTES" target="_blank" rel="external">Redis 4.0 release notes</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;看到redis版本变成4.0，好多同学可能会有疑惑，咋的从3.x直接就跳到4.0了么，这里引用antirez大神的博客来说明原因：&lt;br&gt;Redis 4.0 is not called 3.4 because it is a major release that adds 
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Jenkins构建iOS持续集成环境</title>
@@ -809,49 +861,6 @@
     <summary type="html">
     
       &lt;p&gt;前言&lt;br&gt;先做个简单介绍：DVWA(Dam Vulnerable Web Application)环境演示，DVWA是用PHP+Mysql编写的一套用于常规WEB漏洞教学和检测的WEB脆弱性测试程序。包含了SQL注入、XSS、盲注等常见的一些安全漏洞。&lt;br&gt;本文所有演示
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>http压力测试工具wrk</title>
-    <link href="https://t1ger.github.io/2016/11/19/http%E5%8E%8B%E5%8A%9B%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7wrk/"/>
-    <id>https://t1ger.github.io/2016/11/19/http压力测试工具wrk/</id>
-    <published>2016-11-19T08:56:36.000Z</published>
-    <updated>2016-11-19T09:51:58.379Z</updated>
-    
-    <content type="html"><![CDATA[<p>前言<br>wrk是一款开源的压力测试工具，它没有Load Runner那么复杂，和apache的ab 一样简单上手，确比ab功能更加强大，足以应对开发过程中的性能验证了：</p>
-<ul>
-<li>集成了多线程设计和事件通知系统(epoll,kqueue)</li>
-<li>通过lua脚本进行扩展 eg. http请求的生产、响应处理，自定义报告等</li>
-</ul>
-<p>下载安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># git clone https://github.com/wg/wrk.git</div><div class="line"># cd wrk/</div><div class="line"># make -j8</div><div class="line"># ./wrk  -t12 -c100 -d10s http://www.baidu.com</div></pre></td></tr></table></figure></p>
-<p>要测试的网站当然是百度了，据说百度是局域网看网络通不通的首选哦，没有之一<br>我们启动 12 个线程，100 个并发，持续运行 10 秒。线程数一般设置为cpu核数的2-4倍,如果想看响应时间的分布情况可以加上–latency参数</p>
-<p>[root@localhost wrk]# ./wrk  -t12 -c100 -d10s <a href="http://www.baidu.com" target="_blank" rel="external">http://www.baidu.com</a><br>Running 10s test @ <a href="http://www.baidu.com" target="_blank" rel="external">http://www.baidu.com</a><br>  12 threads and 100 connections<br>  Thread Stats   Avg      Stdev     Max   +/- Stdev<br>    Latency   367.77ms  417.94ms   1.97s    84.84%<br>    Req/Sec     9.79      6.43    40.00     65.23%<br>  760 requests in 10.12s, 11.42MB read<br>  Socket errors: connect 0, read 0, write 0, timeout 41<br>Requests/sec:     75.13<br>Transfer/sec:      1.13MB</p>
-<p>Latency: 可以理解为响应时间, 有平均值, 标准偏差, 最大值, 正负一个标准差占比<br>Requests/sec 就是最基本的指标：每秒处理的请求数(QPS)<br>Thread Stats 是线程执行情况，包括延迟、每秒处理个数，其中的 Avg 和 Max 很好理解，是平均值和最大值，Stdev 是标准差。<br>一般我们来说我们主要关注平均值和最大值. 标准差如果太大说明样本本身离散程度比较高. 有可能系统性能波动很大</p>
-<p>测试场景-Post<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># cat post.lua</div><div class="line">wrk.method = &quot;POST&quot;  </div><div class="line">wrk.body   = &quot;foo=bar&amp;baz=quux&quot;  </div><div class="line">wrk.headers[&quot;Content-Type&quot;] = &quot;application/x-www-form-urlencoded&quot;  </div><div class="line"></div><div class="line"># ./wrk -t12 -c100 -d30s -T30s --script=post.lua --latency http://www.baidu.com</div></pre></td></tr></table></figure></p>
-<p>复合场景-lua 实现访问多个 url.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line">counter = 1</div><div class="line"></div><div class="line">math.randomseed(os.time())</div><div class="line">math.random(); math.random(); math.random()</div><div class="line"></div><div class="line">function file_exists(file)</div><div class="line">  local f = io.open(file, &quot;rb&quot;)</div><div class="line">  if f then f:close() end</div><div class="line">  return f ~= nil</div><div class="line">end</div><div class="line"></div><div class="line">function shuffle(paths)</div><div class="line">  local j, k</div><div class="line">  local n = #paths</div><div class="line">  for i = 1, n do</div><div class="line">    j, k = math.random(n), math.random(n)</div><div class="line">    paths[j], paths[k] = paths[k], paths[j]</div><div class="line">  end</div><div class="line">  return paths</div><div class="line">end</div><div class="line"></div><div class="line">function non_empty_lines_from(file)</div><div class="line">  if not file_exists(file) then return &#123;&#125; end</div><div class="line">  lines = &#123;&#125;</div><div class="line">  for line in io.lines(file) do</div><div class="line">    if not (line == &apos;&apos;) then</div><div class="line">      lines[#lines + 1] = line</div><div class="line">    end</div><div class="line">  end</div><div class="line">  return shuffle(lines)</div><div class="line">end</div><div class="line"></div><div class="line">paths = non_empty_lines_from(&quot;paths.txt&quot;)</div><div class="line"></div><div class="line">if #paths &lt;= 0 then</div><div class="line">  print(&quot;multiplepaths: No paths found. You have to create a file paths.txt with one path per line&quot;)</div><div class="line">  os.exit()</div><div class="line">end</div><div class="line"></div><div class="line">print(&quot;multiplepaths: Found &quot; .. #paths .. &quot; paths&quot;)</div><div class="line"></div><div class="line">request = function()</div><div class="line">    path = paths[counter]</div><div class="line">    counter = counter + 1</div><div class="line">    if counter &gt; #paths then</div><div class="line">      counter = 1</div><div class="line">    end</div><div class="line">    return wrk.format(nil, path)</div><div class="line">end</div></pre></td></tr></table></figure>
-<p>场景-cookie<br>我们需要模拟一些通过 cookie 传递数据的场景. wrk 并没有特殊支持, 可以通过 wrk.headers[“Cookie”]=”xxxxx”实现. 例子是取 Response的cookie作为后续请求的cookie</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">function getCookie(cookies, name)</div><div class="line">  local start = string.find(cookies, name .. &quot;=&quot;)</div><div class="line"></div><div class="line">  if start == nil then</div><div class="line">    return nil</div><div class="line">  end</div><div class="line"></div><div class="line">  return string.sub(cookies, start + #name + 1, string.find(cookies, &quot;;&quot;, start) - 1)</div><div class="line">end</div><div class="line"></div><div class="line">response = function(status, headers, body)</div><div class="line">  local token = getCookie(headers[&quot;Set-Cookie&quot;], &quot;token&quot;)</div><div class="line">  </div><div class="line">  if token ~= nil then</div><div class="line">    wrk.headers[&quot;Cookie&quot;] = &quot;token=&quot; .. token</div><div class="line">  end</div><div class="line">end</div></pre></td></tr></table></figure>
-<p>通过源码可以看到 wrk 对象的源代码有如下属性<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">local wrk = &#123;</div><div class="line">   scheme  = &quot;http&quot;,</div><div class="line">   host    = &quot;localhost&quot;,</div><div class="line">   port    = nil,</div><div class="line">   method  = &quot;GET&quot;,</div><div class="line">   path    = &quot;/&quot;,</div><div class="line">   headers = &#123;&#125;,</div><div class="line">   body    = nil,</div><div class="line">   thread  = nil,</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>schema, host, port, path 这些, 我们一般都是通过 wrk 命令行参数来指定,wrk 还提供了几个lua的hook函数：<br>setup //在目标 IP 地址已经解析完, 并且所有 thread 已经生成, 但是还没有开始时被调用. 每个线程执行一次这个函数.可以通过thread:get(name),  thread:set(name, value)设置线程级别的变量<br>init  //每次请求发送之前被调用<br>delay //返回一个数值, 在这次请求执行完以后延迟多长时间执行下一个请求. 可以对应 thinking time 的场景<br>request  //函数可以每次请求之前修改本次请求的属性. 返回一个字符串. 这个函数要慎用, 会影响测试端性能<br>response //每次请求返回以后被调用. 可以根据响应内容做特殊处理, 比如遇到特殊响应停止执行测试, 或输出到控制台等等<br>done   //在所有请求执行完以后调用, 一般用于自定义统计结果</p>
-<p>已经迫不及待了吧，让我们看看源码给的例子吧</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">local counter = 1</div><div class="line">local threads = &#123;&#125;</div><div class="line"></div><div class="line">function setup(thread)</div><div class="line">   thread:set(&quot;id&quot;, counter)</div><div class="line">   table.insert(threads, thread)</div><div class="line">   counter = counter + 1</div><div class="line">end</div><div class="line"></div><div class="line">function init(args)</div><div class="line">   requests  = 0</div><div class="line">   responses = 0</div><div class="line"></div><div class="line">   local msg = &quot;thread %d created&quot;</div><div class="line">   print(msg:format(id))</div><div class="line">end</div><div class="line"></div><div class="line">function request()</div><div class="line">   requests = requests + 1</div><div class="line">   return wrk.request()</div><div class="line">end</div><div class="line"></div><div class="line">function response(status, headers, body)</div><div class="line">   responses = responses + 1</div><div class="line">end</div><div class="line"></div><div class="line">function done(summary, latency, requests)</div><div class="line">   for index, thread in ipairs(threads) do</div><div class="line">      local id        = thread:get(&quot;id&quot;)</div><div class="line">      local requests  = thread:get(&quot;requests&quot;)</div><div class="line">      local responses = thread:get(&quot;responses&quot;)</div><div class="line">      local msg = &quot;thread %d made %d requests and got %d responses&quot;</div><div class="line">      print(msg:format(id, requests, responses))</div><div class="line">   end</div><div class="line">end</div></pre></td></tr></table></figure>
-<p>ref<br><a href="https://github.com/wg/wrk" target="_blank" rel="external">wrk 官网</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;前言&lt;br&gt;wrk是一款开源的压力测试工具，它没有Load Runner那么复杂，和apache的ab 一样简单上手，确比ab功能更加强大，足以应对开发过程中的性能验证了：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;集成了多线程设计和事件通知系统(epoll,kqueue)&lt;/li&gt;
-&lt;l
     
     </summary>
     
