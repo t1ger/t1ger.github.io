@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-12-09T03:10:15.459Z</updated>
+  <updated>2016-12-09T03:13:36.828Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="https://t1ger.github.io/2016/12/09/%E4%BA%94%E5%88%86%E9%92%9F%E4%BA%86%E8%A7%A3Redis4-0%E6%96%B0%E7%89%B9%E6%80%A7/"/>
     <id>https://t1ger.github.io/2016/12/09/五分钟了解Redis4-0新特性/</id>
     <published>2016-12-09T03:05:05.000Z</published>
-    <updated>2016-12-09T03:10:15.459Z</updated>
+    <updated>2016-12-09T03:13:36.828Z</updated>
     
     <content type="html"><![CDATA[<p>看到redis版本变成4.0，好多同学可能会有疑惑，咋的从3.x直接就跳到4.0了么，这里引用antirez大神的博客来说明原因：<br>Redis 4.0 is not called 3.4 because it is a major release that adds a number<br>of important and non trivial features. Many core functionalities of Redis were<br>seriously reworked.</p>
 <p>这段话大意是说，新版本的 Redis 出现了多项改变， 所以他决定从原来的 3.x 版本直接跳到 4.0 版本， 以此来强调这次更新的变化之大</p>
@@ -37,8 +37,11 @@
 </li>
 <li><p>Redis Cluster support for NAT / Docker. There are new functionalities in order to force cluster instances to announce specific sets of IP address, client and bus ports, to the rest of the cluster, regardless of the auto detected IP. This required a bus protocol change that will force users to mass-restart all the nodes of a Redis 3.2 installation in order to upgrade to 4.0</p>
 </li>
-<li><p>Redis uses now less memory in order to store the same amount of data<br>这里基本都是比较大的特性了，还有些小惊喜等着你哦</p>
+<li><p>Redis uses now less memory in order to store the same amount of data</p>
 </li>
+</ul>
+<p>这里基本都是比较大的特性了，还有些小惊喜等着你哦</p>
+<ul>
 <li><p>Improvements to the RDB format to support 64 bit lengths, binary sorted set scores, and more.The RDB file check utility now uses the same code base of the one used by Redis itself in order to load the RDB file in memory.</p>
 </li>
 <li><p>SWAPDB command: ability to completely and immediately (no latency) replace two Redis databases.<br>可以对指定的两个数据库进行互换： 比如说， 通过执行命令 SWAPDB 0 1 ， 我们可以将原来的数据库 0 变成数据库 1 ， 而原来的数据库 1 则变成数据库 0</p>
@@ -56,6 +59,9 @@
 </ul>
 <p>ref</p>
 <p><a href="https://raw.githubusercontent.com/antirez/redis/4.0/00-RELEASENOTES" target="_blank" rel="external">Redis 4.0 release notes</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
 ]]></content>
     
     <summary type="html">
