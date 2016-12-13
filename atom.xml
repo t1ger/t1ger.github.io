@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-12-13T08:04:34.645Z</updated>
+  <updated>2016-12-13T10:27:12.023Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,77 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>ansible使用指北(一)</title>
+    <link href="https://t1ger.github.io/2016/12/13/ansible%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8C%97(%E4%B8%80)/"/>
+    <id>https://t1ger.github.io/2016/12/13/ansible使用指北(一)/</id>
+    <published>2016-12-13T09:01:14.000Z</published>
+    <updated>2016-12-13T10:27:12.023Z</updated>
+    
+    <content type="html"><![CDATA[<h5 id="ansible的快速安装"><a href="#ansible的快速安装" class="headerlink" title="ansible的快速安装"></a><b>ansible的快速安装</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo esay_install ansible</div><div class="line"># OR</div><div class="line">sudo pip install ansible</div></pre></td></tr></table></figure>
+<h5 id="ansible的七种武器"><a href="#ansible的七种武器" class="headerlink" title="ansible的七种武器"></a><b>ansible的七种武器</b></h5><ul>
+<li>ansible:用于执行ad-hoc命令，即单条命令。默认后面需要跟主机和选项部分，默认不指定模块时，使用的是command模块</li>
+<li>ansible-doc:用于查看模块信息，常用参数有两个-l 和 -s </li>
+<li>ansible-galaxy:用于方便的从<a href="https://galaxy.ansible.com/" target="_blank" rel="external">https://galaxy.ansible.com/</a> 站点下载第三方扩展模块</li>
+<li>ansible-lint:对playbook的语法进行检查的一个工具,用法是ansible-lint playbook.yml </li>
+<li>ansible-playbook:读取playbook 文件后，执行相应的动作</li>
+<li>ansible-pull:ansible的pull模式，适用于超多机器</li>
+<li>ansible-vault:应用于配置文件中含有敏感信息，vault可以帮你加密/解密这个配置文件</li>
+</ul>
+<h5 id="ansible常用模块"><a href="#ansible常用模块" class="headerlink" title="ansible常用模块"></a><b>ansible常用模块</b></h5><ul>
+<li><p>ping模块</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">[root@localhost ~]# ansible 172.16.56.101 -m ping</div><div class="line">172.16.56.101 | success &gt;&gt; &#123;</div><div class="line">    &quot;changed&quot;: false,</div><div class="line">    &quot;ping&quot;: &quot;pong&quot;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>setup模块:用于获取主机信息，在playbooks里经常会用到的一个参数gather_facts就与该模块相关,经常使用的一个参数是filter参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">//memory info</div><div class="line">ansible 172.16.56.101 -m setup -a &apos;filter=ansible_*_mb&apos;   </div><div class="line">//network info</div><div class="line">[root@localhost ~]# ansible 172.16.56.101 -m setup -a &apos;filter=ansible_eth0&apos;</div></pre></td></tr></table></figure>
+</li>
+<li><p>file模块:用于远程主机上的文件操作,选项信息通过ansible-doc file 查看</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ansible test -m file -a &quot;src=/etc/fstab dest=/tmp/fstab state=link&quot;</div><div class="line">ansible test -m file -a &quot;path=/tmp/fstab state=absent&quot;</div></pre></td></tr></table></figure>
+</li>
+<li><p>copy模块:复制文件到远程主机</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ansible test -m copy -a &quot;src=/tmp/foo.conf dest=/etc/foo.conf owner=foo group=foo mode=0644&quot;</div></pre></td></tr></table></figure>
+</li>
+<li><p>service模块:用于管理服务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">- service: name=network state=restarted args=eth0</div></pre></td></tr></table></figure>
+</li>
+<li><p>cron模块:用于管理计划任务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ansible test -m cron -a &apos;name=&quot;a job&quot; special_time=reboot job=&quot;/tmp/job.sh&quot;&apos;</div></pre></td></tr></table></figure>
+</li>
+<li><p>yum模块:使用yum包管理器来管理软件包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ansible test -m yum -a &apos;name=httpd state=latest&apos;</div></pre></td></tr></table></figure>
+</li>
+<li><p>user模块和group模块:请求的是useradd, userdel, usermod三个指令，goup模块请求的是groupadd, groupdel, groupmod 三个指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">- user: name=james18 shell=/bin/zsh groups=developers expires=1422403387</div><div class="line">- user: name=johnd state=absent remove=yes</div><div class="line">#generate password (ansible官方给出的示例)</div><div class="line">python -c &quot;from passlib.hash import sha512_crypt; import getpass; print sha512_crypt.encrypt(getpass.getpass())&quot;</div><div class="line">#OR</div><div class="line">openssl passwd -1 -salt $(&lt; /dev/urandom tr -dc &apos;[:alnum:]&apos; | head -c 32)</div><div class="line"># add user</div><div class="line">ansible all -m user -a &apos;name=foo password=&quot;$1$4P4PlFuE$ur9ObJiT5iHNrb9QnjaIB0&quot;&apos;</div><div class="line">- group: name=somegroup state=present</div></pre></td></tr></table></figure>
+</li>
+<li><p>synchronize模块:使用rsync同步文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">src=some/relative/path dest=/some/absolute/path rsync_path=&quot;sudo rsync&quot;</div></pre></td></tr></table></figure>
+</li>
+<li><p>mount模块:配置挂载点</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">name=/mnt/dvd src=/dev/sr0 fstype=iso9660 opts=ro state=present</div><div class="line">ansible test -a &apos;dd if=/dev/zero of=/disk.img bs=4k count=1024&apos;</div></pre></td></tr></table></figure>
+</li>
+<li><p>get_url模块:于从http、ftp、https服务器上下载文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">- name: download foo.conf</div><div class="line">  get_url: url=http://example.com/path/file.conf dest=/etc/foo.conf mode=0440</div><div class="line">- name: download file with sha256 check</div><div class="line">  get_url: url=http://example.com/path/file.conf dest=/etc/foo.conf sha256sum=b5bb9d8014a0f9b1d61e21e796d78dccdf1352f23cd32812f4850b878ae4944c</div></pre></td></tr></table></figure>
+<p>  如果用到其它模块，请参照<a href="http://docs.ansible.com/ansible/modules_by_category.html" target="_blank" rel="external">官网模块文档</a></p>
+</li>
+</ul>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h5 id=&quot;ansible的快速安装&quot;&gt;&lt;a href=&quot;#ansible的快速安装&quot; class=&quot;headerlink&quot; title=&quot;ansible的快速安装&quot;&gt;&lt;/a&gt;&lt;b&gt;ansible的快速安装&lt;/b&gt;&lt;/h5&gt;&lt;figure class=&quot;highlight p
+    
+    </summary>
+    
+    
+      <category term="ansible" scheme="https://t1ger.github.io/tags/ansible/"/>
+    
+      <category term="linux" scheme="https://t1ger.github.io/tags/linux/"/>
+    
+  </entry>
   
   <entry>
     <title>MySQL with SSL Encryption</title>
@@ -792,66 +863,6 @@
     
     </summary>
     
-    
-  </entry>
-  
-  <entry>
-    <title>Docker初体验-基础入门指北</title>
-    <link href="https://t1ger.github.io/2016/11/21/Docker%E5%88%9D%E4%BD%93%E9%AA%8C-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8%E6%8C%87%E5%8C%97/"/>
-    <id>https://t1ger.github.io/2016/11/21/Docker初体验-基础入门指北/</id>
-    <published>2016-11-21T10:08:35.000Z</published>
-    <updated>2016-11-22T04:00:20.063Z</updated>
-    
-    <content type="html"><![CDATA[<h4 id="docker是什么"><a href="#docker是什么" class="headerlink" title="docker是什么"></a><b>docker是什么</b></h4><p>docker是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。容器是完全使用沙箱机制，相互之间不会有任何接口</p>
-<h4 id="docker做什么"><a href="#docker做什么" class="headerlink" title="docker做什么"></a><b>docker做什么</b></h4><p>在docker中，你可以将你的程序分为不同的基础部分，对于每一个基础部分都可以当做一个应用程序来管理<br>docker能够帮助你快速地测试、快速地编码、快速地交付，并且缩短你从编码到运行应用的周期<br>docker使用轻量级的容器虚拟化平台，并且结合工作流和工具，来帮助你管理、部署你的应用程序</p>
-<h4 id="docker-vs-VM"><a href="#docker-vs-VM" class="headerlink" title="docker vs VM"></a><b>docker vs VM</b></h4><p>VMs = Server + Host OS + Hypervisor（Type2）+ Guest OS + Bins/Libs +(App A | App A’ | App B)<br>Containers = Server + Host OS + Docker Engine + ((Bins/Libs +App A | App A’) | (Bins/Libs +App B))<br>Docker去除了传统虚机的Guest OS层，免除了对应overhead，Docker Engine 替代了VM中的Guest OS + Hypervisor（Type2)层</p>
-<h4 id="docker架构"><a href="#docker架构" class="headerlink" title="docker架构"></a><b>docker架构</b></h4><p>docker是CS架构，主要由下面三部分组成：<br>docker daemon: 运行在宿主机上，docker守护进程，用户通过docker client(docker命令)与docker daemon交互<br>docker client: docker 命令行工具，是用户使用docker的主要方式，docker client与docker daemon通信并将结果返回给用户，docker client也可以通过socket或者RESTful api访问远程的docker daemon<br>docker hub/registry: 共享和管理docker镜像，用户可以上传或者下载上面的镜像，官方地址为 <a href="https://registry.hub.docker.com" target="_blank" rel="external">https://registry.hub.docker.com</a> ,也可以搭建自己私有的docker registry</p>
-<h4 id="docker技术术语"><a href="#docker技术术语" class="headerlink" title="docker技术术语"></a><b>docker技术术语</b></h4><p>docker的几个技术：namespace,cgroups,veth,bridge,copy-on-write,image,container<br>其中namespace和cgroup是其核心技术,我们主要来介绍这两个</p>
-<h4 id="a-namespace"><a href="#a-namespace" class="headerlink" title="a. namespace"></a><b>a. namespace</b></h4><p>负责隔离资源，它让进程拥有独立的进程号，网络，文件系统等，不同的namespace下的进程互不可见，目前的Docker可以通过exec子命令直接切换到进程所在的namespace<br>docker使用到的命名空间有:</p>
-<ul>
-<li>pid命名空间: 使用在进程隔离(PID: Process ID)</li>
-<li>net命名空间: 使用在管理网络接口(NET: Networking)</li>
-<li>ipc命名空间: 使用在管理进程间通信资源 (IPC: InterProcess Communication)</li>
-<li>mnt命名空间: 使用在管理挂载点 (MNT: Mount)</li>
-<li>uts命名空间: 使用在隔离内核和版本标识 (UTS: Unix Timesharing System)</li>
-</ul>
-<h4 id="b-cgroups"><a href="#b-cgroups" class="headerlink" title="b. cgroups"></a><b>b. cgroups</b></h4><p>cgroup负责限制资源,主要体现在cpu、内存、磁盘</p>
-<p><b>CPU子系统</b><br>cgroups提供了三种限制CPU资源的方式：cpuset， cpuquota和cpushares</p>
-<ul>
-<li><p>cpuset可以限制进程使用的cpu核数，通过cpuset/cpuset.cpus来管理，相应的命令如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run --cpuset-cpus 0 -d --name apache apache</div></pre></td></tr></table></figure>
-</li>
-<li><p>cpuquota以时间片的使用率来限制CPU资源，要比cpuset的细粒度大一些，只需要设置一个相对100000的值就可以达到限制一个百分比的效果, 通过 cpu/cpu.cfs_period_us （配置时间片单位，默认为100000）和 cpu/cpu.cfs_quota_us (时间片占比)两个文件来管理,相应的命令如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run --cpu-quota 50000 -d --name apache apache</div></pre></td></tr></table></figure>
-</li>
-<li><p>cpushares根据权重来分配CPU资源，比如如果只有一个进程权重为100，那么进程可以使用100%的CPU资源，如果有两个进程且权重都是100，那么每个进程可以使用50%的CPU资源 , 通过 cpu/cpu.shares 来管理，相应的命令如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run --cpu-shares 1024 -d --name apache apache</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p><b>内存子系统</b></p>
-<ul>
-<li>cgroups对内存的限制包括物理内存和swap，当进程使用内存达到上限时会被kill，关于内存限制的文件如下：<br>memory.limit_in_bytes memory.soft_limit_in_bytes memory.memsw.limit_in_byte,需要注意的一点是docker默认会将swap的限制设置为2倍内存，实际使用的内存可能会大于 -m 设置的内存大小,相应的docker命令<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run -m 100m -d --name apache apache</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p><b>blkio子系统</b></p>
-<ul>
-<li>blkio子系统的功能是对块设备读写的速率限制,目前 blkio 子系统提供的两种控制策略，一个是权重比例方式的控制，另一个是针对 IO 带宽和 IOPS 的控制.前者是针对blkio.weight 分配权重，后者对blkio.throttle.write_iops_device 进行限制。</li>
-</ul>
-<p>ref </p>
-<p><a href="https://www.baidu.com/link?url=ubhv7epUUNTpytivc7_ikrYX-flsGZHW9gn0REl9273xJa2YpM3kLz2wR6BqkCSMjYMZrXuyJlXQjU1bil4uja&amp;wd=&amp;eqid=e8f57cc000011018000000025833b49b" target="_blank" rel="external">Docker 百度百科</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      how to use docker quickly
-    
-    </summary>
-    
-    
-      <category term="docker" scheme="https://t1ger.github.io/tags/docker/"/>
     
   </entry>
   
