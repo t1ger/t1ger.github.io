@@ -126,6 +126,14 @@
 
 					<div class="article-content">
 						<h5 id="ansible的快速安装"><a href="#ansible的快速安装" class="headerlink" title="ansible的快速安装"></a><b>ansible的快速安装</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo esay_install ansible</div><div class="line"># OR</div><div class="line">sudo pip install ansible</div></pre></td></tr></table></figure>
+<p>先来解决两个小问题：<br>1）将本地文件复制到远程服务器<br>2）需要在远程服务器上执行一个命令或脚本</p>
+<p>现在我们以192.168.100.119为例(已经安装ansible),首先登陆到119主机<br>在我们的家目录下建立.ansible.cfg文件（为了安全考虑，还是的麻烦大家输入密码，或者用key），文件内容如果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">cat /home/t1ger/.ansible.cfg</div><div class="line">[defaults]</div><div class="line">hostfile=hosts</div><div class="line">remote_user=t1ger</div><div class="line">ask_pass = True</div><div class="line">#ask_sudo_pass = True</div><div class="line">sudo_user = root</div><div class="line">remote_tmp = $HOME/.ansible/tmp</div><div class="line">host_key_checking = False</div><div class="line">system_warnings = False</div></pre></td></tr></table></figure></p>
+<p>接下来我们建立hosts文件，此文件就是记录我们要操作的主机列表<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">cat /home/t1ger/hosts</div><div class="line">[dev]</div><div class="line">192.168.100.101</div><div class="line">192.168.100.103</div><div class="line">[test]</div><div class="line">192.168.100.110</div><div class="line">192.168.100.111</div></pre></td></tr></table></figure></p>
+<p>到此为止，我们的准备工作已经完成</p>
+<p>完成任务1<br>ansible dev -m copy -a “src=/tmp/test.txt dest=/tmp”<br>完成任务2<br>ansible test -m command -a ” ls /root”</p>
+<p>如果需要root权限，那当然需要sudo了<br>ansible test -m command -a “sudo  ls /root”<br>或者添加 -s<br>ansible test -m command -s -a “ls /root”</p>
+<p>如果我执行的命令特别多呢，可以写成一个脚本，通过copy模块拷贝到远端机器，然后再执行<br>然而，这样需要两次ansible调用，我们可以使用script模块来解决这个问题</p>
+<p>我们在本地写一个脚本，在远程服务器上执行：<br>ansible dev  -m script -a “/tmp/target.sh”</p>
 <h5 id="ansible的七种武器"><a href="#ansible的七种武器" class="headerlink" title="ansible的七种武器"></a><b>ansible的七种武器</b></h5><ul>
 <li>ansible:用于执行ad-hoc命令，即单条命令。默认后面需要跟主机和选项部分，默认不指定模块时，使用的是command模块</li>
 <li>ansible-doc:用于查看模块信息，常用参数有两个-l 和 -s </li>

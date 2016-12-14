@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-12-13T10:27:12.023Z</updated>
+  <updated>2016-12-14T08:35:02.159Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -16,13 +16,212 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>ansible使用指北(三)</title>
+    <link href="https://t1ger.github.io/2016/12/14/ansible%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8C%97-%E4%B8%89/"/>
+    <id>https://t1ger.github.io/2016/12/14/ansible使用指北-三/</id>
+    <published>2016-12-14T06:48:45.000Z</published>
+    <updated>2016-12-14T08:35:02.159Z</updated>
+    
+    <content type="html"><![CDATA[<p>前言<br>在前面文章中我们认识了ansible的常用功能，今天我们来了解下ansible变量和ansible api,之后我们来看看如何优化ansible的性能</p>
+<h5 id="ansible变量"><a href="#ansible变量" class="headerlink" title="ansible变量"></a><b>ansible变量</b></h5><ul>
+<li><p>在Inventory中定义变量</p>
+<ul>
+<li><p>主机与组</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">mail.example.com</div><div class="line">[webservers]</div><div class="line">foo.example.com</div><div class="line">bar.example.com</div><div class="line">[dbservers]</div><div class="line">one.example.com</div><div class="line">two.example.com</div><div class="line">three.example.com</div></pre></td></tr></table></figure>
+</li>
+<li><p>主机变量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[atlanta]</div><div class="line">host1 http_port=80 maxRequestsPerChild=808</div><div class="line">host2 http_port=303 maxRequestsPerChild=909</div></pre></td></tr></table></figure>
+</li>
+<li><p>组的变量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">[atlanta]</div><div class="line">host1</div><div class="line">host2</div><div class="line">[atlanta:vars]</div><div class="line">ntp_server=ntp.atlanta.example.com</div><div class="line">proxy=proxy.atlanta.example.com</div></pre></td></tr></table></figure>
+</li>
+<li><p>把一个组作为另一个组的子成员</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">[atlanta]</div><div class="line">host1</div><div class="line">host2</div><div class="line">[raleigh]</div><div class="line">host2</div><div class="line">host3</div><div class="line">[southeast:children]</div><div class="line">atlanta</div><div class="line">raleigh</div><div class="line">[southeast:vars]</div><div class="line">some_server=foo.southeast.example.com</div><div class="line">halon_system_timeout=30</div><div class="line">self_destruct_countdown=60</div><div class="line">escape_pods=2</div><div class="line">[usa:children]</div><div class="line">southeast</div><div class="line">northeast</div><div class="line">southwest</div><div class="line">northwest</div></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>在playbook中定义变量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">- hosts: webservers</div><div class="line">  vars:</div><div class="line">    http_port: 80</div></pre></td></tr></table></figure>
+</li>
+<li><p>在文件和role中定义变量<br>角色默认变量允许你为 included roles 或者 dependent roles(见下) 设置默认变量。要创建默认变量，只需在 roles 目录下添加 defaults/main.yml 文件。这些变量在所有可用变量中拥有最低优先级，可能被其他地方定义的变量(包括 inventory 中的变量)所覆盖</p>
+</li>
+<li><p>使用变量: 关于Jinja2</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">#简单的模板中</div><div class="line">My amp goes to &#123;&#123; max_amp_value &#125;&#125;</div><div class="line"></div><div class="line">#在playbook中直接这样用</div><div class="line">template: src=foo.cfg.j2 dest=&#123;&#123; remote_install_path &#125;&#125;/foo.cfg</div></pre></td></tr></table></figure>
+</li>
+<li><p>注册变量<br>变量的另一个主要用途是在运行命令时,把命令结果存储到一个变量中.不同模块的执行结果是不同的.运行playbook时使用-v选项可以看到可能的结果值. 在ansible执行任务的结果值可以保存在变量中,以便稍后使用它.在 条件选择 章节有一些示例.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">- hosts: web_servers</div><div class="line">  tasks:</div><div class="line">     - shell: /usr/bin/foo</div><div class="line">       register: foo_result</div><div class="line">       ignore_errors: True</div><div class="line">     - shell: /usr/bin/bar</div><div class="line">       when: foo_result.rc == 5</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="ansible-api"><a href="#ansible-api" class="headerlink" title="ansible api"></a><b>ansible api</b></h5><p>ansible api 方便对结果输出的整形，以及二次开发及和其他程序之间的耦合调用，先来个简单例子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">import ansible.runner</div><div class="line">runner = ansible.runner.Runner(</div><div class="line">   module_name=&apos;ping&apos;,</div><div class="line">   module_args=&apos;&apos;,</div><div class="line">   pattern=&apos;web*&apos;,</div><div class="line">   forks=10</div><div class="line">)</div><div class="line">datastructure = runner.run()</div></pre></td></tr></table></figure></p>
+<p>结果如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    &quot;dark&quot; : &#123;</div><div class="line">       &quot;web1.example.com&quot; : &quot;failure message&quot;</div><div class="line">    &#125;,</div><div class="line">    &quot;contacted&quot; : &#123;</div><div class="line">       &quot;web2.example.com&quot; : 1</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>看个详细的例子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">#!/usr/bin/python</div><div class="line"></div><div class="line">import ansible.runner</div><div class="line">import sys</div><div class="line"></div><div class="line"># construct the ansible runner and execute on all hosts</div><div class="line">results = ansible.runner.Runner(</div><div class="line">    pattern=&apos;*&apos;, forks=10,</div><div class="line">    module_name=&apos;command&apos;, module_args=&apos;/usr/bin/uptime&apos;,</div><div class="line">).run()</div><div class="line"></div><div class="line">if results is None:</div><div class="line">   print &quot;No hosts found&quot;</div><div class="line">   sys.exit(1)</div><div class="line"></div><div class="line">print &quot;UP ***********&quot;</div><div class="line">for (hostname, result) in results[&apos;contacted&apos;].items():</div><div class="line">    if not &apos;failed&apos; in result:</div><div class="line">        print &quot;%s &gt;&gt;&gt; %s&quot; % (hostname, result[&apos;stdout&apos;])</div><div class="line"></div><div class="line">print &quot;FAILED *******&quot;</div><div class="line">for (hostname, result) in results[&apos;contacted&apos;].items():</div><div class="line">    if &apos;failed&apos; in result:</div><div class="line">        print &quot;%s &gt;&gt;&gt; %s&quot; % (hostname, result[&apos;msg&apos;])</div><div class="line"></div><div class="line">print &quot;DOWN *********&quot;</div><div class="line">for (hostname, result) in results[&apos;dark&apos;].items():</div><div class="line">    print &quot;%s &gt;&gt;&gt; %s&quot; % (hostname, result)</div></pre></td></tr></table></figure></p>
+<p>上面的示例基本上都是参照<a href="http://docs.ansible.com/ansible/dev_guide/developing_api.html#python-api-2-0" target="_blank" rel="external">官方页面</a>进行执行的，更多用法可以通过pydoc ansible或者通过python里的help(ansible)查看。另外在多主机执行时，可以使用async(异部)方式运行</p>
+<h5 id="ansible-性能优化"><a href="#ansible-性能优化" class="headerlink" title="ansible 性能优化"></a><b>ansible 性能优化</b></h5><ul>
+<li><p>优化前的准备—收集数据<br>在 github 发现一个 Ansible 任务计时插件“ansible-profile”，安装这个插件后会显示 ansible-playbook 执行每一个任务所花费的时间。Github 地址：<a href="https://github.com/jlafon/ansible-profile。" target="_blank" rel="external">https://github.com/jlafon/ansible-profile。</a> 这个插件安装很简单，只需要简单的三个命令即可完成安装。在你的 playbook 文件的目录下创建一个目录，目录名 callback_plugins 然后将下载的 profile_tasks.py 文件放到该目录下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">cd /etc/ansible </div><div class="line">mkdir callback_plugins </div><div class="line">cd callback_plugins </div><div class="line">wget https://raw.githubusercontent.com/jlafon/ansible-profile/master/callback_plugins/profile_tasks.py</div></pre></td></tr></table></figure>
+</li>
+<li><p>关闭 gathering facts<br>如果您观察过 ansible-playbook 的执行过程中，您会发现 ansible-playbook 的第 1 个步骤总是执行 gather facts，不论你有没有在 playbook 设定这个 tasks。如果你不需要获取被控机器的 fact 数据的话，你可以关闭获取 fact 数据功能。关闭之后，可以加快 ansible-playbook 的执行效率，尤其是你管理很大量的机器时，这非常明显。关闭获取 facts 很简单，只需要在 playbook 文件中加上“gather_facts: no”即可。如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">--- </div><div class="line"> - hosts: 172.16.64.240 </div><div class="line"> gather_facts: no </div><div class="line">  remote_user: liheng </div><div class="line">  sudo: yes </div><div class="line">  roles: </div><div class="line">  - &#123;role: profile_test&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>SSH PIPElinING<br>SSH pipelining 是一个加速 Ansible 执行速度的简单方法。ssh pipelining 默认是关闭，之所以默认关闭是为了兼容不同的 sudo 配置，主要是 requiretty 选项。如果不使用 sudo，建议开启。打开此选项可以减少 ansible 执行没有传输时 ssh 在被控机器上执行任务的连接数。不过，如果使用 sudo，必须关闭 requiretty 选项。修改 /etc/ansible/ansible.cfg 文件可以开启 pipelining</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">pipelining=False</div><div class="line">修改为</div><div class="line">pipelining=True</div></pre></td></tr></table></figure>
+</li>
+<li><p>ControlPersist<br>ControlPersist 特性需要高版本的 SSH 才支持，CentOS 6 默认是不支持的，如果需要使用，需要自行升级 openssh。ControlPersist 即持久化 socket，一次验证，多次通信。并且只需要修改 ssh 客户端就行，也就是 Ansible 机器即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">cat ~/.ssh/config </div><div class="line"> Host * </div><div class="line">  Compression yes </div><div class="line">  ServerAliveInterval 60 </div><div class="line">  ServerAliveCountMax 5 </div><div class="line">  ControlMaster auto </div><div class="line">  ControlPath ~/.ssh/sockets/%r@%h-%p</div><div class="line">  ControlPersist 4h</div></pre></td></tr></table></figure>
+<p>  在开启了 ControlPersist 特性后，SSH 在建立了 sockets 之后，节省了每次验证和创建的时间。在网络状况不是特别理想，尤其是跨互联网的情况下，所带来的性能提升是非常可观的。有这边需求的，试试就知道了</p>
+</li>
+</ul>
+<h5 id="Ansible-playbook-技巧"><a href="#Ansible-playbook-技巧" class="headerlink" title="Ansible-playbook 技巧"></a><b>Ansible-playbook 技巧</b></h5><ul>
+<li><p>获取执行命令的输出 –Register<br>register 关键字可以存储指定命令的输出结果到一个自定义的变量中，我们通过访问这个自定义变量就可以获取到命令的输出结果。Register 的使用很方便，只需要在 task 声明 register 关键字，并自定义一个变量名就可以。如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">- name: echo date </div><div class="line">  command: date </div><div class="line">  register: date_output </div><div class="line"></div><div class="line"> - name: echo date_output </div><div class="line">  command: echo &quot;30&quot;</div><div class="line">  when: date_output.stdout.split(&apos; &apos;)[2] == &quot;30&quot;</div></pre></td></tr></table></figure>
+<p>这里第 1 个 task 是执行了一个 date 命令，register 关键字将 date 命令的输出存储到 date_output 变量名。第 2 个 task 对输出进行分析，并使用 when 对关键字对分析后的进行判断，如果匹配，则执行这个 task，不匹配就不执行。这里要重点说下的，因为 register 获取到的输出内容都是字符串，而 ansible 又是 python 写的，你可以使用 python 字符串的方法对其做处理，比如本文中使用的 split，还可以使用 find 方法。个人觉得，真是非常灵活方便</p>
+</li>
+<li><p>task委托<br>在对一组服务器 server_group1 执行操作过程中，需要在另外一台机器 A 上执行一个操作，比如在 A 服务器上添加一条 hosts 记录，这些操作必须要在一个 playbook 联动完成。也就是是说 A 服务器这个操作与 server_group1 组上的服务器有依赖关系。Ansible 默认只会在定义好的一组服务器上执行相同的操作，这个特性对于执行批处理是非常有用的。但如果在这过程中需要同时对另外 1 台机器执行操作时，就需要用到 Ansible 的任务委派功能（delegate_to）。使用 delegate_to 关键字可以委派任务到指定的机器上运行。在 playbook 的操作如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">- name: add host record </div><div class="line">  shell: &apos;echo &quot;192.168.1.100 test.xyz.com&quot; &gt;&gt; /etc/hosts&apos;</div><div class="line"></div><div class="line"> - name: add host record to center server </div><div class="line">  shell: &apos;echo &quot;192.168.1.100 test.xyz.com &quot; &gt;&gt; /etc/hosts&apos;</div><div class="line">  delegate_to: 192.168.1.1</div></pre></td></tr></table></figure>
+<p>  任务委派功能还可以用于以下场景：<br>a)在部署之前将一个主机从一个负载均衡集群中删除<br>b)当你要对一个主机做改变之前去掉相应 dns 的记录<br>c)当在一个存储设备上创建 iscsi 卷的时候<br>d)当使用外的主机来检测网络出口是否正常的时候</p>
+</li>
+<li><p>本地操作功能 –local_action<br>Ansible 默认只会对控制机器执行操作，如果需要在 Ansible 本机执行操作,可以使用 delegate_to( 任务委派 ),可以使用另外一外功能实现，这就是 local_action 关键字</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">- name: add host record to center server </div><div class="line"> local_action: shell &apos;echo &quot;192.168.1.100 test.xyz.com &quot; &gt;&gt; /etc/hosts&apos;</div></pre></td></tr></table></figure>
+<p>  当然您也可以使用 connection:local 方法，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">- name: add host record to center server </div><div class="line">  shell: &apos;echo &quot;192.168.1.100 test.xyz.com &quot; &gt;&gt; /etc/hosts&apos;</div><div class="line">  connection: local</div></pre></td></tr></table></figure>
+</li>
+<li><p>选择性执行 task–Tag（标签）<br>您可能因为某些原因，会创建一个很大型的 playbook，但是你可能只想想运行其中特定部分的配置而无需要运行整个 playbook 。那么这时你可能需要用到 tag 功能。示例如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">- name: yun install package </div><div class="line"> yum: name=&#123;&#123; item &#125;&#125; state=installed </div><div class="line"> with_items: </div><div class="line">    - httpd </div><div class="line">    - memcached </div><div class="line"> tags: </div><div class="line">    - packages </div><div class="line"></div><div class="line">- name: configuration modity </div><div class="line"> template: src=templates/src.j2 dest=/etc/foo.conf </div><div class="line"> tags: </div><div class="line">     - configuration</div></pre></td></tr></table></figure>
+<p>如果你只想运行 playbook 中的”configuration”和”packages”，你可以这样做</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ansible-playbook example.yml – tags “configuration,packages”</div></pre></td></tr></table></figure>
+<p>  如果你只想执行 playbook 中某个特定任务之外的所有任务，你可以这样做：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ansible-playbook example.yml – skip-tags “configuration”</div></pre></td></tr></table></figure>
+<p>tag 特性是一个不错的功能，但如果真的是要维护一个大型的 playbook，还是建议将 playbook 按功能或应用拆分成多个 playbook，然后再在主 playbook include 其他子 playbook，这样即既利于维护也方便管理</p>
+</li>
+</ul>
+<p>ref<br><a href="http://docs.ansible.com/ansible/dev_guide/developing_api.html#python-api-2-0" target="_blank" rel="external">python-api-2-0</a><br><a href="http://www.ansible.com.cn/docs/intro_inventory.html#id11" target="_blank" rel="external">Inventory </a><br><a href="http://docs.ansible.com/ansible/playbooks_variables.html" target="_blank" rel="external">Docs Variables</a><br><a href="http://www.ibm.com/developerworks/cn/linux/1608_lih_ansible/index.html?ca=drs-" target="_blank" rel="external">Ansible 进阶技巧</a><br><a href="http://www.361way.com/playbook-advanced/4443.html" target="_blank" rel="external">ansible小结（九）playbook进阶</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;前言&lt;br&gt;在前面文章中我们认识了ansible的常用功能，今天我们来了解下ansible变量和ansible api,之后我们来看看如何优化ansible的性能&lt;/p&gt;
+&lt;h5 id=&quot;ansible变量&quot;&gt;&lt;a href=&quot;#ansible变量&quot; class=&quot;head
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>ansible使用指北(二)</title>
+    <link href="https://t1ger.github.io/2016/12/13/ansible%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8C%97-%E4%BA%8C/"/>
+    <id>https://t1ger.github.io/2016/12/13/ansible使用指北-二/</id>
+    <published>2016-12-13T10:31:21.000Z</published>
+    <updated>2016-12-14T06:28:23.899Z</updated>
+    
+    <content type="html"><![CDATA[<p>前言<br>在上一篇文章里我们了解了ansible的常用模块，今天我们来了解下ansible-playbook,ansbile-playbook是一系统ansible命令的集合，其利用yaml 语言编写,ansbile-playbook命令根据自上而下的顺序依次执行。</p>
+<p>playbook通过ansible-playbook命令使用,它的参数和ansible命令类似,如参数-k(–ask-pass) 和 -K (–ask-sudo) 来询问ssh密码和sudo密码,-u指定用户,这些指令也可以通过规定的单元写在playbook 。<br>ansible-playbook的简单使用方法: ansible-playbook play.yml </p>
+<h4 id="ansible-Example"><a href="#ansible-Example" class="headerlink" title="ansible Example"></a><b>ansible Example</b></h4><p>现在给出一个ansible-playbook示例<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">---</div><div class="line">- hosts: webservers</div><div class="line">  vars:</div><div class="line">    http_port: 80</div><div class="line">    max_clients: 200</div><div class="line">  remote_user: root</div><div class="line">  tasks:</div><div class="line">  - name: ensure apache is at the latest version</div><div class="line">    yum: name=httpd state=latest</div><div class="line">  - name: write the apache config file</div><div class="line">    template: src=/srv/httpd.j2 dest=/etc/httpd.conf</div><div class="line">    notify:</div><div class="line">    - restart apache</div><div class="line">  - name: ensure apache is running (and enable it at boot)</div><div class="line">    service: name=httpd state=started enabled=yes</div><div class="line">  handlers:</div><div class="line">    - name: restart apache</div><div class="line">      service: name=httpd state=restarted</div></pre></td></tr></table></figure></p>
+<p>hosts参数指定了对哪些主机进行操作<br>vars参数指定了变量<br>remote_user 则用于指定执行任务的用户<br>tasks指定了一个任务</p>
+<ul>
+<li>name参数是对任务的描述</li>
+<li>yum参数是执行的任务</li>
+<li>template参数指拷贝的模板</li>
+<li>notify触发条件，指config有变化是重启服务<br>handlers指task 执行完成以后需要调用的任务<br>备注：在 notify 中定义内容一定要和tasks中定义的 - name 内容一样，这样才能达到触发的效果，否则会不生效</li>
+</ul>
+<p>从这个示例我们可以看出playbook的构成<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">playbooks组成：</div><div class="line">  Target section：   定义要执行 playbook 主机组</div><div class="line">  Variable section： 定义 playbook 运行使用的变量</div><div class="line">  Task section：     定义执行的任务列表</div><div class="line">  Handler section：  定义 task 执行完成以后需要调用的任务</div></pre></td></tr></table></figure></p>
+<h4 id="Include-Statements"><a href="#Include-Statements" class="headerlink" title="Include Statements"></a><b>Include Statements</b></h4><ul>
+<li><p>普通的include:一个 task include file 由一个普通的 task 列表所组成，像这样:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">---</div><div class="line"># possibly saved as tasks/foo.yml</div><div class="line">- name: placeholder foo</div><div class="line">  command: /bin/foo</div><div class="line">- name: placeholder bar</div><div class="line">  command: /bin/bar</div></pre></td></tr></table></figure>
+<p>  Include 指令看起来像下面这样，在一个 playbook 中，Include 指令可以跟普通的 task 混合在一起使用:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">tasks:</div><div class="line">  - include: tasks/foo.yml</div></pre></td></tr></table></figure>
+</li>
+<li><p>参数化的 include<br>如果我们要部署多个 wordpress 实例，我们可将所有的 wordpress task 写在一个 wordpress.yml 文件中， 然后像下面这样使用 wordpress.yml 文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">tasks:</div><div class="line">  - include: wordpress.yml wp_user=timmy</div><div class="line">  - include: wordpress.yml wp_user=alice</div><div class="line">  - include: wordpress.yml wp_user=bob</div></pre></td></tr></table></figure>
+<p>  备注：Ansible 1.4 及以后的版本，include 语法可更为精简，这种写法同样允许传递列表和字典参数:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">tasks:</div><div class="line"> - &#123; include: wordpress.yml, wp_user: timmy, ssh_keys: [ &apos;keys/one.txt&apos;, &apos;keys/two.txt&apos; ] &#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>Include 语句也可用来将一个 playbook 文件导入另一个 playbook 文件。这种方式允许你定义一个 顶层的 playbook，这个顶层 playbook 由其他 playbook 所组成,先看一个例子吧</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">- name: this is a play at the top level of a file</div><div class="line">  hosts: all</div><div class="line">  remote_user: root</div><div class="line">  tasks:</div><div class="line">  - name: say hi</div><div class="line">    tags: foo</div><div class="line">    shell: echo &quot;hi...&quot;</div><div class="line">- include: load_balancers.yml</div><div class="line">- include: webservers.yml</div><div class="line">- include: dbservers.yml</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="Playbook-Roles"><a href="#Playbook-Roles" class="headerlink" title="Playbook Roles"></a><b>Playbook Roles</b></h4><ul>
+<li><p>Roles 基于一个已知的文件结构，去自动的加载某些 vars_files，tasks 以及 handlers。基于 roles 对内容进行分组，使得我们可以容易地与其他用户分享 roles</p>
+<p>  Ansible主要是通过一个inventory来定义role和主机之间的匹配，通过一个ini风格的配置文件来管理所有的主机，通过一个<br>group_vars下与主机组同名的文件来管理变量，或者host_vars下与主机同名的文件来管理变量(和pillar类似)，然后按照固定的目录<br>结构在角色名目录下创建好files, handlers, tasks, templates,<br>vars(角色级别的变量)等目录；最后通过ansible命令再跟一系列的参数指定好inventory, playbooks,<br>user等来触发对所有主机的配置<br>项目的结构如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">site.yml</div><div class="line">webservers.yml</div><div class="line">fooservers.yml</div><div class="line">roles/</div><div class="line">   common/</div><div class="line">     files/</div><div class="line">     templates/</div><div class="line">     tasks/</div><div class="line">     handlers/</div><div class="line">     vars/</div><div class="line">     defaults/</div><div class="line">     meta/</div><div class="line">   webservers/</div><div class="line">     files/</div><div class="line">     templates/</div><div class="line">     tasks/</div><div class="line">     handlers/</div><div class="line">     vars/</div><div class="line">     defaults/</div><div class="line">     meta/</div></pre></td></tr></table></figure>
+<p>  playbook 如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">---</div><div class="line">- hosts: webservers</div><div class="line">  roles:</div><div class="line">     - common</div><div class="line">     - webservers</div></pre></td></tr></table></figure>
+<p>  这个 playbook 为一个角色 ‘x’ 指定了如下的行为</p>
+<ul>
+<li>如果 roles/x/tasks/main.yml 存在, 其中列出的 tasks 将被添加到 play 中</li>
+<li>如果 roles/x/handlers/main.yml 存在, 其中列出的 handlers 将被添加到 play 中</li>
+<li>如果 roles/x/vars/main.yml 存在, 其中列出的 variables 将被添加到 play 中</li>
+<li>如果 roles/x/meta/main.yml 存在, 其中列出的 “角色依赖” 将被添加到 roles 列表中 (1.3 and later)</li>
+<li>所有 copy tasks 可以引用 roles/x/files/ 中的文件，不需要指明文件的路径。</li>
+<li>所有 script tasks 可以引用 roles/x/files/ 中的脚本，不需要指明文件的路径。</li>
+<li>所有 template tasks 可以引用 roles/x/templates/ 中的文件，不需要指明文件的路径。</li>
+<li><p>所有 include tasks 可以引用 roles/x/tasks/ 中的文件，不需要指明文件的路径。</p>
+<p>如果 roles 目录下有文件不存在，这些文件将被忽略。比如 roles 目录下面缺少了 ‘vars/’ 目录，这也没关系。<br>注意：你仍然可以在 playbook 中松散地列出 tasks，vars_files 以及 handlers，这种方式仍然可用，但 roles 是一种很好的具有组织性的功能特性，我们强烈建议使用它。如果你在 playbook 中同时使用 roles 和 tasks，vars_files 或者 handlers，roles 将优先执行</p>
+</li>
+</ul>
+<p>也可以使用参数化的 roles，这种方式通过添加变量来实现，比如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">---</div><div class="line">- hosts: webservers</div><div class="line">  roles:</div><div class="line">    - common</div><div class="line">    - &#123; role: foo_app_instance, dir: &apos;/opt/a&apos;,  port: 5000 &#125;</div><div class="line">    - &#123; role: foo_app_instance, dir: &apos;/opt/b&apos;,  port: 5001 &#125;</div></pre></td></tr></table></figure>
+<p>也可以为 roles 设置触发条件，像这样:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">---</div><div class="line">- hosts: webservers</div><div class="line">  roles:</div><div class="line">    - &#123; role: some_role, when: &quot;ansible_os_family == &apos;RedHat&apos;&quot; &#125;</div></pre></td></tr></table></figure>
+<p>它的工作方式是：将条件子句应用到 role 中的每一个 task 上。关于”条件子句”的讨论参见本文档后面的章节。</p>
+<p>最后，你可能希望给 roles 分配指定的 tags。比如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">---</div><div class="line">- hosts: webservers</div><div class="line">  roles:</div><div class="line">    - &#123; role: foo, tags: [&quot;bar&quot;, &quot;baz&quot;] &#125;</div></pre></td></tr></table></figure>
+<p>如果 play 仍然包含有 ‘tasks’ section，这些 tasks 将在所有 roles 应用完成之后才被执行。<br>如果你希望定义一些 tasks，让它们在 roles 之前以及之后执行，你可以这样做:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">---</div><div class="line">- hosts: webservers</div><div class="line">  pre_tasks:</div><div class="line">    - shell: echo &apos;hello&apos;</div><div class="line">  roles:</div><div class="line">    - &#123; role: some_role &#125;</div><div class="line">  tasks:</div><div class="line">    - shell: echo &apos;still busy&apos;</div><div class="line">  post_tasks:</div><div class="line">    - shell: echo &apos;goodbye&apos;</div></pre></td></tr></table></figure>
+<p>备注：如果对 tasks 应用了 tags，需确保给 pre_tasks 以及 post_tasks 也同样应用 tags，并且将它们一并传递。特别是当 pre_tasks 和 post_tasks 被用来监视 “停止窗口控制” 或者 “负载均衡” 时要确保这样做</p>
+</li>
+<li><p>角色默认变量(Role Default Variables)<br>角色默认变量允许你为 included roles 或者 dependent roles(见下) 设置默认变量。要创建默认变量，只需在 roles 目录下添加 defaults/main.yml 文件。这些变量在所有可用变量中拥有最低优先级，可能被其他地方定义的变量(包括 inventory 中的变量)所覆盖</p>
+</li>
+<li><p>角色依赖(Role Dependencies)<br>“角色依赖” 使你可以自动地将其他 roles 拉取到现在使用的 role 中。”角色依赖” 保存在 roles 目录下的 meta/main.yml 文件中。这个文件应包含一列 roles 和 为之指定的参数，下面是在 roles/myapp/meta/main.yml 文件中的示例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">---</div><div class="line">dependencies:</div><div class="line">  - &#123; role: common, some_parameter: 3 &#125;</div><div class="line">  - &#123; role: apache, port: 80 &#125;</div><div class="line">  - &#123; role: postgres, dbname: blarg, other_parameter: 12 &#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>实战nginx</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div></pre></td><td class="code"><pre><div class="line"># mkdir -pv roles/nginx/&#123;tasks,files,templates,handlers,vars,meta,default&#125;</div><div class="line"># ansible all -m setup | grep ansible_processor_cores</div><div class="line">        &quot;ansible_processor_cores&quot;: 1,  \\获取ansible的要调用的相关函数</div><div class="line"># cd roles/nginx/templates/   \\模板文件一定要放到此目录</div><div class="line">vim nginx.conf </div><div class="line">worker_processes &#123;&#123;  ansible_processor_cores &#125;&#125;;  \\调用获取到的函数</div><div class="line"></div><div class="line"># ls -l  roles/nginx/files/</div><div class="line">-rw-r--r--. 1 root root   1290 Nov 12  2014 default.conf</div><div class="line">-rw-r--r--. 1 root root 319456 Mar 29 20:44 nginx-1.4.7-1.el6.ngx.x86_64.rpm</div><div class="line"></div><div class="line">#cd  roles/nginx/tasks/</div><div class="line">[root@localhost tasks]# vim  main.yml </div><div class="line">  - name: copy nginx.rpm</div><div class="line">    copy: src=nginx-1.4.7-1.el6.ngx.x86_64.rpm  dest=/tmp/nginx-1.4.7-1.el6.ngx.x86_64.rpm</div><div class="line">  - name: install nginx</div><div class="line">    shell: yum -y  install /tmp/nginx-1.4.7-1.el6.ngx.x86_64.rpm</div><div class="line">  - name: provides nginx.conf</div><div class="line">    template: src=nginx.conf  dest=/etc/nginx/nginx.conf</div><div class="line">    tags: nginxconf</div><div class="line">    notify:</div><div class="line">    - server restart</div><div class="line">  - name: provides default.conf</div><div class="line">    copy: src=default.conf dest=/etc/nginx/conf.d/default.conf </div><div class="line">    tags: nginxconf</div><div class="line">  - name: server start</div><div class="line">    service: name=nginx enabled=true state=started</div><div class="line">	</div><div class="line">[root@localhost playbook]# cd roles/nginx/handlers/</div><div class="line">[root@localhost handlers]# vim  main.yml </div><div class="line">- name: server restart</div><div class="line">  service: name=nginx  state=restarted</div><div class="line">  </div><div class="line">[root@localhost playbook]# cat site.yml </div><div class="line">- hosts: nginx</div><div class="line">  remote_user: root</div><div class="line">  roles:</div><div class="line">  - nginx</div><div class="line">  </div><div class="line">[root@localhost ]# ansible-playbook site.yml   </div><div class="line"></div><div class="line">[root@localhost playbook]# tree roles/</div><div class="line">roles/</div><div class="line">└── nginx</div><div class="line">    ├── default</div><div class="line">    ├── files</div><div class="line">    │  ├── default.conf</div><div class="line">    │  └── nginx-1.4.7-1.el6.ngx.x86_64.rpm</div><div class="line">    ├── handlers</div><div class="line">    │  └── main.yml</div><div class="line">    ├── meta</div><div class="line">    ├── tasks</div><div class="line">    │  └── main.yml</div><div class="line">    ├── templates</div><div class="line">    │  └── nginx.conf</div><div class="line">    └── vars</div><div class="line">`</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="ansible-Conditionals"><a href="#ansible-Conditionals" class="headerlink" title="ansible Conditionals"></a><b>ansible Conditionals</b></h4><ul>
+<li><p>Loops and Conditionals</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">#use list</div><div class="line">tasks:</div><div class="line">    - command: echo &#123;&#123; item &#125;&#125;</div><div class="line">      with_items: [ 0, 2, 4, 6, 8, 10 ]</div><div class="line">      when: item &gt; 5</div><div class="line">#use dict</div><div class="line">- command: echo &#123;&#123; item.key &#125;&#125;</div><div class="line">  with_dict: &quot;&#123;&#123; mydict|default(&#123;&#125;) &#125;&#125;&quot;</div><div class="line">  when: item.value &gt; 5</div></pre></td></tr></table></figure>
+</li>
+<li><p>The When Statement</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">#group conditions(a logical &apos;or&apos;)</div><div class="line">tasks:</div><div class="line">  - name: &quot;shut down CentOS 6 and Debian 7 systems&quot;</div><div class="line">    command: /sbin/shutdown -t now</div><div class="line">    when: (ansible_distribution == &quot;CentOS&quot; and ansible_distribution_major_version == &quot;6&quot;) or</div><div class="line">          (ansible_distribution == &quot;Debian&quot; and ansible_distribution_major_version == &quot;7&quot;)</div><div class="line"></div><div class="line">#multiple(a logical &apos;and&apos;)</div><div class="line">tasks:</div><div class="line">  - name: &quot;shut down CentOS 6 systems&quot;</div><div class="line">    command: /sbin/shutdown -t now</div><div class="line">    when:</div><div class="line">      - ansible_distribution == &quot;CentOS&quot;</div><div class="line">      - ansible_distribution_major_version == &quot;6&quot;</div></pre></td></tr></table></figure>
+<p>备注： example requires the lsb_release package on the target host in order to return the ansible_lsb.major_release fact</p>
+</li>
+</ul>
+<p>ref <a href="http://docs.ansible.com/ansible/playbooks_conditionals.html#loops-and-conditionals" target="_blank" rel="external">Docs-Conditionals</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;前言&lt;br&gt;在上一篇文章里我们了解了ansible的常用模块，今天我们来了解下ansible-playbook,ansbile-playbook是一系统ansible命令的集合，其利用yaml 语言编写,ansbile-playbook命令根据自上而下的顺序依次执行。&lt;/p
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
     <title>ansible使用指北(一)</title>
     <link href="https://t1ger.github.io/2016/12/13/ansible%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8C%97(%E4%B8%80)/"/>
     <id>https://t1ger.github.io/2016/12/13/ansible使用指北(一)/</id>
     <published>2016-12-13T09:01:14.000Z</published>
-    <updated>2016-12-13T10:27:12.023Z</updated>
+    <updated>2016-12-14T06:36:16.979Z</updated>
     
     <content type="html"><![CDATA[<h5 id="ansible的快速安装"><a href="#ansible的快速安装" class="headerlink" title="ansible的快速安装"></a><b>ansible的快速安装</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo esay_install ansible</div><div class="line"># OR</div><div class="line">sudo pip install ansible</div></pre></td></tr></table></figure>
+<p>先来解决两个小问题：<br>1）将本地文件复制到远程服务器<br>2）需要在远程服务器上执行一个命令或脚本</p>
+<p>现在我们以192.168.100.119为例(已经安装ansible),首先登陆到119主机<br>在我们的家目录下建立.ansible.cfg文件（为了安全考虑，还是的麻烦大家输入密码，或者用key），文件内容如果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">cat /home/t1ger/.ansible.cfg</div><div class="line">[defaults]</div><div class="line">hostfile=hosts</div><div class="line">remote_user=t1ger</div><div class="line">ask_pass = True</div><div class="line">#ask_sudo_pass = True</div><div class="line">sudo_user = root</div><div class="line">remote_tmp = $HOME/.ansible/tmp</div><div class="line">host_key_checking = False</div><div class="line">system_warnings = False</div></pre></td></tr></table></figure></p>
+<p>接下来我们建立hosts文件，此文件就是记录我们要操作的主机列表<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">cat /home/t1ger/hosts</div><div class="line">[dev]</div><div class="line">192.168.100.101</div><div class="line">192.168.100.103</div><div class="line">[test]</div><div class="line">192.168.100.110</div><div class="line">192.168.100.111</div></pre></td></tr></table></figure></p>
+<p>到此为止，我们的准备工作已经完成</p>
+<p>完成任务1<br>ansible dev -m copy -a “src=/tmp/test.txt dest=/tmp”<br>完成任务2<br>ansible test -m command -a ” ls /root”</p>
+<p>如果需要root权限，那当然需要sudo了<br>ansible test -m command -a “sudo  ls /root”<br>或者添加 -s<br>ansible test -m command -s -a “ls /root”</p>
+<p>如果我执行的命令特别多呢，可以写成一个脚本，通过copy模块拷贝到远端机器，然后再执行<br>然而，这样需要两次ansible调用，我们可以使用script模块来解决这个问题</p>
+<p>我们在本地写一个脚本，在远程服务器上执行：<br>ansible dev  -m script -a “/tmp/target.sh”</p>
 <h5 id="ansible的七种武器"><a href="#ansible的七种武器" class="headerlink" title="ansible的七种武器"></a><b>ansible的七种武器</b></h5><ul>
 <li>ansible:用于执行ad-hoc命令，即单条命令。默认后面需要跟主机和选项部分，默认不指定模块时，使用的是command模块</li>
 <li>ansible-doc:用于查看模块信息，常用参数有两个-l 和 -s </li>
@@ -655,211 +854,6 @@
 &lt;ul&gt;
 &lt;li&gt;mount-提供磁盘挂载点和文件系统的隔离能力&lt;/li&gt;
 &lt;li&gt;ipc-提供进程间通信的隔离能力，用来隔离System V IPC标识以及Posix消息队
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>docker学习笔记之Linux cgroups</title>
-    <link href="https://t1ger.github.io/2016/11/25/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B9%8BLinux-cgroups/"/>
-    <id>https://t1ger.github.io/2016/11/25/docker学习笔记之Linux-cgroups/</id>
-    <published>2016-11-25T06:50:26.000Z</published>
-    <updated>2016-11-25T10:31:49.561Z</updated>
-    
-    <content type="html"><![CDATA[<h4 id="cgroup是什么"><a href="#cgroup是什么" class="headerlink" title="cgroup是什么"></a><b>cgroup是什么</b></h4><p>Linux CGroup全称Linux Control Group,Linux内核的一个功能,用来限制、控制与分离一个进程组群的资源(如CPU、内存、磁盘输入输出等),它最初叫Process Container,由Google工程师(Paul Menage和Rohit Seth)于2006年提出,后来因为Container有多重含义容易引起误解,就在2007年更名为Control Groups,并被整合进Linux内核2.6.24。<br>通俗的来说,cgroups可以限制、记录、隔离进程组所使用的物理资源,为容器实现虚拟化提供了基本保证,是构建Docker等一系列虚拟化管理工具的基石</p>
-<p>本质上来说,cgroups是内核附加在程序上的一系列钩子(hooks),通过程序运行时对资源的调度触发相应的钩子以达到资源追踪和限制的目的<br>对开发者来说,cgroups有如下四个有趣的特点：</p>
-<ul>
-<li>cgroups的API以一个伪文件系统的方式实现,即用户可以通过文件操作实现cgroups的组织管理</li>
-<li>cgroups的组织管理操作单元可以细粒度到线程级别,用户态代码也可以针对系统分配的资源创建和销毁cgroups,从而实现资源再分配和管理</li>
-<li>所有资源管理的功能都以“subsystem(子系统)”的方式实现,接口统一</li>
-<li>子进程创建之初与其父进程处于同一个cgroups的控制组</li>
-</ul>
-<h4 id="cgroup的功能"><a href="#cgroup的功能" class="headerlink" title="cgroup的功能"></a><b>cgroup的功能</b></h4><p>cgroups提供了以下四个功能</p>
-<ul>
-<li>资源限制(Resource Limitation):对进程组使用的资源总额进行限制<br>假如设置了内存上限,一旦超过配额就发出OOM(out of memory)</li>
-<li>优先级分配(Prioritization):通过分配cpu的时间片数据及磁盘io带宽大学,进而控制了进程运行的优先级</li>
-<li>资源统计(Accounting):统计系统资源使用量,比如统计cpu时长,内存用量,可用于计费功能</li>
-<li>进程控制(Control):可以对进程组执行挂起、恢复等操作</li>
-</ul>
-<p>备注:有一段时间,内核开发者甚至把namespace也作为一个cgroups的subsystem加入进来,也就是说cgroups曾经甚至还包含了资源隔离的能力。但是资源隔离会给cgroups带来许多问题,如PID在循环出现的时候cgroup却出现了命名冲突、cgroup创建后进入新的namespace导致脱离了控制等等,所以在2011年就被移除了</p>
-<p>在实践中，SA一般会利用cgroup做下面这些事：</p>
-<ul>
-<li>隔离一个进程集合（比如：nginx的所有进程），并限制他们所消费的资源</li>
-<li>为这组进程 分配其足够使用的内存</li>
-<li>为这组进程分配相应的网络带宽和磁盘存储限制</li>
-<li>限制访问某些设备(通过设置设备的白名单)</li>
-</ul>
-<h4 id="组织结构和规则"><a href="#组织结构和规则" class="headerlink" title="组织结构和规则"></a><b>组织结构和规则</b></h4><p>在传统Unix进程管理,实际上是先启动init进程作为根节点,再由init节点创建子进程作为子节点,而每个子节点由可以创建新的子节点,如此往复,形成一个树状结构<br>cgroup也是类似的树状结构,子节点也从父节点继承属性<br>区别在于,cgroup构成的hierarchy可以允许存在多个,如果进程模型是由init作为根节点构成的一棵树的话,那么cgroups的模型则是由多个hierarchy构成的森林。原因在于,如果只有一个hierarchy,那么所有的task都要受到绑定其上的subsystem的限制,会给那些不需要这些限制的task造成麻烦</p>
-<ul>
-<li>规则1:同一个hierarchy可以附加一个或多个subsystem,cpu和memory的subsystem附加到了一个hierarchy</li>
-<li>规则2:一个subsystem可以附加到多个hierarchy,当且仅当这些hierarchy只有这唯一一个subsystem</li>
-<li>规则3:系统每次新建一个hierarchy时,该系统上的所有task默认构成了这个新建的hierarchy的初始化cgroup,这个cgroup也称为root cgroup。对于你创建的每个hierarchy,task只能存在于其中一个cgroup中,即一个task不能存在于同一个hierarchy的不同cgroup中,但是一个task可以存在在不同hierarchy中的多个cgroup中。如果操作时把一个task添加到同一个hierarchy中的另一个cgroup中,则会从第一个cgroup中移除</li>
-<li>规则4:进程（task）在fork自身时创建的子任务(child task)默认与原task在同一个cgroup中,但是child task允许被移动到不同的cgroup中。即fork完成后,父子进程间是完全独立的</li>
-</ul>
-<h4 id="cgroup工作原理和实现方式"><a href="#cgroup工作原理和实现方式" class="headerlink" title="cgroup工作原理和实现方式"></a><b>cgroup工作原理和实现方式</b></h4><ul>
-<li>cgroup实现结构讲解<br>cgroup的实现本质上是给系统进程挂上钩子(hooks),当task运行的过程中涉及到某个资源时就会触发钩子上所附带的subsystem进行检测,最终根据资源类别的不同使用对应的技术进行资源限制和优先级分配</li>
-</ul>
-<p>Linux中管理task进程的数据结构为task_struct<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">#ifdef CONFIG_CGROUPS </div><div class="line">/* Control Group info protected by css_set_lock */ </div><div class="line">struct css_set *cgroups; </div><div class="line">/* cg_list protected by css_set_lock and tsk-&gt;alloc_lock */ </div><div class="line">struct list_head cg_list; </div><div class="line">#endif</div><div class="line">struct css_set &#123; </div><div class="line">atomic_t refcount;</div><div class="line">struct hlist_node hlist; </div><div class="line">struct list_head tasks; </div><div class="line">struct list_head cg_links; </div><div class="line">struct cgroup_subsys_state *subsys[CGROUP_SUBSYS_COUNT]; </div><div class="line">struct rcu_head rcu_head; </div><div class="line">&#125;;</div><div class="line">struct cgroup_subsys_state &#123; </div><div class="line">struct cgroup *cgroup; </div><div class="line">atomic_t refcnt; </div><div class="line">unsigned long flags; </div><div class="line">struct css_id *id; </div><div class="line">&#125;;</div><div class="line">struct cgroup &#123; </div><div class="line">unsigned long flags; </div><div class="line">atomic_t count; </div><div class="line">struct list_head sibling; </div><div class="line">struct list_head children; </div><div class="line">struct cgroup *parent; </div><div class="line">struct dentry *dentry; </div><div class="line">struct cgroup_subsys_state *subsys[CGROUP_SUBSYS_COUNT]; </div><div class="line">struct cgroupfs_root *root;</div><div class="line">struct cgroup *top_cgroup; </div><div class="line">struct list_head css_sets; </div><div class="line">struct list_head release_list; </div><div class="line">struct list_head pidlists;</div><div class="line">struct mutex pidlist_mutex; </div><div class="line">struct rcu_head rcu_head; </div><div class="line">struct list_head event_list; </div><div class="line">spinlock_t event_list_lock; </div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
-<p>在task_struct中,与cgroup相关的字段主要有两个,一个是css_set *cgroups,表示指向css_set（包含进程相关的cgroups信息）的指针,一个task只对应一个css_set结构,但是一个css_set可以被多个task使用。另一个字段是list_head cg_list,是一个链表的头指针,这个链表包含了所有的链到同一个css_set的task进程。每个css_set结构中都包含了一个指向cgroup_subsys_state(包含进程与一个特定子系统相关的信息)的指针数组。cgroup_subsys_state则指向了cgroup结构(包含一个cgroup的所有信息),通过这种方式间接的把一个进程和cgroup联系了起来</p>
-<p>另一方面,cgroup结构体中有一个list_head css_sets字段,它是一个头指针,指向由cg_cgroup_link（包含cgroup与task之间多对多关系的信息）形成的链表。由此获得的每一个cg_cgroup_link都包含了一个指向css_set *cg字段,指向了每一个task的css_set。css_set结构中则包含tasks头指针,指向所有链到此css_set的task进程构成的链表</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">struct cg_cgroup_link &#123; </div><div class="line">struct list_head cgrp_link_list; </div><div class="line">struct cgroup *cgrp; </div><div class="line">struct list_head cg_link_list; </div><div class="line">struct css_set *cg; &#125;;</div></pre></td></tr></table></figure>
-<p>css_set中也有指向所有cg_cgroup_link构成链表的头指针,通过这种方式也能定位到所有的cgroup</p>
-<p>为什么要使用cg_cgroup_link结构体呢？<br>因为task与cgroup之间是多对多的关系。在数据库中,如果两张表是多对多的关系,那么如果不加入第三张关系表,就必须为一个字段的不同添加许多行记录,导致大量冗余。通过从主表和副表各拿一个主键新建一张关系表,可以提高数据查询的灵活性和效率。而一个task可能处于不同的cgroup,只要这些cgroup在不同的hierarchy中,并且每个hierarchy挂载的子系统不同:另一方面,一个cgroup中可以有多个task,这是显而易见的,但是这些task因为可能还存在在别的cgroup中,所以它们对应的css_set也不尽相同,所以一个cgroup也可以对应多个·css_set。在系统运行之初,内核的主函数就会对root cgroups和css_set进行初始化,每次task进行fork/exit时,都会附加（attach）/分离（detach）对应的css_set。综上所述,添加cg_cgroup_link主要是出于性能方面的考虑,一是节省了task_struct结构体占用的内存,二是提升了进程fork()/exit()的速度</p>
-<p>当task从一个cgroup中移动到另一个时,它会得到一个新的css_set指针。如果所要加入的cgroup与现有的cgroup子系统相同,那么就重复使用现有的css_set,否则就分配一个新css_set。所有的css_set通过一个哈希表进行存放和查询,hlist_node hlist就指向了css_set_table这个hash表。同时,为了让cgroups便于用户理解和使用,也为了用精简的内核代码为cgroup提供熟悉的权限和命名空间管理,内核开发者们按照Linux 虚拟文件系统转换器（VFS：Virtual Filesystem Switch）的接口实现了一套名为cgroup的文件系统,非常巧妙地用来表示cgroups的hierarchy概念,把各个subsystem的实现都封装到文件系统的各项操作中。定义子系统的结构体是cgroup_subsys,cgroup_subsys中定义了一组函数的接口,让各个子系统自己去实现,类似的思想还被用在了cgroup_subsys_state中,cgroup_subsys_state并没有定义控制信息,只是定义了各个子系统都需要用到的公共信息,由各个子系统各自按需去定义自己的控制信息结构体,最终在自定义的结构体中把cgroup_subsys_state包含进去,然后内核通过container_of等宏定义来获取对应的结构体</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">struct cgroup_subsys &#123; </div><div class="line">struct cgroup_subsys_state *(*create)(struct cgroup_subsys *ss, </div><div class="line">struct cgroup *cgrp); </div><div class="line">int (*pre_destroy)(struct cgroup_subsys *ss, struct cgroup *cgrp); </div><div class="line">void (*destroy)(struct cgroup_subsys *ss, struct cgroup *cgrp); </div><div class="line">int (*can_attach)(struct cgroup_subsys *ss,</div><div class="line"> struct cgroup *cgrp, struct task_struct *tsk, bool threadgroup); </div><div class="line">void (*cancel_attach)(struct cgroup_subsys *ss, </div><div class="line">struct cgroup *cgrp, struct task_struct *tsk, bool threadgroup); </div><div class="line">void (*attach)(struct cgroup_subsys *ss, struct cgroup *cgrp, </div><div class="line">struct cgroup *old_cgrp, struct task_struct *tsk, bool threadgroup); </div><div class="line">void (*fork)(struct cgroup_subsys *ss, struct task_struct *task); </div><div class="line">void (*exit)(struct cgroup_subsys *ss, struct task_struct *task); </div><div class="line">int (*populate)(struct cgroup_subsys *ss, struct cgroup *cgrp); </div><div class="line">void (*post_clone)(struct cgroup_subsys *ss, struct cgroup *cgrp); </div><div class="line">void (*bind)(struct cgroup_subsys *ss, struct cgroup *root);</div><div class="line">int subsys_id; </div><div class="line">int active; </div><div class="line">int disabled; </div><div class="line">int early_init; </div><div class="line">bool use_id; </div><div class="line">#define MAX_CGROUP_TYPE_NAMELEN 32 </div><div class="line">const char *name; </div><div class="line">struct mutex hierarchy_mutex; </div><div class="line">struct lock_class_key subsys_key; </div><div class="line">struct cgroupfs_root *root; </div><div class="line">struct list_head sibling; </div><div class="line">struct idr idr; </div><div class="line">spinlock_t id_lock; </div><div class="line">struct module *module; </div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<ul>
-<li>基于cgroups实现结构的用户层体现</li>
-</ul>
-<p>在实际使用时,需要通过挂载（mount）cgroup文件系统新建一个层级结构,挂载时指定要绑定的子系统,缺省情况下默认绑定系统所有子系统。把cgroup文件系统挂载（mount）上以后,你就可以像操作文件一样对cgroups的hierarchy层级进行浏览和操作管理,包括权限管理、子文件管理等等。除了cgroup文件系统以外,内核没有为cgroups的访问和操作添加任何系统调用。如果新建的层级结构要绑定的子系统与目前已经存在的层级结构完全相同,那么新的挂载会重用原来已经存在的那一套（指向相同的css_set）。否则如果要绑定的子系统已经被别的层级绑定,就会返回挂载失败的错误。如果一切顺利,挂载完成后层级就被激活并与相应子系统关联起来,可以开始使用了</p>
-<p>目前无法将一个新的子系统绑定到激活的层级上,或者从一个激活的层级中解除某个子系统的绑定。<br>当一个顶层的cgroup文件系统被卸载（umount）时,如果其中创建后代cgroup目录,那么就算上层的cgroup被卸载了,层级也是激活状态,其后代cgoup中的配置依旧有效。只有递归式的卸载层级中的所有cgoup,那个层级才会被真正删除</p>
-<p>层级激活后,/proc目录下的每个task PID文件夹下都会新添加一个名为cgroup的文件,列出task所在的层级,对其进行控制的子系统及对应cgroup文件系统的路径。<br>一个cgroup创建完成,不管绑定了何种子系统,其目录下都会生成以下几个文件,用来描述cgroup的相应信息。同样,把相应信息写入这些配置文件就可以生效,内容如下：<br>tasks：这个文件中罗列了所有在该cgroup中task的PID。该文件并不保证task的PID有序,把一个task的PID写到这个文件中就意味着把这个task加入这个cgroup中。<br>cgroup.procs：这个文件罗列所有在该cgroup中的线程组ID。该文件并不保证线程组ID有序和无重复。写一个线程组ID到这个文件就意味着把这个组中所有的线程加到这个cgroup中。<br>notify_on_release：填0或1,表示是否在cgroup中最后一个task退出时通知运行release agent,默认情况下是0,表示不运行。<br>release_agent：指定release agent执行脚本的文件路径,该文件在最顶层cgroup目录中存在,在这个脚本通常用于自动化umount无用的cgroup</p>
-<p>除了上述几个通用的文件以外,绑定特定子系统的目录下也会有其他的文件进行子系统的参数配置。在创建的hierarchy中创建文件夹,就类似于fork中一个后代cgroup,后代cgroup中默认继承原有cgroup中的配置属性,但是你可以根据需求对配置参数进行调整。这样就把一个大的cgroup系统分割成一个个嵌套的、可动态变化的“软分区”</p>
-<h4 id="cgroup的使用方法简介"><a href="#cgroup的使用方法简介" class="headerlink" title="cgroup的使用方法简介"></a><b>cgroup的使用方法简介</b></h4><ul>
-<li><p>安装cgroups工具库<br>安装的过程会自动创建/cgroup目录,如果没有自动创建也不用担心,使用mkdir /cgroup 手动创建即可<br>安装完成后,你就可以使用lssubsys,默认的cgroup配置文件为/etc/cgconfig.conf,但是因为存在使LXC无法运行的bug,所以在新版本中把这个配置移除了</p>
-</li>
-<li><p>查询cgroup及子系统挂载状态<br>在挂载子系统之前,可能你要先检查下目前子系统的挂载状态,如果子系统已经挂载,你就无法把子系统挂载到新的hierarchy,此时就需要先删除相应hierarchy或卸载对应子系统后再挂载。<br>查看所有的cgroup：lscgroup<br>查看所有支持的子系统：lssubsys -a<br>查看所有子系统挂载的位置： lssubsys –m<br>查看单个子系统挂载位置：lssubsys –m memory（以memory为例）</p>
-</li>
-<li>创建hierarchy层级并挂载子系统<br>使用cgroup的最佳方式是为想要管理的每个或每组资源创建单独的cgroup层级结构。而创建hierarchy并不神秘,实际上就是做一个标记,通过挂载一个tmpfs文件系统,并给一个好的名字就可以了</li>
-</ul>
-<p>系统默认挂载的cgroup就会进行如下操作</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mount -t tmpfs cgroups /sys/fs/cgroup</div></pre></td></tr></table></figure>
-<p>挂载完成tmpfs后就可以通过mkdir命令创建相应的文件夹<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mkdir /sys/fs/cgroup/cg1</div></pre></td></tr></table></figure></p>
-<p>再把子系统挂载到相应层级上,挂载子系统也使用mount命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mount -t cgroup -o subsystems name /cgroup/name</div></pre></td></tr></table></figure></p>
-<p>name是层级名称。具体我们以挂载cpu和memory的子系统为例<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mount –t cgroup –o cpu,memory cpu_and_mem /sys/fs/cgroup/cg1</div></pre></td></tr></table></figure></p>
-<p>从mount命令开始,-t后面跟的是挂载的文件系统类型,即cgroup文件系统。-o后面跟要挂载的子系统种类如cpu、memory,用逗号隔开,其后的cpu_and_mem不被cgroup代码的解释,但会出现在/proc/mounts里,可以使用任何有用的标识字符串。最后的参数则表示挂载点的目录位置</p>
-<ul>
-<li>卸载cgroup<br>cgroup文件系统虽然支持重新挂载,但是官方不建议使用,重新挂载虽然可以改变绑定的子系统和release agent,但是它要求对应的hierarchy是空的并且release_agent会被传统的fsnotify（内核默认的文件系统通知）代替,这就导致重新挂载很难生效。可以通过卸载,再挂载的方式处理这样的需求</li>
-</ul>
-<p>卸载cgroup非常简单,你可以通过cgdelete命令,也可以通过rmdir</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">rmdir /sys/fs/cgroup/cg1</div></pre></td></tr></table></figure>
-<p>rmdir执行成功的必要条件是cg1下层没有创建其它cgroup,cg1中没有添加任何task,并且它也没有被别的cgroup所引用。<br>cgdelete cpu,memory:/ 使用cgdelete命令可以递归的删除cgroup及其命令下的后代cgroup,并且如果cgroup中有task,那么task会自动移到上一层没有被删除的cgroup中,如果所有的cgroup都被删除了,那task就不被cgroups控制。但是一旦再次创建一个新的cgroup,所有进程都会被放进新的cgroup中</p>
-<ul>
-<li>设置cgroups参数<br>设置cgroups参数非常简单,直接对之前创建的cgroup对应文件夹下的文件写入即可。<br>设置task允许使用的cpu为0和1</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">echo 0-1 &gt; /sys/fs/cgroup/cg1/cpuset.cpus</div></pre></td></tr></table></figure>
-<p>使用cgset命令也可以进行参数设置,对应上述允许使用0和1cpu</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cgset -r cpuset.cpus=0-1 cpu,memory:/</div></pre></td></tr></table></figure>
-<ul>
-<li>添加task到cgroup<br>通过文件操作进行添加<br>echo [PID] &gt; /path/to/cgroup/tasks<br>上述命令就是把进程ID打印到tasks中,如果tasks文件中已经有进程,需要使用”&gt;&gt;”向后添加。<br>通过cgclassify将进程添加到cgroup</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cgclassify -g subsystems:path_to_cgroup pidlist</div></pre></td></tr></table></figure>
-<p>这个命令中,subsystems指的就是子系统(如果使用man命令查看,可能也会使用controllers表示)​​​,如果mount了多个,就是用”,”隔开的子系统名字作为名称,类似cgset命令。<br>通过cgexec直接在cgroup中启动并执行进程</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cgexec -g subsystems:path_to_cgroup command arguments</div></pre></td></tr></table></figure>
-<p>command和arguments就表示要在cgroup中执行的命令和参数<br>cgexec常用于执行临时的任务</p>
-<ul>
-<li>权限管理<br>与文件的权限管理类似,通过chown就可以对cgroup文件系统进行权限管理</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">chown uid:gid /path/to/cgroup</div></pre></td></tr></table></figure>
-<h4 id="subsystem的配置参数用法"><a href="#subsystem的配置参数用法" class="headerlink" title="subsystem的配置参数用法"></a><b>subsystem的配置参数用法</b></h4><ul>
-<li>BLOCK IO资源控制<br>限额类。限额类是主要有两种策略,一种是基于完全公平队列调度（CFQ：Completely Fair Queuing）的按权重分配各个cgroup所能占用总体资源的百分比,好处是当资源空闲时可以充分利用,但只能用于最底层节点cgroup的配置；另一种则是设定资源使用上限,这种限额在各个层次的cgroup都可以配置,但这种限制较为生硬,并且容器之间依然会出现资源的竞争。<br>按比例分配块设备IO资源：<br>blkio.weight：填写100-1000的一个整数值,作为相对权重比率,作为通用的设备分配比。<br>blkio.weight_device：针对特定设备的权重比,写入格式为device_types:node_numbers weight,空格前的参数段指定设备,weight参数与blkio.weight相同并覆盖原有的通用分配比。查看一个设备的device_types:node_numbers可以使用：ls -l /dev/DEV,看到的用逗号分隔的两个数字就是。也称之为major_number:minor_number。<br>控制IO读写速度上限：<br>blkio.throttle.read_bps_device：按每秒读取块设备的数据量设定上限,格式device_types:node_numbers bytes_per_second。<br>blkio.throttle.write_bps_device：按每秒写入块设备的数据量设定上限,格式device_types:node_numbers bytes_per_second。<br>blkio.throttle.read_iops_device：按每秒读操作次数设定上限,格式device_types:node_numbers operations_per_second。<br>blkio.throttle.write_iops_device：按每秒写操作次数设定上限,格式device_types:node_numbers operations_per_second。<br>针对特定操作(read, write, sync, 或async)设定读写速度上限。<br>blkio.throttle.io_serviced：针对特定操作按每秒操作次数设定上限,格式device_types:node_numbers operation operations_per_second。<br>blkio.throttle.io_service_bytes：针对特定操作按每秒数据量设定上限,格式device_types:node_numbers operation bytes_per_second。<br>统计与监控。以下内容都是只读的状态报告,通过这些统计项更好地统计、监控进程的io情况。<br>blkio.reset_stats：重置统计信息,写入一个int值即可。<br>blkio.time：统计cgroup对设备的访问时间,按格式device_types:node_numbers milliseconds读取信息即可,以下类似。<br>blkio.io_serviced：统计cgroup对特定设备的IO操作,包括read、write、sync及async次数,格式device_types:node_numbers operation number。<br>blkio.sectors：统计cgroup对设备扇区访问次数,格式 device_types:node_numbers sector_count。<br>blkio.io_service_bytes：统计cgroup对特定设备IO操作,包括read、write、sync及async的数据量,格式device_types:node_numbers operation bytes。<br>blkio.io_queued：统计cgroup的队列中对IO操作,包括read、write、sync及async的请求次数,格式number operation。<br>blkio.io_service_time：统计cgroup对特定设备的IO操作,包括read、write、sync及async时间(单位为ns),格式device_types:node_numbers operation time。<br>blkio.io_merged：统计cgroup 将 BIOS 请求合并到IO操作,包括read、write、sync及async请求的次数,格式number operation。<br>blkio.io_wait_time：统计cgroup在各设​​​备​​​中各类型​​​IO操作,包括read、write、sync及async在队列中的等待时间​(单位ns),格式device_types:node<em>numbers operation time。<br><strong>blkio.</strong>recursive</em>*：各类型的统计都有一个递归版本,Docker中使用的都是这个版本。获取的数据与非递归版本是一样的,但是包括cgroup所有层级的监控数据</li>
-</ul>
-<p>我们的模拟命令如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo dd if=/dev/sda1 of=/dev/null</div></pre></td></tr></table></figure></p>
-<p>通过iotop命令我们可以看到相关的IO速度是55MB/s(vm)<br>之后，我们先创建一个blkio（块设备IO）的cgroup，并把读IO限制到1MB/s，并把前面那个dd命令的pid放进去(注：8:0 是设备号，你可以通过ls -l /dev/sda1获得)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mkdir /sys/fs/cgroup/blkio/cg1</div><div class="line">echo &apos;8:0 1048576&apos;  &gt; /sys/fs/cgroup/blkio/cgl/blkio.throttle.read_bps_device</div><div class="line">echo 8128 &gt; /sys/fs/cgroup/blkio/haoel/tasks</div></pre></td></tr></table></figure></p>
-<p>再用iotop命令，你马上就能看到读速度被限制到了1MB/s左右</p>
-<ul>
-<li>CPU资源控制<br>CPU资源的控制也有两种策略,一种是完全公平调度（CFS：Completely Fair Scheduler）策略,提供了限额和按比例分配两种方式进行资源控制；另一种是实时调度（Real-Time Scheduler）策略,针对实时进程按周期分配固定的运行时间。配置时间都以微秒（µs）为单位,文件名中用us表示。<br>CFS调度策略配置：<br>设定CPU使用周期使用时间上限。<br>cpu.cfs_period_us：设定周期时间,必须与cfs_quota_us配合使用。<br>cpu.cfs_quota_us：设定周期内最多可使用的时间。这里的配置指task对单个cpu的使用上限,若cfs_quota_us是cfs_period_us的两倍,就表示在两个核上完全使用。数值范围为1000-1000,000（微秒）。<br>cpu.stat：统计信息,包含nr_periods（表示经历了几个cfs_period_us周期）、nr_throttled（表示task被限制的次数）及throttled_time（表示task被限制的总时长）。<br>按权重比例设定CPU的分配。<br>cpu.shares：设定一个整数,必须大于等于2,表示相对权重,最后除以权重总和算出相对比例,按比例分配CPU时间。如cgroup A设置100,cgroup B设置300,那么cgroup A中的task运行25%的CPU时间。对于一个4核CPU的系统来说,cgroup A中的task可以100%占有某一个CPU,这个比例是相对整体的一个值。<br>RT调度策略下的配置：<br>实时调度策略与公平调度策略中的按周期分配时间的方法类似,也是在周期内分配一个固定的运行时间。<br>cpu.rt_period_us：设定周期时间。<br>cpu.rt_runtime_us：设定周期中的运行时间</li>
-</ul>
-<p>假设，我们有个非常耗cpu的程序<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">int main(void)</div><div class="line">&#123;</div><div class="line">    int i = 0;</div><div class="line">    for(;;) i++;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>执行后，可以top看到进程pid为3529</p>
-<p>在/sys/fs/cgroup/cpu下建立cg1的group<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">cat /sys/fs/cgroup/cpu/haoel/cpu.cfs_quota_us </div><div class="line">-1</div><div class="line">echo 20000 &gt; /sys/fs/cgroup/cpu/haoel/cpu.cfs_quota_us</div><div class="line"># 将进程的pid加入到cgroup中</div><div class="line">echo 3529 &gt;&gt; /sys/fs/cgroup/cpu/haoel/tasks</div></pre></td></tr></table></figure></p>
-<p>之后，在top中看到cpu下降了20%</p>
-<p>下边代码是一个线程示例</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line">#define _GNU_SOURCE         /* See feature_test_macros(7) */</div><div class="line"> </div><div class="line">#include &lt;pthread.h&gt;</div><div class="line">#include &lt;stdio.h&gt;</div><div class="line">#include &lt;stdlib.h&gt;</div><div class="line">#include &lt;sys/stat.h&gt;</div><div class="line">#include &lt;sys/types.h&gt;</div><div class="line">#include &lt;unistd.h&gt;</div><div class="line">#include &lt;sys/syscall.h&gt;</div><div class="line"> </div><div class="line"> </div><div class="line">const int NUM_THREADS = 5;</div><div class="line"> </div><div class="line">void *thread_main(void *threadid)</div><div class="line">&#123;</div><div class="line">    /* 把自己加入cgroup中（syscall(SYS_gettid)为得到线程的系统tid） */</div><div class="line">    char cmd[128];</div><div class="line">    sprintf(cmd, &quot;echo %ld &gt;&gt; /sys/fs/cgroup/cpu/haoel/tasks&quot;, syscall(SYS_gettid));</div><div class="line">    system(cmd); </div><div class="line">    sprintf(cmd, &quot;echo %ld &gt;&gt; /sys/fs/cgroup/cpuset/haoel/tasks&quot;, syscall(SYS_gettid));</div><div class="line">    system(cmd);</div><div class="line"> </div><div class="line">    long tid;</div><div class="line">    tid = (long)threadid;</div><div class="line">    printf(&quot;Hello World! It&apos;s me, thread #%ld, pid #%ld!\n&quot;, tid, syscall(SYS_gettid));</div><div class="line">     </div><div class="line">    int a=0; </div><div class="line">    while(1) &#123;</div><div class="line">        a++;</div><div class="line">    &#125;</div><div class="line">    pthread_exit(NULL);</div><div class="line">&#125;</div><div class="line">int main (int argc, char *argv[])</div><div class="line">&#123;</div><div class="line">    int num_threads;</div><div class="line">    if (argc &gt; 1)&#123;</div><div class="line">        num_threads = atoi(argv[1]);</div><div class="line">    &#125;</div><div class="line">    if (num_threads&lt;=0 || num_threads&gt;=100)&#123;</div><div class="line">        num_threads = NUM_THREADS;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    /* 设置CPU利用率为50% */</div><div class="line">    mkdir(&quot;/sys/fs/cgroup/cpu/haoel&quot;, 755);</div><div class="line">    system(&quot;echo 50000 &gt; /sys/fs/cgroup/cpu/haoel/cpu.cfs_quota_us&quot;);</div><div class="line"> </div><div class="line">    mkdir(&quot;/sys/fs/cgroup/cpuset/haoel&quot;, 755);</div><div class="line">    /* 限制CPU只能使用#2核和#3核 */</div><div class="line">    system(&quot;echo \&quot;2,3\&quot; &gt; /sys/fs/cgroup/cpuset/haoel/cpuset.cpus&quot;);</div><div class="line"> </div><div class="line">    pthread_t* threads = (pthread_t*) malloc (sizeof(pthread_t)*num_threads);</div><div class="line">    int rc;</div><div class="line">    long t;</div><div class="line">    for(t=0; t&lt;num_threads; t++)&#123;</div><div class="line">        printf(&quot;In main: creating thread %ld\n&quot;, t);</div><div class="line">        rc = pthread_create(&amp;threads[t], NULL, thread_main, (void *)t);</div><div class="line">        if (rc)&#123;</div><div class="line">            printf(&quot;ERROR; return code from pthread_create() is %d\n&quot;, rc);</div><div class="line">            exit(-1);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    /* Last thing that main() should do */</div><div class="line">    pthread_exit(NULL);</div><div class="line">    free(threads);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<ul>
-<li><p>cpu资源报告<br>这个子系统的配置是cpu子系统的补充,提供CPU资源用量的统计,时间单位都是纳秒。<br>cpuacct.usage：统计cgroup中所有task的cpu使用时长。<br>cpuacct.stat：统计cgroup中所有task的用户态和内核态分别使用cpu的时长。<br>cpuacct.usage_percpu：统计cgroup中所有task使用每个cpu的时长</p>
-</li>
-<li><p>cpu绑定<br>为task分配独立CPU资源的子系统,参数较多,这里只选讲两个必须配置的参数,同时Docker中目前也只用到这两个。<br>cpuset.cpus：在这个文件中填写cgroup可使用的CPU编号,如0-2,16代表 0、1、2和16这4个CPU。<br>cpuset.mems：与CPU类似,表示cgroup可使用的memory node</p>
-</li>
-<li><p>限制task对device的使用<br>设备黑/白名单过滤<br>devices.allow：允许名单,语法type device_types:node_numbers access type。<br>type有三种类型：b（块设备）、c（字符设备）、a（全部设备）<br>access也有三种方式：r（读）、w（写）、m（创建）<br>devices.deny：禁止名单,语法格式同上。<br>统计报告<br>devices.list：报告为这个cgroup中的task设定访问控制的设备</p>
-</li>
-<li><p>暂停/恢复cgroup中的task<br>只有一个属性,表示进程的状态,把task放到freezer所在的cgroup,再把state改为FROZEN,就可以暂停进程。不允许在cgroup处于FROZEN状态时加入进程。<br>freezer.state包括如下三种状态： -FROZEN 停止。-FREEZING 正在停止,这个是只读状态,不能写入这个值。-THAWED 恢复</p>
-</li>
-<li><p>内存资源管理</p>
-</li>
-</ul>
-<p>限额类：<br>memory.limit_bytes：强制限制最大内存使用量,单位有k、m、g三种,填-1则代表无限制。<br>memory.soft_limit_bytes：软限制,只有比强制限制设置的值小时才有意义。当整体内存紧张的情况下,task获取的内存就被限制在软限制额度之内,以保证不会有太多进程因内存挨饿。可以看到,加入了内存的资源限制并不代表没有资源竞争。<br>memory.memsw.limit_bytes：设定最大内存与swap区内存之和的用量限制。<br>报警与自动控制：<br>memory.oom_control：改参数填0或1,0表示开启,当cgroup中的进程使用资源超过界限时立即杀死进程,1表示不启用。默认情况下,包含memory子系统的cgroup都启用。当oom_control不启用时,实际使用内存超过界限时进程会被暂停直到有空闲的内存资源。<br>统计与监控类：<br>memory.usage_bytes：报告该cgroups中进程使用的当前中总内存用量（以字节为单位）。<br>memory.max_usage_bytes：报告该cgroups中进程使用的最大内存使用量。<br>memory.failcnt：报告内存达到在memory.limit_in_bytes设定的限制值次数。<br>memory.stat：包含大量的内存统计数据。<br>cache：页缓存,包括​​tmpfs,单位为字节。<br>rss：匿名和swap,不包括tmpfs,单位为字节。​<br>mapped_file：memory-mapped映射的文件大小,包括tmpfs,单位为字节。<br>pgpgin：存入内存中的页数。<br>pgpgout：从内存中读出页数。<br>swap：swap用量,单位为字节。<br>active_anon：在活跃的最近最少使用（least-recently-used,LRU）列表中的匿名和swap缓存,包括tmpfs,单位为字节。<br>inactive_anon：不活跃的LRU列表中的匿名和swap缓存,包括tmpfs,单位为字节。<br>active_file：活跃LRU列表中的file-backed内存,以字节为单位。<br>inactive_file：不活跃LRU列表中的file-backed内存,以字节为单位。<br>unevictable：无法再生的内存,以字节为单位。<br>hierarchical_memory_limit：包含memory cgroup的层级的内存限制,单位为字节。<br>hierarchical_memsw_limit：包含memory cgroup的层级的内存加swap限制,单位为字节</p>
-<p>下面是一个限制内存的示例(代码是个死循环，其它不断的分配内存，每次512个字节，每次休息一秒)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">#include &lt;stdio.h&gt;</div><div class="line">#include &lt;stdlib.h&gt;</div><div class="line">#include &lt;string.h&gt;</div><div class="line">#include &lt;sys/types.h&gt;</div><div class="line">#include &lt;unistd.h&gt;</div><div class="line"> </div><div class="line">int main(void)</div><div class="line">&#123;</div><div class="line">    int size = 0;</div><div class="line">    int chunk_size = 512;</div><div class="line">    void *p = NULL;</div><div class="line"> </div><div class="line">    while(1) &#123;</div><div class="line"> </div><div class="line">        if ((p = malloc(p, chunk_size)) == NULL) &#123;</div><div class="line">            printf(&quot;out of memory!!\n&quot;);</div><div class="line">            break;</div><div class="line">        &#125;</div><div class="line">        memset(p, 1, chunk_size);</div><div class="line">        size += chunk_size;</div><div class="line">        printf(&quot;[%d] - memory is allocated [%8d] bytes \n&quot;, getpid(), size);</div><div class="line">        sleep(1);</div><div class="line">    &#125;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>之后，我们在另一个终端</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># 创建memory cgroup</div><div class="line">$ mkdir /sys/fs/cgroup/memory/haoel</div><div class="line">$ echo 64k &gt; /sys/fs/cgroup/memory/haoel/memory.limit_in_bytes</div><div class="line"> </div><div class="line"># 把上面的进程的pid加入这个cgroup</div><div class="line">$ echo [pid] &gt; /sys/fs/cgroup/memory/haoel/tasks</div></pre></td></tr></table></figure>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a><b>总结</b></h4><p>内核对cgroups的支持已经较为完善,但是依旧有许多工作需要完善。如网络方面目前是通过TC（Traffic Controller）来控制,未来需要统一整合；资源限制并没有解决资源竞争,在各自限制之内的进程依旧存在资源竞争,优先级调度方面依旧有很大的改进空间</p>
-<p>ref</p>
-<p><a href="http://70data.net/1131.html" target="_blank" rel="external">Docker学习笔记-Linux cgroups</a><br><a href="https://access.redhat.com/documentation/zh-CN/Red_Hat_Enterprise_Linux/6/html-single/Resource_Management_Guide/index.html" target="_blank" rel="external">Reahat Resource Management Guide</a><br><a href="http://coolshell.cn/articles/17049.html" target="_blank" rel="external">Docker基础技术：Linux CGroup</a></p>
-<p>t1ger整理于2016.11.25</p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h4 id=&quot;cgroup是什么&quot;&gt;&lt;a href=&quot;#cgroup是什么&quot; class=&quot;headerlink&quot; title=&quot;cgroup是什么&quot;&gt;&lt;/a&gt;&lt;b&gt;cgroup是什么&lt;/b&gt;&lt;/h4&gt;&lt;p&gt;Linux CGroup全称Linux Control Group,L
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>配置中心那点事</title>
-    <link href="https://t1ger.github.io/2016/11/23/%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E9%82%A3%E7%82%B9%E4%BA%8B/"/>
-    <id>https://t1ger.github.io/2016/11/23/配置中心那点事/</id>
-    <published>2016-11-23T05:12:05.000Z</published>
-    <updated>2016-11-23T09:46:08.971Z</updated>
-    
-    <content type="html"><![CDATA[<h4 id="配置中心怎么做"><a href="#配置中心怎么做" class="headerlink" title="配置中心怎么做"></a><b>配置中心怎么做</b></h4><ul>
-<li>配置分发，实现有两种方式<br>推：实时性变更，需要应用和配置中心保持长连接，复杂度高<br>拉：实时性相对差，没有增量更新机制会增加配置中心压力，复杂度低</li>
-<li>订阅和发布<br>支持配置变更通知，如果是推送，server把每次变更实时发送给订阅客户端<br>如果是拉取，则通过比较client和server的数据md5来实现有效变更通知。server会下发数据和md5给client,client请求的时候会带上md5,假如md5变化，则server重新下发，否则无需变更，返回”无变更”</li>
-<li>多环镜、集群配置管理<br>同一份程序在不同的环境（开发，测试，生产）、不同的集群（如不同的数据中心）经常需要有不同的配置，所以需要有完善的环境、集群配置管理</li>
-<li>权限控制和操作审计：配置能改变程序的行为,需要有完善的权限控制，以防错误的配置引起的故障。变更操作都要有审计日志，可以方便的追踪问题</li>
-<li>版本管理<br>所有的配置发布都有版本概念，从而可以方便的支持配置的回滚</li>
-<li>支持灰度发布<br>支持配置的灰度发布，比如点了发布后，只对部分应用实例生效，等观察一段时间没问题后再推给所有应用实例,两种解决方案：<br>a.配置项增加一个host属性，表示这个配置项只“发布”给某些IP<br>b.定义一个优先级，客户端优先加载本地配置文件，这样如果某些机器上的应用需要特殊配置，那么可以采用老的方式上去修改其本地配置文件</li>
-<li>支持降级<br>非核心服务降级开关。发生问题时，降级服务的非核心服务</li>
-<li>同时支持web页面和Restful API接口</li>
-<li>支持多语言，支持php这种无状态语言</li>
-<li>支持容错性，当server出现问题时，不影响client的运行</li>
-<li>支持本地缓存，减少每次获取配置项时与server的网络消耗，仅server更新时通知client</li>
-</ul>
-<h4 id="客户端怎么支持"><a href="#客户端怎么支持" class="headerlink" title="客户端怎么支持"></a><b>客户端怎么支持</b></h4><ul>
-<li>配合配置中心的推送，在参数变化时调用客户端自行实现的回调接口，不需要重启应用</li>
-<li>支持环境变量，JVM启动参数，配置文件，配置中心等多种来源按优先级互相覆盖，并有接口暴露最后的参数选择</li>
-<li>配置文件中支持多套profile，如开发，单元测试，集成测试，生产</li>
-</ul>
-<h4 id="开源解决方案现状"><a href="#开源解决方案现状" class="headerlink" title="开源解决方案现状"></a><b>开源解决方案现状</b></h4><ul>
-<li>淘宝的<a href="">Diamond</a></li>
-<li>携程开源的<a href="https://github.com/ctripcorp/apollo" target="_blank" rel="external">Applo</a>，支持Java，其他语言通过Http支持</li>
-<li>个人开源的<a href="https://github.com/knightliao/disconf/tree/master/disconf-web" target="_blank" rel="external">disconf</a>，只支持Java＋Spring</li>
-<li>360的<a href="https://github.com/Qihoo360/QConf" target="_blank" rel="external">Qconf</a>，基于zk，特色是基于Agent模式的多语言支持。但服务端也没有界面、灰度、预案什么的，直接通过API操作ZK而已</li>
-<li>个人开源的<a href="https://github.com/hengyunabc/xdiamond" target="_blank" rel="external">xdiamond</a></li>
-<li>个人开源的<a href="https://github.com/cncduLee/zk-ucc" target="_blank" rel="external">zk-ucc</a></li>
-<li>个人开源的<a href="https://github.com/xuxueli/xxl-conf" target="_blank" rel="external">xxlconf</a></li>
-<li>个人开源的<a href="https://github.com/ihaolin/diablo" target="_blank" rel="external">diablo</a></li>
-<li><a href="https://github.com/coreos/etcd" target="_blank" rel="external">etcd</a></li>
-<li><a href="https://zookeeper.apache.org" target="_blank" rel="external">zookeeper</a></li>
-<li><a href="https://www.consul.io/" target="_blank" rel="external">consul</a></li>
-<li><a href="https://github.com/kelseyhightower/confd" target="_blank" rel="external">confd</a></li>
-<li><a href="http://www.cfg4j.org" target="_blank" rel="external">cfg4j</a></li>
-<li><a href="https://github.com/melin/super-diamond" target="_blank" rel="external">super-diamond</a> ,已停止更新</li>
-</ul>
-<p>开源之外呢？<br>应该说最好的配置中心还是在各个互联网公司的基础架构部里，虽然不是完美，虽然修修补补，常见的两种玩法</p>
-<ul>
-<li><p>一种玩法是基于zk和etcd，一般支持界面和api,用数据库来保存版本历史，预案，走流程,最后下发到zk或etcd这种有推送能力的存储里（服务注册本身也是用zk或etcd，选型就一块了）。客户端都直接和zk或etcd打交道<br>灰度发布麻烦些，其中一种实现是同时发布一个可接收的IP列表，客户端监听到配置节点变化时，对比一下自己是否属于该列表<br>PHP这种无状态的语言和其他zk/etcd不支持的语言，只好自己在客户端的机器上起一个Agent来监听变化，再写到配置文件或Share Memory了</p>
-</li>
-<li><p>另一种玩法是基于运维自动化的配置文件的推送，一样有数据库与界面或API来管理配置，下发时生成配置文件，基于各种运维自动化工具如Puppet，Ansible推送到每个客户端。而应用则定时重新读取这个外部的配置文件</p>
-</li>
-</ul>
-<p>ref<br><a href="http://jm.taobao.org/2016/09/28/an-article-about-config-center/" target="_blank" rel="external">一篇好TM长的关于配置中心的文章</a><br><a href="http://calvin1978.blogcn.com/articles/serviceconfig.html" target="_blank" rel="external">服务化体系之－配置中心，在ZK或etcd之外</a><br><a href="http://vernonzheng.com/2015/02/09/%E5%BC%80%E6%BA%90%E5%88%86%E5%B8%83%E5%BC%8F%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E9%80%89%E5%9E%8B/" target="_blank" rel="external">开源分布式配置中心选型</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h4 id=&quot;配置中心怎么做&quot;&gt;&lt;a href=&quot;#配置中心怎么做&quot; class=&quot;headerlink&quot; title=&quot;配置中心怎么做&quot;&gt;&lt;/a&gt;&lt;b&gt;配置中心怎么做&lt;/b&gt;&lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;配置分发，实现有两种方式&lt;br&gt;推：实时性变更，需要应用和配置中心保持长连
     
     </summary>
     
