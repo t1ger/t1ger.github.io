@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2016-12-29T04:12:36.673Z</updated>
+  <updated>2017-01-19T10:08:29.923Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>HTTP调试工具HTTPie</title>
+    <link href="https://t1ger.github.io/2017/01/19/HTTP%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7HTTPie/"/>
+    <id>https://t1ger.github.io/2017/01/19/HTTP调试工具HTTPie/</id>
+    <published>2017-01-19T09:33:50.000Z</published>
+    <updated>2017-01-19T10:08:29.923Z</updated>
+    
+    <content type="html"><![CDATA[<p>HTTPie(读aych-tee-tee-pie)是一个 HTTP 的命令行客户端,其目标是让 CLI 和 web 服务之间的交互尽可能的人性化.<br>HTTPie 采用 Python 开发，底层用到了 Requests 和 Pygments 库，缺省支持json，比curl的语法更加简洁.</p>
+<p>安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">#Debian，Ubuntu 或者 Linux Mint：</div><div class="line">sudo apt-get install httpie</div><div class="line">#linux</div><div class="line">pip install httpie</div><div class="line">#centos7 </div><div class="line">yum -y install python2-httpie.noarch</div></pre></td></tr></table></figure></p>
+<p>用法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">#simulation commit a form</div><div class="line">http -f POST iweishao.com username=neo</div><div class="line"></div><div class="line">#display more detailed request</div><div class="line">http -v iweishao.com</div><div class="line"></div><div class="line">#display Header</div><div class="line">http -h iweishao.com</div><div class="line"></div><div class="line">#display Body</div><div class="line">http -b iweishao.com</div><div class="line"></div><div class="line">#download file</div><div class="line">http -d iweishao.com</div><div class="line"></div><div class="line">#request a delete method</div><div class="line">http DELETE iweishao.com</div><div class="line"></div><div class="line">#pass json data request(default json request)</div><div class="line">http PUT iweishao.com name=neo password=neo_password</div><div class="line">#if json data not string use := to serperate,eg</div><div class="line">http PUT iweishao.com name=neo password=neo_password age:=28 a:=true streets:=&apos;[&quot;a&quot;,&quot;b&quot;]&apos;</div><div class="line"></div><div class="line">#simulation Form Post method,Content-Type: application/x-www-form-urlencoded; charset=utf-8</div><div class="line">http --form POST iweishao.com name=&apos;neo&apos;</div><div class="line"></div><div class="line">#simulation Form upload,Content-Type: multipart/form-data</div><div class="line">http -f POST iweishao.com/jobs name=&apos;neo&apos; file@~/test.pdf</div><div class="line"></div><div class="line">#modify request header,use : serperate</div><div class="line">http iweishao.com User-Agent:Yhz/1.0 &apos;Cookie:a=b;b=c&apos; Referer:http://iweishao.com/</div><div class="line"></div><div class="line">#auth</div><div class="line">http -a username:password iweishao.com</div><div class="line">http --auth-type=digest -a username:password iweishao.com</div><div class="line"></div><div class="line">#use http proxy</div><div class="line">http --proxy=http:http://192.168.1.130:8060 iweishao</div><div class="line">http --proxy=http:http://user:pass@192.168.1.130:8060 iweishao.com</div></pre></td></tr></table></figure></p>
+<p>高级用法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"># display all and direct</div><div class="line">http --all --follow iweishao.com/redirect/3</div><div class="line"></div><div class="line">#download binary file</div><div class="line">http example.org/movie.mov &gt;mov.mov</div><div class="line"></div><div class="line">#download image,use Imagemagick convert, upload another website</div><div class="line">http octodex.example.com/images/original.jpg |convert - -resize 25% - | http iweishao/Octocats</div><div class="line"># put auth info to session</div><div class="line">http --session=user1 -a user:password example.org X-foo:Bar</div><div class="line">#use before auth session visite</div><div class="line">http --session=user example.org</div></pre></td></tr></table></figure></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;HTTPie(读aych-tee-tee-pie)是一个 HTTP 的命令行客户端,其目标是让 CLI 和 web 服务之间的交互尽可能的人性化.&lt;br&gt;HTTPie 采用 Python 开发，底层用到了 Requests 和 Pygments 库，缺省支持json，比cu
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>rpmbuild使用方法简要</title>
@@ -697,72 +722,6 @@
     <summary type="html">
     
       &lt;h4 id=&quot;DeviceMapper简介&quot;&gt;&lt;a href=&quot;#DeviceMapper简介&quot; class=&quot;headerlink&quot; title=&quot;DeviceMapper简介&quot;&gt;&lt;/a&gt;&lt;b&gt;DeviceMapper简介&lt;/b&gt;&lt;/h4&gt;&lt;p&gt;DeviceMapper自Li
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>docker学习笔记-AUFS</title>
-    <link href="https://t1ger.github.io/2016/11/28/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-AUFS/"/>
-    <id>https://t1ger.github.io/2016/11/28/docker学习笔记-AUFS/</id>
-    <published>2016-11-28T06:41:01.000Z</published>
-    <updated>2016-11-28T08:05:11.212Z</updated>
-    
-    <content type="html"><![CDATA[<h4 id="AUFS的八卦"><a href="#AUFS的八卦" class="headerlink" title="AUFS的八卦"></a><b>AUFS的八卦</b></h4><p>AUFS最初命名为Another UnionFS，后来改为Alternative UnionFS，后来可能觉得不够霸气，又改为Advance UnionFS。Junjiro Okajima（岡島順治郎）在2006年开发的，AUFS完全重写了早期的UnionFS 1.x，其主要目的是为了可靠性和性能，并且引入了一些新的功能，比如可写分支的负载均衡。AUFS在使用上全兼容UnionFS，而且比之前的UnionFS在稳定性和性能上都要好很多，后来的UnionFS 2.x开始抄AUFS中的功能。因为Linus的原因，没有进到Linux主干里，基本上是因为代码量比较多，而且写得烂（相对于只有3000行的union mount和10000行的UnionFS，以及其它平均下来只有6000行代码左右的VFS，AUFS居然有30000行代码），所以，岡島不断地改进代码质量，不断地提交，不断地被Linus拒掉，所以，到今天AUFS都还进不了Linux主干（今天你可以看到AUFS的代码其实还好了，比起OpenSSL好N倍，要么就是Linus对代码的质量要求非常高，要么就是Linus就是不喜欢AUFS）</p>
-<h4 id="Linux文件系统-vs-AUFS"><a href="#Linux文件系统-vs-AUFS" class="headerlink" title="Linux文件系统 vs AUFS"></a><b>Linux文件系统 vs AUFS</b></h4><p>典型的Linux文件系统有bootfs和rootfs两部分组成<br>bootfs主要包含bootloader和kernel，bootloader主要引导加载kernel,当kernel被加载到内存中后bootfs就被umount了<br>rootfs包含linux系统中的/dev、/proc、/bin、/etc等标准目录和文件</p>
-<p>AUFS是一种Union File System，所谓UnionFS就是把不同物理位置的目录合并mount到同一个目录中。UnionFS的一个最主要的应用是，把一张CD/DVD和一个硬盘目录给联合 mount在一起，然后，你就可以对这个只读的CD/DVD上的文件进行修改（当然,修改的文件存于硬盘上的目录里）</p>
-<p>传统的Linux加载bootfs时会先将rootfs设为read-only，然后在系统自检之后将rootfs从read-only改为read-write，然后就可以在rootfs上进行写和读的操作了。但Docker的镜像却不是这样，它在bootfs自检完毕之后并不会把rootfs的read-only改为read-write。而是利用union mount（UnionFS的一种挂载机制）将一个或多个read-only的rootfs加载到之前的read-only的rootfs层之上。在加载了这么多层的rootfs之后，仍然让它看起来只像是一个文件系统，在Docker的体系里把union mount的这些read-only的rootfs叫做Docker的镜像。但是，此时的每一层rootfs都是read-only的，此时还不能对其进行操作。当创建一个容器，也就是将Docker镜像进行实例化，系统会在一层或是多层read-only的rootfs之上分配一层空的read-write的rootfs</p>
-<p>回到AUFS,让我们来看个示例吧<br>首先，建上两个目录（水果和蔬菜），并在这两个目录中放上一些文件，水果中有苹果和蕃茄，蔬菜有胡萝卜和蕃茄。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">tree</div><div class="line">.</div><div class="line">├── fruits</div><div class="line">│   ├── apple</div><div class="line">│   └── tomato</div><div class="line">└── vegetables</div><div class="line">    ├── carrots</div><div class="line">    └── tomato</div></pre></td></tr></table></figure>
-<p>然后，输入以下命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"># 创建一个mount目录</div><div class="line">$ mkdir mnt</div><div class="line"># 把水果目录和蔬菜目录union mount到 ./mnt目录中</div><div class="line">$ sudo mount -t aufs -o dirs=./fruits:./vegetables none ./mnt</div><div class="line">#  查看./mnt目录</div><div class="line">$ tree ./mnt</div><div class="line">./mnt</div><div class="line">├── apple</div><div class="line">├── carrots</div><div class="line">└── tomato</div></pre></td></tr></table></figure>
-<p>可以看到在./mnt目录下有三个文件，苹果apple、胡萝卜carrots和蕃茄tomato。水果和蔬菜的目录被union到了./mnt目录下了。<br>修改一下其中的文件内容</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ echo mnt &gt; ./mnt/apple</div><div class="line">$ cat ./mnt/apple</div><div class="line">mnt</div><div class="line">$ cat ./fruits/apple</div><div class="line">mnt</div></pre></td></tr></table></figure>
-<p>可以看到./mnt/apple的内容改了，./fruits/apple的内容也改</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ echo mnt_carrots &gt; ./mnt/carrots</div><div class="line">$ cat ./vegetables/carrots</div><div class="line">$ cat ./fruits/carrots</div><div class="line">mnt_carrots</div></pre></td></tr></table></figure>
-<p>修改了./mnt/carrots的文件内容，./vegetables/carrots并没有变化，反而是./fruits/carrots的目录中出现了carrots文件，其内容是在./mnt/carrots里的内容。<br>在mount aufs命令中，没有指定它vegetables和fruits的目录权限，默认上来说，命令行上第一个(最左边)的目录是可读可写的，后面的全都是只读的</p>
-<p>所以，如果像下面这样指定权限来mount aufs，就会发现有不一样的效果(记得先把上面./fruits/carrots的文件删除了)。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"> sudo mount -t aufs -o dirs=./fruits=rw:./vegetables=rw none ./mnt</div><div class="line">$ echo &quot;mnt_carrots&quot; &gt; ./mnt/carrots</div><div class="line">$ cat ./vegetables/carrots</div><div class="line">mnt_carrots</div><div class="line">$ cat ./fruits/carrots</div><div class="line">cat: ./fruits/carrots: No such file or directory</div></pre></td></tr></table></figure>
-<p>如果要修改./mnt/tomato这个文件，那么究竟是哪个文件会被改写？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ echo &quot;mnt_tomato&quot; &gt; ./mnt/tomato</div><div class="line">$ cat ./fruits/tomato</div><div class="line">mnt_tomato</div><div class="line">$ cat ./vegetables/tomato</div><div class="line">I am a vegetable</div></pre></td></tr></table></figure>
-<p>可见，如果有重复的文件名，在mount命令行上，越往前的就优先级越高。</p>
-<p>关于docker的分层镜像，除了aufs，docker还支持btrfs, devicemapper和vfs，你可以使用-s或–storage-driver=选项来指定相关的镜像存储。在Ubuntu 14.04下，docker默认Ubuntu的aufs。在CentOS7下，用的是devicemapper，可以在下面的目录中查看相关的每个层的镜像</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/var/lib/docker/aufs/diff/&lt;id&gt;</div></pre></td></tr></table></figure>
-<h4 id="AUFS的一些特性"><a href="#AUFS的一些特性" class="headerlink" title="AUFS的一些特性"></a><b>AUFS的一些特性</b></h4><p>AUFS实现了所有Union FS的特性，把多个目录合并为同一目录，并可以按每个需要合并的目录指定相应的权限，实时的添加、删除、修改已经mount好的目录，还可以在多个可写的branch/dir间进行负载均衡<br>被union的目录（分支）的相关权限</p>
-<ul>
-<li>rw表示可写可读read-write</li>
-<li>ro表示read-only，如果你不指权限，那么除了第一个外ro是默认值，对于ro分支，其永远不会收到写操作，也不会收到查找whiteout的操作</li>
-<li>rr表示real-read-only，与read-only不同的是，rr标记的是天生就是只读的分支，这样，AUFS可以提高性能，比如不再设置inotify来检查文件变动通知</li>
-</ul>
-<p>a.术语Branch-就是各个要被union起来的目录</p>
-<ul>
-<li>Branch根据被union的顺序形成一个stack，一般来说最上面的是可写的，下面的都是只读的</li>
-<li>Branch的stack可以在被mount后进行修改，比如：修改顺序，加入新的branch，或是删除其中的branch，或是直接修改branch的权限</li>
-</ul>
-<p>b.术语Opaque-就是不允许任何下层的某个目录显示出来</p>
-<p>c.术语whiteout-一般来说ro的分支都会有wh的属性，比如“[dir]=ro+wh”。所谓whiteout的意思，如果在union中删除的某个文件，实际上是位于一个readonly的分支（目录）上，那么，在mount的union这个目录中将看不到这个文件，但是read-only这个层上无法做任何的修改，所以就需要对这个readonly目录里的文件作whiteout。AUFS的whiteout的实现是通过在上层的可写的目录下建立对应的whiteout隐藏文件来实现的</p>
-<ul>
-<li>在隐藏低层档的情况下，whiteout的名字是’.wh.<filename>’</filename></li>
-<li>在阻止readdir的情况下，名字是’.wh..wh..opq’或者 ’.wh.__dir_opaque’</li>
-</ul>
-<p>假设有三个目录和文件如下所示（test是个空目录）：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"># tree</div><div class="line">.</div><div class="line">├── fruits</div><div class="line">│   ├── apple</div><div class="line">│   └── tomato</div><div class="line">├── test</div><div class="line">└── vegetables</div><div class="line">    ├── carrots</div><div class="line">    └── tomato</div></pre></td></tr></table></figure>
-<p>如下mount：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># mkdir mnt</div><div class="line"># mount -t aufs -o dirs=./test=rw:./fruits=ro:./vegetables=ro none ./mnt</div><div class="line"># # ls ./mnt/</div><div class="line">apple carrots tomato</div></pre></td></tr></table></figure>
-<p>现在在权限为rw的test目录下建个whiteout的隐藏文件.wh.apple，会发现./mnt/apple这个文件就消失了:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># touch ./test/.wh.apple</div><div class="line"># ls ./mnt</div><div class="line">carrots  tomato</div></pre></td></tr></table></figure>
-<p>ref</p>
-<p><a href="http://coolshell.cn/articles/17061.html" target="_blank" rel="external">Docker基础技术：AUFS</a><br><a href="http://70data.net/1174.html" target="_blank" rel="external">Docker学习笔记（五）Linux AUFS</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h4 id=&quot;AUFS的八卦&quot;&gt;&lt;a href=&quot;#AUFS的八卦&quot; class=&quot;headerlink&quot; title=&quot;AUFS的八卦&quot;&gt;&lt;/a&gt;&lt;b&gt;AUFS的八卦&lt;/b&gt;&lt;/h4&gt;&lt;p&gt;AUFS最初命名为Another UnionFS，后来改为Alternative Un
     
     </summary>
     
