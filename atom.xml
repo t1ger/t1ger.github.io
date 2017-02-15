@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-01-19T10:11:16.573Z</updated>
+  <updated>2017-02-15T04:05:34.518Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,59 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>lua基本语法</title>
+    <link href="https://t1ger.github.io/2017/02/14/lua%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95/"/>
+    <id>https://t1ger.github.io/2017/02/14/lua基本语法/</id>
+    <published>2017-02-14T09:46:12.000Z</published>
+    <updated>2017-02-15T04:05:34.518Z</updated>
+    
+    <content type="html"><![CDATA[<h5 id="关键字"><a href="#关键字" class="headerlink" title="关键字"></a><b>关键字</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">and		break	do		else	elseif</div><div class="line">end		false	for		function	if</div><div class="line">in		local	nil		not		or</div><div class="line">repeat	return	then	true	until	while</div></pre></td></tr></table></figure>
+<h5 id="运算"><a href="#运算" class="headerlink" title="运算"></a><b>运算</b></h5><ul>
+<li><p>数字运算</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">支持+，-，*，、，…… 比如2^2 结果为4,2^4结果为16</div><div class="line">连接两个字符串，用&quot;..&quot;运算符</div></pre></td></tr></table></figure>
+</li>
+<li><p>赋值运算</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">a,b,c,d=1,2,3,4  --多变量一起赋值</div><div class="line">a,b=b,a --交换变量功能</div><div class="line">在默认情况下，变量是全局的。如果需要使用局部变量，使用关键字loacal</div><div class="line">local a,b,c =1,2,3 --a,b,c都是局部变量</div></pre></td></tr></table></figure>
+</li>
+<li><p>逻辑运算</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">and,or,not</div><div class="line">在lua 中，只有false和nil被计算为false,其他数据都被计算为true,0也是true</div><div class="line">and和or 的运算结果不是true和false,而是和它的两个操作数相关</div><div class="line"></div><div class="line">a and b :如果a为false,则返回a,否则返回b</div><div class="line">a or  b :如果a为true,则返回a,否则返回b</div><div class="line"></div><div class="line">模拟c语言中的语句：x=a?b:c,在lua中，可以写成：x=a and b or c都是局部变量</div><div class="line">有用的语句：x=x or v,相当于： if not x then x=v end</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="条件判断语句"><a href="#条件判断语句" class="headerlink" title="条件判断语句"></a><b>条件判断语句</b></h5><ul>
+<li><p>if</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">if condition then</div><div class="line">		...</div><div class="line">elseif condition then</div><div class="line">		... else ...</div><div class="line">end</div></pre></td></tr></table></figure>
+</li>
+<li><p>repeat</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">repeat ... until condition</div></pre></td></tr></table></figure>
+</li>
+<li><p>while</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">while condition</div><div class="line">do</div><div class="line">	...</div><div class="line">end</div></pre></td></tr></table></figure>
+</li>
+<li><p>for</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">for var=v1,vn,step</div><div class="line">do</div><div class="line">	...</div><div class="line">end</div><div class="line"></div><div class="line">for var1,var2,... varn in table</div><div class="line">do</div><div class="line">	...</div><div class="line">end</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="常用结构"><a href="#常用结构" class="headerlink" title="常用结构"></a><b>常用结构</b></h5><ul>
+<li>table<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">table 是lua的重要数据类型</div><div class="line">table 类似于 python中的字典</div><div class="line">table 只能通过构造式来创建</div><div class="line"></div><div class="line">lua code</div><div class="line"></div><div class="line">tab=&#123;a=10,b=20,c=30,d=40&#125;</div><div class="line">print(tab[&quot;a&quot;])</div><div class="line"></div><div class="line">comment:</div><div class="line">a)table中的每项要求是 key=value的形式</div><div class="line">b)key只能是字符串，这里的a,b,c,d都是字符串，但是不能加引号</div><div class="line">c)通过key来访问table的值，这时候 a必须加引号</div><div class="line"></div><div class="line"></div><div class="line">tab=&#123;10,m=20,11,12,13&#125;</div><div class="line">print(tab[1]) =10</div><div class="line">print(tab[2]) =11</div><div class="line">print(tab[3]) =12</div><div class="line">print(tab[4]) =13</div><div class="line"></div><div class="line">get table length</div><div class="line">print(table.getn(tab))  -&gt; 4</div><div class="line">print(#tab)             -&gt; 4</div><div class="line"></div><div class="line">for k,v in pairs(tab) do</div><div class="line">		print(k,&quot;:&quot;,v)</div><div class="line">end</div><div class="line"></div><div class="line">1:10</div><div class="line">2:11</div><div class="line">3:12</div><div class="line">4:13</div><div class="line">m:20</div><div class="line"></div><div class="line">注释：</div><div class="line">a)省略key,会自动以1开始编号，并跳过设置过的key</div><div class="line">b)获取表长度，只有当表使用1自动编号开始，可以获取</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="lua表空判断"><a href="#lua表空判断" class="headerlink" title="lua表空判断"></a><b>lua表空判断</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">local a =&#123;&#125;</div><div class="line">判断table a是否为空，有提供api table.maxn(a) 或 #a 获取表a长度，</div><div class="line">该情况只针对key为数字且安装递增方式。</div><div class="line"></div><div class="line">对于自定义key的情况下，获取表长度会失败，可通过lua内置next函数解决</div></pre></td></tr></table></figure>
+<p><a href="http://17173ops.com/2013/11/01/17173-ngx-lua-manual.shtml#toc9" target="_blank" rel="external">lua基本语法</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h5 id=&quot;关键字&quot;&gt;&lt;a href=&quot;#关键字&quot; class=&quot;headerlink&quot; title=&quot;关键字&quot;&gt;&lt;/a&gt;&lt;b&gt;关键字&lt;/b&gt;&lt;/h5&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>HTTP调试工具HTTPie</title>
@@ -638,90 +691,6 @@
     <summary type="html">
     
       &lt;h5 id=&quot;Swarm-Mode是什么&quot;&gt;&lt;a href=&quot;#Swarm-Mode是什么&quot; class=&quot;headerlink&quot; title=&quot;Swarm Mode是什么&quot;&gt;&lt;/a&gt;&lt;b&gt;Swarm Mode是什么&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;Swarm Mode 直接集成于 do
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>docker学习笔记-DeviceMapper</title>
-    <link href="https://t1ger.github.io/2016/11/28/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-DeviceMapper/"/>
-    <id>https://t1ger.github.io/2016/11/28/docker学习笔记-DeviceMapper/</id>
-    <published>2016-11-28T08:09:12.000Z</published>
-    <updated>2016-11-28T09:51:37.909Z</updated>
-    
-    <content type="html"><![CDATA[<h4 id="DeviceMapper简介"><a href="#DeviceMapper简介" class="headerlink" title="DeviceMapper简介"></a><b>DeviceMapper简介</b></h4><p>DeviceMapper自Linux 2.6被引入成为了Linux最重要的一个技术。它在内核中支持逻辑卷管理的通用设备映射机制，它为实现用于存储资源管理的块设备驱动提供了一个高度模块化的内核架构，它包含三个重要的对象概念，Mapped Device、Mapping Table、Target device</p>
-<p>Mapped Device是一个逻辑抽象，可以理解成为内核向外提供的逻辑设备，它通过Mapping Table描述的映射关系和Target Device建立映射。Target device表示的是Mapped Device所映射的物理空间段，对Mapped Device所表示的逻辑设备来说，就是该逻辑设备映射到的一个物理设备</p>
-<p>Mapping Table里有Mapped Device逻辑的起始地址、范围、和表示在Target Device所在物理设备的地址偏移量以及Target 类型等信息（注：这些地址和偏移量都是以磁盘的扇区为单位的，即512个字节大小，所以看到128的时候，其实表示的是128*512=64K）</p>
-<p>DeviceMapper中的逻辑设备Mapped Device不但可以映射一个或多个物理设备Target Device，还可以映射另一个Mapped Device，于是，就是构成了一个迭代或递归的情况，就像文件系统中的目录里除了文件还可以有目录，理论上可以无限嵌套下去</p>
-<p>DeviceMapper在内核中通过一个一个模块化的Target Driver插件实现对IO请求的过滤或者重新定向等工作，当前已经实现的插件包括软 Raid、加密、多路径、镜像、快照等，这体现了在Linux内核设计中策略和机制分离的原则。如下图可以看到DeviceMapper只是一个框架，在这个框架上，可以插入各种各样的策略，在这诸多“插件”中，有一个东西叫Thin Provisioning Snapshot，这是Docker使用DeviceMapper中最重要的模块</p>
-<h4 id="Thin-Provisioning-简介"><a href="#Thin-Provisioning-简介" class="headerlink" title="Thin Provisioning 简介"></a><b>Thin Provisioning 简介</b></h4><p>Thin Provisioning是虚拟化技术中的一种。类似于虚拟内存技术。操作系统给每个进程N多用不完的内址地址（32位下，每个进程可以有最多2GB的内存空间）。但是物理内存是没有那么多的。所以操作系统引入了虚拟内存的设计。逻辑上给无限多的内存，但是实际上是实报实销，达到了内存使用率提高的效果。 第一个是Fat Provisioning。 第二个是Thin Provisioning</p>
-<p>Docker是怎么使用Thin Provisioning这个技术做到像UnionFS那样的分层镜像的呢？答案是，Docker使用了Thin Provisioning的Snapshot的技术,下面我们来介绍一下Thin Provisioning的Snapshot。 先建两个文件，一个是data.img，一个是meta.data.img</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">$ sudo dd if=/dev/zero of=/tmp/data.img bs=1K count=1 seek=10M</div><div class="line">1+0 records in</div><div class="line">1+0 records out</div><div class="line">1024 bytes (1.0 kB) copied, 0.000621428 s, 1.6 MB/s</div><div class="line">$ sudo dd if=/dev/zero of=/tmp/meta.data.img bs=1K count=1 seek=1G</div><div class="line">1+0 records in</div><div class="line">1+0 records out</div><div class="line">1024 bytes (1.0 kB) copied, 0.000140858 s, 7.3 MB/s</div></pre></td></tr></table></figure>
-<p>注意命令中seek选项，其表示为略过of选项指定的输出文件的前10G个output的bloksize的空间后再写入内容。因为bs是1个字节，所以也就是10G的尺寸，但其实在硬盘上是没有占有空间的，占有空间只有1k的内容。当向其写入内容时，才会在硬盘上为其分配空间。可以用ls命令看一下，实际分配了12K和4K</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">sudo ls -lsh /tmp/data.img</div><div class="line">12K -rw-r--r--. 1 root root 11G Aug 25 23:01 /tmp/data.img</div><div class="line">$ sudo ls -slh /tmp/meta.data.img</div><div class="line">4.0K -rw-r--r--. 1 root root 101M Aug 25 23:17 /tmp/meta.data.img</div></pre></td></tr></table></figure>
-<p>为这个文件创建一个loopback设备</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ sudo losetup /dev/loop2015 /tmp/data.img</div><div class="line">$ sudo losetup /dev/loop2016 /tmp/meta.data.img</div><div class="line">$ sudo losetup -a</div><div class="line">/dev/loop2015: [64768]:103991768 (/tmp/data.img)</div><div class="line">/dev/loop2016: [64768]:103991765 (/tmp/meta.data.img)</div></pre></td></tr></table></figure>
-<p>为这个设备建一个Thin Provisioning的Pool，用dmsetup命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo dmsetup create hchen-thin-pool \</div><div class="line">               --table &quot;0 20971522 thin-pool /dev/loop2016 /dev/loop2015 \</div><div class="line">                        128 65536 1 skip_block_zeroing&quot;</div></pre></td></tr></table></figure>
-<p>参数解释如下</p>
-<ul>
-<li>dmsetup create是用来创建thin pool的命令。</li>
-<li>hchen-thin-pool是自定义的一个pool名。</li>
-<li>–table是这个pool的参数设置。<br>0代表起的sector位置。<br>20971522代码结句的sector号，一个sector是512字节，20971522个正好是10GB。<br>/dev/loop2016是meta文件的设备。<br>/dev/loop2015是data文件的设备。<br>128是最小的可分配的sector数。<br>65536是最少可用sector的water mark，也就是一个threshold。<br>1 代表有一个附加参数。<br>skip_block_zeroing是个附加参数，表示略过用0填充的块。</li>
-</ul>
-<p>现在我们可以看到一个Device Mapper的设备了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo ll /dev/mapper/hchen-thin-pool</div><div class="line">lrwxrwxrwx. 1 root root 7 Aug 25 23:24 /dev/mapper/hchen-thin-pool -&gt; ../dm-4</div></pre></td></tr></table></figure>
-<p>接下来创建一个Thin Provisioning的Volume</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ sudo dmsetup message /dev/mapper/hchen-thin-pool 0 &quot;create_thin 0&quot;</div><div class="line">$ sudo dmsetup create hchen-thin-volumn-001 \</div><div class="line">       --table &quot;0 2097152 thin /dev/mapper/hchen-thin-pool 0&quot;</div></pre></td></tr></table></figure>
-<ul>
-<li>第一个命令中的create_thin是关键字，后面的0表示这个Volume的device的id。</li>
-<li>第二个命令是真正的为这个Volumn创建一个可以mount的设备，名字叫hchen-thin-volumn-001。2097152只有1GB。</li>
-</ul>
-<p>在mount之前，我们格式化一下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">$ sudo mkfs.ext4 /dev/mapper/hchen-thin-volumn-001</div><div class="line">mke2fs 1.42.9 (28-Dec-2013)</div><div class="line">Discarding device blocks: done</div><div class="line">Filesystem label=</div><div class="line">OS type: Linux</div><div class="line">Block size=4096 (log=2)</div><div class="line">Fragment size=4096 (log=2)</div><div class="line">Stride=16 blocks, Stripe width=16 blocks</div><div class="line">65536 inodes, 262144 blocks</div><div class="line">13107 blocks (5.00%) reserved for the super user</div><div class="line">First data block=0</div><div class="line">Maximum filesystem blocks=268435456</div><div class="line">8 block groups</div><div class="line">32768 blocks per group, 32768 fragments per group</div><div class="line">8192 inodes per group</div><div class="line">Superblock backups stored on blocks:</div><div class="line">32768, 98304, 163840, 229376</div><div class="line">Allocating group tables: done</div><div class="line">Writing inode tables: done</div><div class="line">Creating journal (8192 blocks): done</div><div class="line">Writing superblocks and filesystem accounting information: done</div></pre></td></tr></table></figure>
-<p>终于可以mount了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ sudo mkdir -p /mnt/base</div><div class="line">$ sudo mount /dev/mapper/hchen-thin-volumn-001 /mnt/base</div><div class="line">$ sudo echo &quot;hello world, I am a base&quot; &gt; /mnt/base/id.txt</div><div class="line">$ sudo cat /mnt/base/id.txt</div><div class="line">hello world, I am a base</div></pre></td></tr></table></figure>
-<p>下面来操作snapshot。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ sudo dmsetup message /dev/mapper/hchen-thin-pool 0 &quot;create_snap 1 0&quot;</div><div class="line">$ sudo dmsetup create mysnap1 \</div><div class="line">                   --table &quot;0 2097152 thin /dev/mapper/hchen-thin-pool 1&quot;</div><div class="line">$ sudo ll /dev/mapper/mysnap1</div><div class="line">lrwxrwxrwx. 1 root root 7 Aug 25 23:49 /dev/mapper/mysnap1 -&gt; ../dm-5</div></pre></td></tr></table></figure>
-<ul>
-<li>第一条命令是向hchen-thin-pool发一个create_snap的消息，后面跟两个id，第一个是新的dev id，第二个是要从哪个已有的dev id上做snapshot。</li>
-<li>第二条命令是创建一个mysnap1的device，并可以被mount</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">$ sudo mkdir -p /mnt/mysnap1</div><div class="line">$ sudo mount /dev/mapper/mysnap1 /mnt/mysnap1</div><div class="line">$ sudo ll /mnt/mysnap1/</div><div class="line">total 20</div><div class="line">-rw-r--r--. 1 root root 25 Aug 25 23:46 id.txt</div><div class="line">drwx------. 2 root root 16384 Aug 25 23:43 lost+found</div><div class="line">$ sudo cat /mnt/mysnap1/id.txt</div><div class="line">hello world, I am a base</div></pre></td></tr></table></figure>
-<p>我们在修改一下/mnt/mysnap1/id.txt，并加上一个snap1.txt的文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">$ sudo echo &quot;I am snap1&quot; &gt;&gt; /mnt/mysnap1/id.txt</div><div class="line">$ sudo echo &quot;I am snap1&quot; &gt; /mnt/mysnap1/snap1.txt</div><div class="line">$ sudo cat /mnt/mysnap1/id.txt</div><div class="line">hello world, I am a base</div><div class="line">I am snap1</div><div class="line">$ sudo cat /mnt/mysnap1/snap1.txt</div><div class="line">I am snap1</div></pre></td></tr></table></figure>
-<p>再看一下/mnt/base，你会发现没有什么变化</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ sudo ls /mnt/base</div><div class="line">id.txt      lost+found</div><div class="line">$ sudo cat /mnt/base/id.txt</div><div class="line">hello world, I am a base</div></pre></td></tr></table></figure>
-<p>似乎已经看到了分层镜像的样子。。。<br>在刚才的snapshot上再建一个snapshot</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">$ sudo dmsetup message /dev/mapper/hchen-thin-pool 0 &quot;create_snap 2 1&quot;</div><div class="line">$ sudo dmsetup create mysnap2 \</div><div class="line">                   --table &quot;0 2097152 thin /dev/mapper/hchen-thin-pool 2&quot;</div><div class="line">$ sudo ll /dev/mapper/mysnap2</div><div class="line">lrwxrwxrwx. 1 root root 7 Aug 25 23:52 /dev/mapper/mysnap1 -&gt; ../dm-7</div><div class="line">$ sudo mkdir -p /mnt/mysnap2</div><div class="line">$ sudo mount /dev/mapper/mysnap2 /mnt/mysnap2</div><div class="line">$ sudo  ls /mnt/mysnap2</div><div class="line">id.txt  lost+found  snap1.txt</div></pre></td></tr></table></figure>
-<p>看到了分层镜像。这里需要补充的理论知识</p>
-<ul>
-<li>Snapshot来自LVM（Logic Volumn Manager），它可以在不中断服务的情况下为某个device打一个快照</li>
-<li>Snapshot是Copy-On-Write的，也就是说，只有发生了修改，才会对对应的内存进行拷贝</li>
-</ul>
-<h4 id="docker的loopback设备"><a href="#docker的loopback设备" class="headerlink" title="docker的loopback设备"></a><b>docker的loopback设备</b></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ sudo losetup -a</div><div class="line">/dev/loop0: [64768]:38050288 (/var/lib/docker/devicemapper/devicemapper/data)</div><div class="line">/dev/loop1: [64768]:38050289 (/var/lib/docker/devicemapper/devicemapper/metadata)</div></pre></td></tr></table></figure>
-<p>其中data 100GB，metadata 2.0GB</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ sudo ls -alhs /var/lib/docker/devicemapper/devicemapper</div><div class="line">506M -rw-------. 1 root root 100G Sep 10 20:15 data</div><div class="line">1.1M -rw-------. 1 root root 2.0G Sep 10 20:15 metadata</div></pre></td></tr></table></figure>
-<p>下面是相关的thin-pool。其中，有个当一大串hash串的device是正在启动的容器</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ sudo ll /dev/mapper/dock*</div><div class="line">lrwxrwxrwx. 1 root root 7 Aug 25 07:57 /dev/mapper/docker-253:0-104108535-pool -&gt; ../dm-2</div><div class="line">lrwxrwxrwx. 1 root root 7 Aug 25 11:13 /dev/mapper/docker-253:0-104108535-deefcd630a60aa5ad3e69249f58a68e717324be4258296653406ff062f605edf -&gt; ../dm-3</div></pre></td></tr></table></figure>
-<p>看一下device id</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo cat /var/lib/docker/devicemapper/metadata/deefcd630a60aa5ad3e69249f58a68e717324be4258296653406ff062f605edf</div><div class="line">&#123;&quot;device_id&quot;:24,&quot;size&quot;:10737418240,&quot;transaction_id&quot;:26,&quot;initialized&quot;:false&#125;</div></pre></td></tr></table></figure>
-<p>device_id是24，size是10737418240，除以512，就是20971520 个 sector，我们用这些信息来做个snapshot看看（注：我用了一个比较大的dev id – 1024）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">sudo dmsetup message &quot;/dev/mapper/docker-253:0-104108535-pool&quot; 0 \</div><div class="line">                                    &quot;create_snap 1024 24&quot;</div><div class="line">$ sudo dmsetup create dockersnap --table \</div><div class="line">                    &quot;0 20971520 thin /dev/mapper/docker-253:0-104108535-pool 1024&quot;</div><div class="line">$ sudo mkdir /mnt/docker</div><div class="line">$ sudo mount /dev/mapper/dockersnap /mnt/docker/</div><div class="line">$ sudo ls /mnt/docker/</div><div class="line">id lost+found rootfs</div><div class="line">$ sudo ls /mnt/docker/rootfs/</div><div class="line">bin dev etc home lib lib64 lost+found media mnt opt proc root run sbin srv sys tmp usr var</div></pre></td></tr></table></figure>
-<p>在docker的容器里用findmnt命令也可以看到相关的mount的情况</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># findmnt</div><div class="line">TARGET                SOURCE               </div><div class="line">/                 /dev/mapper/docker-253:0-104108535-deefcd630a60[/rootfs]</div><div class="line">/etc/resolv.conf  /dev/mapper/centos-root[/var/lib/docker/containers/deefcd630a60/resolv.conf]</div><div class="line">/etc/hostname     /dev/mapper/centos-root[/var/lib/docker/containers/deefcd630a60/hostname]</div><div class="line">/etc/hosts        /dev/mapper/centos-root[/var/lib/docker/containers/deefcd630a60/hosts]</div></pre></td></tr></table></figure>
-<p>ref</p>
-<p><a href="http://coolshell.cn/articles/17200.html" target="_blank" rel="external">Docker基础技术：DeviceMapper</a><br><a href="http://70data.net/1172.html" target="_blank" rel="external">Docker学习笔记（六）Linux DeviceMapper</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h4 id=&quot;DeviceMapper简介&quot;&gt;&lt;a href=&quot;#DeviceMapper简介&quot; class=&quot;headerlink&quot; title=&quot;DeviceMapper简介&quot;&gt;&lt;/a&gt;&lt;b&gt;DeviceMapper简介&lt;/b&gt;&lt;/h4&gt;&lt;p&gt;DeviceMapper自Li
     
     </summary>
     
