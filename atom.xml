@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-02-15T04:05:34.518Z</updated>
+  <updated>2017-02-15T06:29:53.019Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -20,12 +20,12 @@
     <link href="https://t1ger.github.io/2017/02/14/lua%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95/"/>
     <id>https://t1ger.github.io/2017/02/14/lua基本语法/</id>
     <published>2017-02-14T09:46:12.000Z</published>
-    <updated>2017-02-15T04:05:34.518Z</updated>
+    <updated>2017-02-15T06:29:53.019Z</updated>
     
-    <content type="html"><![CDATA[<h5 id="关键字"><a href="#关键字" class="headerlink" title="关键字"></a><b>关键字</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">and		break	do		else	elseif</div><div class="line">end		false	for		function	if</div><div class="line">in		local	nil		not		or</div><div class="line">repeat	return	then	true	until	while</div></pre></td></tr></table></figure>
+    <content type="html"><![CDATA[<h5 id="关键字"><a href="#关键字" class="headerlink" title="关键字"></a><b>关键字</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">and	break	do	else	elseif</div><div class="line">end	false	for	function	if</div><div class="line">in	local	nil	not	or</div><div class="line">repeat	return	then	true	until	while</div></pre></td></tr></table></figure>
 <h5 id="运算"><a href="#运算" class="headerlink" title="运算"></a><b>运算</b></h5><ul>
 <li><p>数字运算</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">支持+，-，*，、，…… 比如2^2 结果为4,2^4结果为16</div><div class="line">连接两个字符串，用&quot;..&quot;运算符</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">支持+，-，*，/，…… 比如2^2 结果为4,2^4结果为16</div><div class="line">连接两个字符串，用&quot;..&quot;运算符</div></pre></td></tr></table></figure>
 </li>
 <li><p>赋值运算</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">a,b,c,d=1,2,3,4  --多变量一起赋值</div><div class="line">a,b=b,a --交换变量功能</div><div class="line">在默认情况下，变量是全局的。如果需要使用局部变量，使用关键字loacal</div><div class="line">local a,b,c =1,2,3 --a,b,c都是局部变量</div></pre></td></tr></table></figure>
