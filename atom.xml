@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-02-17T10:00:12.371Z</updated>
+  <updated>2017-03-13T03:46:10.352Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,55 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>SQLAdvisor简明教程</title>
+    <link href="https://t1ger.github.io/2017/03/13/SQLAdvisor%E7%AE%80%E6%98%8E%E6%95%99%E7%A8%8B/"/>
+    <id>https://t1ger.github.io/2017/03/13/SQLAdvisor简明教程/</id>
+    <published>2017-03-13T03:49:52.000Z</published>
+    <updated>2017-03-13T03:46:10.352Z</updated>
+    
+    <content type="html"><![CDATA[<h5 id="简介"><a href="#简介" class="headerlink" title="简介"></a><b>简介</b></h5><p>SQLAdvisor是由美团点评公司技术工程部DBA团队（北京）开发维护的一个分析SQL给出索引优化建议的工具。它基于MySQL原生态词法解析，结合分析SQL中的where条件、聚合条件、多表Join关系 给出索引优化建议<br>主要功能：输出SQL索引优化建议</p>
+<h5 id="SQLAdvisor安装"><a href="#SQLAdvisor安装" class="headerlink" title="SQLAdvisor安装"></a><b>SQLAdvisor安装</b></h5><ul>
+<li><p>安装依赖项</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">1. 配置percona56 yum源: </div><div class="line">   yum install http://www.percona.com/downloads/percona-release/redhat/0.1-3/percona-release-0.1-3.noarch.rpm</div><div class="line"></div><div class="line">2. yum | apt-get  install cmake libaio-devel libffi-devel glib2 glib2-devel</div><div class="line">3. yum | apt-get  install --enablerepo=Percona56 Percona-Server-shared-56</div></pre></td></tr></table></figure>
+</li>
+<li><p>拉取最新代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/Meituan-Dianping/SQLAdvisor.git</div></pre></td></tr></table></figure>
+</li>
+<li><p>编译依赖项sqlparser</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">1. cmake -DBUILD_CONFIG=mysql_release -DCMAKE_BUILD_TYPE=debug -DCMAKE_INSTALL_PREFIX=/usr/local/sqlparser ./</div><div class="line">2. make &amp;&amp; make install</div><div class="line"></div><div class="line">编译sqladvisor时依赖perconaserverclient_r, 因此需要安装Percona-Server-shared-56</div><div class="line">有可能需要配置软链接例如:</div><div class="line">1. cd /usr/lib64/ </div><div class="line">2. ln -s libperconaserverclient_r.so.18 libperconaserverclient_r.so</div></pre></td></tr></table></figure>
+</li>
+<li><p>安装SQLAdvisor源码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">1. cd SQLAdvisor/sqladvisor/</div><div class="line">2. cmake -DCMAKE_BUILD_TYPE=debug ./</div><div class="line">3. make</div><div class="line">4. 在本路径下生成一个sqladvisor可执行文件，这即是我们想要的。</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="SQLAdvisor使用"><a href="#SQLAdvisor使用" class="headerlink" title="SQLAdvisor使用"></a><b>SQLAdvisor使用</b></h5><ul>
+<li><p>–help输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">[root@localhost sqladvisor]# ./sqladvisor --help</div><div class="line">Usage:</div><div class="line">  sqladvisor [OPTION...] sqladvisor</div><div class="line"></div><div class="line">SQL Advisor Summary</div><div class="line"></div><div class="line">Help Options:</div><div class="line">  -?, --help              Show help options</div><div class="line"></div><div class="line">Application Options:</div><div class="line">  -f, --defaults-file     sqls file</div><div class="line">  -u, --username          username</div><div class="line">  -p, --password          password</div><div class="line">  -P, --port              port</div><div class="line">  -h, --host              host</div><div class="line">  -d, --dbname            database name</div><div class="line">  -q, --sqls              sqls</div><div class="line">  -v, --verbose           1:output logs 0:output nothing</div></pre></td></tr></table></figure>
+</li>
+<li><p>命令行传参调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">./sqladvisor -h xx  -P xx  -u xx -p &apos;xx&apos; -d xx -q &quot;sql&quot; -v 1</div><div class="line"></div><div class="line">注意：命令行传参时，参数名与值需要用空格隔开</div></pre></td></tr></table></figure>
+</li>
+<li><p>配置文件传参调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">$&gt; cat sql.cnf</div><div class="line">[sqladvisor]</div><div class="line">username=xx</div><div class="line">password=xx</div><div class="line">host=xx</div><div class="line">port=xx</div><div class="line">dbname=xx</div><div class="line">sqls=sql1;sql2;sql3....</div><div class="line"></div><div class="line">cmd: ./sqladvisor -f sql.cnf  -v 1</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="常见错误FAQ"><a href="#常见错误FAQ" class="headerlink" title="常见错误FAQ"></a><b>常见错误FAQ</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">我已经安装了libaio-devel库：</div><div class="line">-- Running cmake version 2.8.12.2</div><div class="line">CMake Error at cmake/build_configurations/mysql_release.cmake:46 (MESSAGE):</div><div class="line">          aio is required on Linux, you need to install the required library:</div><div class="line">            Debian/Ubuntu:              apt-get install libaio-dev</div><div class="line">            RedHat/Fedora/Oracle Linux: yum install libaio-devel</div><div class="line">            SuSE:                       zypper install libaio-devel</div><div class="line">          If you really do not want it, pass -DIGNORE_AIO_CHECK to cmake.          </div><div class="line">Call Stack (most recent call first):</div><div class="line">  CMakeLists.txt:131 (INCLUDE)</div><div class="line">  </div><div class="line">原因：刚开始第一次执行cmake的时候就产生了CMakeCache.txt，</div><div class="line">这个时候我并没有安装libaio-devel库，</div><div class="line">然后继续安装依赖库后再执行cmake其实读取的依然是前面生成的cache文件,</div><div class="line">导致cmake判断libaio-devel一直未被安装。</div><div class="line"></div><div class="line">解决：我们rm删除CMakeCache.txt文件后重新执行cmake命令</div></pre></td></tr></table></figure>
+<p>ref<br><a href="https://github.com/Meituan-Dianping/SQLAdvisor/blob/master/doc/QUICK_START.md" target="_blank" rel="external">QUICK_START</a><br><a href="https://github.com/Meituan-Dianping/SQLAdvisor/blob/master/doc/THEORY_PRACTICES.md" target="_blank" rel="external">THEORY_PRACTICES</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h5 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;&lt;b&gt;简介&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;SQLAdvisor是由美团点评公司技术工程部DBA团队（北京）开发维护的一个分析SQL给出索引优化建议的工具。它基于MySQ
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>lua基本语法</title>
@@ -605,99 +654,6 @@
     <summary type="html">
     
       &lt;h5 id=&quot;关于持续集成&quot;&gt;&lt;a href=&quot;#关于持续集成&quot; class=&quot;headerlink&quot; title=&quot;关于持续集成&quot;&gt;&lt;/a&gt;&lt;b&gt;关于持续集成&lt;/b&gt;&lt;/h5&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td cla
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Docker 1.12 Swarm Mode初体验</title>
-    <link href="https://t1ger.github.io/2016/12/01/Docker-1-12-Swarm-Mode%E5%88%9D%E4%BD%93%E9%AA%8C/"/>
-    <id>https://t1ger.github.io/2016/12/01/Docker-1-12-Swarm-Mode初体验/</id>
-    <published>2016-12-01T02:40:08.000Z</published>
-    <updated>2016-12-07T02:02:24.607Z</updated>
-    
-    <content type="html"><![CDATA[<h5 id="Swarm-Mode是什么"><a href="#Swarm-Mode是什么" class="headerlink" title="Swarm Mode是什么"></a><b>Swarm Mode是什么</b></h5><p>Swarm Mode 直接集成于 docker engine 内部, 提供了原生的集群支持, 但与单机版 docker engine 并不兼容, 使用独立的 docker service 命令进行管理, 也无法使用单机版 Docker 的工具及 API,下面介绍几个基本概念</p>
-<ul>
-<li>节点(node)为Swarm集群中的一个docker engine实例。其中管理节点(manager node)负责swarm集群管理并向工作节点分配任务；工作节点(work node)接受并执行来自管理节点的task</li>
-<li>服务(service)是对在worker nodes所运行一组任务的定义，它是整个swarm的核心，一个service由多个任务组成</li>
-<li>任务(task)包含Docker容器和容器中运行的命令或应用，它是swarm中被调度的最小单元。简单可理解为一个task就是一个容器</li>
-</ul>
-<p>Swarm Mode下主要使用三组新的命令行工具创建和管理一个Swarm集群</p>
-<ul>
-<li>docker swarm:集群管理，子命令有init, join, leave, update</li>
-<li>docker node: 节点管理，子命令有accept, promote, demote, inspect, update, tasks, ls, rm</li>
-<li>docker service: 服务创建，子命令有create, inspect, update, remove, tasks</li>
-<li>docker stack/deploy：试验特性，用于多应用部署， 类似与 docker-compose 中的特性</li>
-</ul>
-<h5 id="Swarm-Mode特性"><a href="#Swarm-Mode特性" class="headerlink" title="Swarm Mode特性"></a><b>Swarm Mode特性</b></h5><ul>
-<li>去中心化设计</li>
-<li>声明式服务模型</li>
-<li>随意控制集群规模</li>
-<li>自动状态维护</li>
-<li>跨主机网络</li>
-<li>服务发现</li>
-<li>负载均衡</li>
-<li>默认tls加密</li>
-<li>滚动更新</li>
-</ul>
-<h5 id="创建Swarm集群"><a href="#创建Swarm集群" class="headerlink" title="创建Swarm集群"></a><b>创建Swarm集群</b></h5><ul>
-<li><p>准备工作</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"># rpm -ivh epel-release-7-2.noarch.rpm </div><div class="line"># cat /etc/yum.repos.d/docker.repo </div><div class="line">[dockerrepo]</div><div class="line">name=Docker Repository</div><div class="line">baseurl=https://yum.dockerproject.org/repo/main/centos/$releasever/</div><div class="line">enabled=1</div><div class="line">gpgcheck=1</div><div class="line">gpgkey=https://yum.dockerproject.org/gpg</div><div class="line"> </div><div class="line"># yum install docker-engine -y</div><div class="line"># systemctl start docker</div><div class="line"># systemctl enable docker</div><div class="line"># docker version</div></pre></td></tr></table></figure>
-</li>
-<li><p>在node01上初始化swarm集群</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"># docker swarm init --advertise-addr 192.168.1.102</div><div class="line">Swarm initialized: current node (1r64t4ljem9e4l2e8pnxx9p5o) is now a manager.</div><div class="line"></div><div class="line">To add a worker to this swarm, run the following command:</div><div class="line"></div><div class="line">docker swarm join \</div><div class="line">--token SWMTKN-1-457lrm2xagck8zy5ce9njycvybj9fsurgsh71ihhotol4ivtmj-ds0l8ld19esrbev349v6r4hd1 \</div><div class="line">192.168.1.102:2377</div><div class="line"></div><div class="line">To add a manager to this swarm, run &apos;docker swarm join-token manager&apos; and follow the instructions.</div></pre></td></tr></table></figure>
-<p>  以后如果查看token信息，可以执行 docker swarm join-token worker<br>将node2添加到节点</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">[root@node2 ~]# docker swarm join \</div><div class="line">     --token SWMTKN-1-457lrm2xagck8zy5ce9njycvybj9fsurgsh71ihhotol4ivtmj-ds0l8ld19esrbev349v6r4hd1 \</div><div class="line">     192.168.1.102:2377</div><div class="line">This node joined a swarm as a worker.</div></pre></td></tr></table></figure>
-<p>  再次查看node1节点信息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">[root@node1 ~]# docker node ls</div><div class="line">ID                           HOSTNAME   STATUS  AVAILABILITY  MANAGER STATUS</div><div class="line">1r64t4ljem9e4l2e8pnxx9p5o *  node1  Ready   Active        Leader</div><div class="line">e4ch01lolinm7g49tu38tfib3    node2  Ready   Active</div></pre></td></tr></table></figure>
-</li>
-<li><p>在node1上建立服务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">[root@node1 ~]# docker service create --replicas 1 --name dv citizenstig/dvwa</div><div class="line">5zgu87rqr7k5ieg7la5so03j1</div><div class="line">[root@node1 ~]# docker service ls</div><div class="line">ID            NAME  REPLICAS  IMAGE             COMMAND</div><div class="line">5zgu87rqr7k5  dv    1/1       citizenstig/dvwa  </div><div class="line">[root@node1 ~]# docker service inspect --pretty dv</div><div class="line">ID:             5zgu87rqr7k5ieg7la5so03j1</div><div class="line">Name:           dv</div><div class="line">Mode:           Replicated</div><div class="line"> Replicas:      1</div><div class="line">Placement:</div><div class="line">UpdateConfig:</div><div class="line"> Parallelism:   1</div><div class="line"> On failure:    pause</div><div class="line">ContainerSpec:</div><div class="line"> Image:         citizenstig/dvwa</div><div class="line">Resources:</div><div class="line"></div><div class="line">[root@node1 ~]# docker service ps dv</div><div class="line">ID                         NAME  IMAGE             NODE       DESIRED STATE  CURRENT STATE               ERROR</div><div class="line">7t5qj48rzmeezc1q0rd663gcm  dv.1  citizenstig/dvwa  node1  Running        Running about a minute ago</div></pre></td></tr></table></figure>
-</li>
-<li><p>扩容 scale</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">[root@node1 ~]# docker service scale dv=3</div><div class="line">dv scaled to 3</div><div class="line">[root@node1 ~]# docker service ps dv</div><div class="line">ID                         NAME  IMAGE             NODE       DESIRED STATE  CURRENT STATE             ERROR</div><div class="line">7t5qj48rzmeezc1q0rd663gcm  dv.1  citizenstig/dvwa  node1  Running        Running 2 minutes ago     </div><div class="line">9ohh5xlgffbmzuc8rcfc3bvyu  dv.2  citizenstig/dvwa  node2  Running        Preparing 14 seconds ago  </div><div class="line">20dygfzgpfoilxkdg7lffy47v  dv.3  citizenstig/dvwa  node2  Running        Preparing 14 seconds ago  </div><div class="line"></div><div class="line">我们查看一下任务在2个节点的分布状态</div><div class="line">[root@node1 ~]# docker ps -a        </div><div class="line">CONTAINER ID        IMAGE                     COMMAND                  CREATED             STATUS                   PORTS                          NAMES</div><div class="line">443133ab06bf        citizenstig/dvwa:latest   &quot;/run.sh&quot;                9 minutes ago       Up 9 minutes             80/tcp, 3306/tcp               dv.1.7t5qj48rzmeezc1q0rd663gcm</div><div class="line">[root@node2 ~]# docker ps -a   </div><div class="line">CONTAINER ID        IMAGE                                              COMMAND                  CREATED             STATUS                    PORTS               NAMES</div><div class="line">0aa62a67014c        citizenstig/dvwa:latest                            &quot;/run.sh&quot;                2 minutes ago       Up 2 minutes              80/tcp, 3306/tcp    dv.2.9ohh5xlgffbmzuc8rcfc3bvyu</div><div class="line">a2131cd7d1b4        citizenstig/dvwa:latest                            &quot;/run.sh&quot;                2 minutes ago       Up 2 minutes              80/tcp, 3306/tcp    dv.3.20dygfzgpfoilxkdg7lffy47v</div></pre></td></tr></table></figure>
-</li>
-<li><p>停止服务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">[root@node1 ~]# docker service rm dv</div><div class="line">dv</div><div class="line">[root@node1 ~]# docker service ps dv</div><div class="line">Error: No such service: dv</div></pre></td></tr></table></figure>
-</li>
-<li><p>滚动更新<br>前提：集群中的节点都包括了相同的images，这里使用citizenstig/dvwa</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">docker service create \</div><div class="line">    --replicas 3 \</div><div class="line">    --name dvwa \</div><div class="line">    --update-delay 10s \</div><div class="line">    citizenstig/dvwa</div><div class="line">31rs07r46qg6m6jkrxwi0h23g</div></pre></td></tr></table></figure>
-<p>  通过以下命令查看</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">docker service inspect --pretty dvwa</div><div class="line">docker service ps dvwa</div></pre></td></tr></table></figure>
-<p>  升级为 dvwa:v2 这个image,通过以下命令查看变化</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">docker service update --image dvwa:v2 dvwa</div><div class="line">docker service inspect --pretty dvwa</div><div class="line">docker service ps dvwa</div><div class="line">#清理</div><div class="line">docker service rm dvwa</div></pre></td></tr></table></figure>
-</li>
-<li><p>管理 worker 节点<br>a. 不可用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">docker node update --availability drain node2</div><div class="line">docker node ls</div></pre></td></tr></table></figure>
-<p>  将 node 设置为 drain 后，表明：该 node 将不会运行任务；可以观察到，该 node 中运行的服务正在自动迁移到线上的其他 node 上。<br>示例：将 manager node 设置为 drain，从而避免任务在该 node 上运行，保持 manager 的单一和资源。<br>b. 激活</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker node update --availability active node1</div></pre></td></tr></table></figure>
-<p>  c. 提升为 manager 和降级</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">docker node ls</div><div class="line">docker node promote node1</div><div class="line">docker node ls</div><div class="line">docker node demote node1</div></pre></td></tr></table></figure>
-</li>
-<li><p>overlay 网络</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"># 创建一个 覆盖 所有集群的 overlay  网络</div><div class="line">docker network create --driver overlay --opt encrypted --subnet=10.0.9.0/24 my-net</div><div class="line">#使用 --opt encrypted 标识</div><div class="line"></div><div class="line"># 创建 service 时添加 --endpoint-mode dnsrr  使用dns 做为服务发现，否则跨主机之间无法通讯</div><div class="line"># 例:</div><div class="line">docker service create --replicas 3 --name my-nginx --network my-net --endpoint-mode dnsrr nginx:alpine</div><div class="line"></div><div class="line"># 使用 nslookup my-nginx   查询dns 情况</div><div class="line">-----------------------------------------------------------------------------------------------------------</div><div class="line">nslookup: can&apos;t resolve &apos;(null)&apos;: Name does not resolve</div><div class="line">Name:      my-nginx</div><div class="line">Address 1: 10.0.9.3 b177080c9e65</div><div class="line">Address 2: 10.0.9.2 my-nginx.1.0p2gn3h3ujoghub8ilyyvbenq.my-net</div><div class="line">Address 3: 10.0.9.4 my-nginx.3.axmsfkrxd89gbp75j00cu5qqw.my-net</div></pre></td></tr></table></figure>
-</li>
-<li><p>挂载目录, mount</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker service create --mount type=bind,target=/container_data/,source=/host_data/</div></pre></td></tr></table></figure>
-<p>  示例 - 本地目录： target = 容器里面的路径， source = 本地硬盘路径</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">#docker service create --mount type=volume,source=&lt;VOLUME-NAME&gt;,target=&lt;CONTAINER-PATH&gt;,volume-driver=&lt;DRIVER&gt;</div><div class="line"></div><div class="line">docker service create --name nginx --mount type=bind,target=/usr/share/nginx/html/,source=/opt/web/ --replicas 2 --publish 80:80/tcp nginx</div></pre></td></tr></table></figure>
-<p>  示例 - 挂载volume卷： source = volume 名称 , traget = 容器里面的路径</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker service create --name nginx --mount type=volume,source=myvolume,target=/usr/share/nginx/html,volume-driver=local --replicas 2 --publish 80:80/tcp nginx</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<h5 id="常见使用"><a href="#常见使用" class="headerlink" title="常见使用"></a><b>常见使用</b></h5><p>常见的双层（web+db）应用可按以下方法创建<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">docker network create -d overlay mynet</div><div class="line">docker service create --name frontend --replicas 5 -p 80:80/tcp \</div><div class="line">--network mynet mywebapp</div><div class="line">docker service create --name redis --network mynet redis:latest</div></pre></td></tr></table></figure></p>
-<p>由5套Nginx容器构成的Swarm作为单一内部负载均衡型服务，且于Swarm内任意节点的端口80上进行交付</p>
-<p>ref<br><a href="http://nosmoking.blog.51cto.com/3263888/1832212" target="_blank" rel="external">docker深入2-熟悉v1.12</a><br><a href="https://fangs.work/blog/docker-1-12-swarm-mode" target="_blank" rel="external">Docker 1.12 Swarm Mode http://初上手体验</a><br><a href="http://www.dockerinfo.net/1420.html" target="_blank" rel="external">Docker 1.12 Swarm Mode集群实战(第二章)</a><br><a href="https://tangpengcsu.gitbooks.io/docker/content/Docker%E9%9B%86%E7%BE%A4/docker-swarm-mode.html" target="_blank" rel="external">Swarm Mode</a><br><a href="http://www.xf80.com/2016/10/25/docker-swarm-1.12/" target="_blank" rel="external">docker 1.12 swarm</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h5 id=&quot;Swarm-Mode是什么&quot;&gt;&lt;a href=&quot;#Swarm-Mode是什么&quot; class=&quot;headerlink&quot; title=&quot;Swarm Mode是什么&quot;&gt;&lt;/a&gt;&lt;b&gt;Swarm Mode是什么&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;Swarm Mode 直接集成于 do
     
     </summary>
     
