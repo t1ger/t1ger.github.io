@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
   
-  <title>MySQL复制概述(二) | t1ger的茶馆</title>
+  <title>Docker CE vs Docker EE | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
   
   <meta name="description" content="https://t1ger.github.io/">
   
 
-  <meta name="keywords" content="mysql5.7,linux,replication,GTID">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta property="og:title" content="MySQL复制概述(二)"/>
+  <meta property="og:title" content="Docker CE vs Docker EE"/>
   <meta property="og:site_name" content="t1ger的茶馆"/>
 
   
@@ -117,112 +117,26 @@
 			<!-- index -->
 		   
 
-			  		<h2>MySQL复制概述(二)</h2>
+			  		<h2>Docker CE vs Docker EE</h2>
 					
 					<div>
-						<span class="post-time">2016-09-25 17:28:12</span>
+						<span class="post-time">2017-03-14 17:59:18</span>
 					</div>	
 					
 
 					<div class="article-content">
-						<h5 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h5><p>在上一文章中，我们了解了mysql5.5x系列的mysql复制，这篇文章我们主要介绍mysql5.7版本下的GTID主从复制</p>
-<pre><code>什么是GTID
-GTID = source_id:transaction_id
-开启GTID的必备条件
-gtid_mod=ON
-enforce-gtid-consistency
-log_bin=ON(可选)
-log-slave-updates=ON(可选)
-</code></pre><h6 id="a-标准安装步骤"><a href="#a-标准安装步骤" class="headerlink" title="a)标准安装步骤"></a>a)标准安装步骤</h6><ul>
-<li>同步所有servers<pre><code>mysql&gt; set @@global.read_only = ON;
-注： 执行前slave务必执行完所以更新
-</code></pre></li>
-<li>关闭所有servers<pre><code>shell&gt; mysqladmin -uusername -p shutdown
-</code></pre></li>
-<li><p>重启服务，并开启GTID</p>
-<pre><code>shell&gt; mysqld --gtid-mode=ON --log-bin --enforce-gtid-consistency &amp;
-</code></pre></li>
-<li><p>执行同步命令</p>
-<pre><code>mysql&gt; change master to
-    master_host = host,
-    master_port = port,
-    master_user = user,
-    master_password = password,
-    master_auto_position = 1;
-mysql&gt; start slave;
-</code></pre></li>
-<li><p>取消master的只读模式</p>
-<pre><code>mysql&gt; set @@global.read_only = OFF;
-</code></pre></li>
-</ul>
-<h6 id="b-从备份中恢复"><a href="#b-从备份中恢复" class="headerlink" title="b)从备份中恢复"></a>b)从备份中恢复</h6><ul>
-<li><p>备份</p>
-<pre><code>mysqldump --all-databases --single-transaction --trigger --routines --user=root -p &gt;backup.sql
-# grep PURGED backup.sql
-SET @@GLOBAL.GTID_PURGED=&apos;9a511b7b-7059-11e2-9a24-08002762b8af:1-13&apos;;
-</code></pre></li>
-<li><p>在slave上reset master ,导入备份<br>注：如果是逻辑导入，请设置sql_log_bin=off</p>
-<pre><code>mysql&gt; reset master;
-mysql&gt; show global variables like &apos;gtid_executed&apos;;
-+---------------+-------+
-| Variable_name | Value |
-+---------------+-------+
-| gtid_executed |       |
-+---------------+-------+
-mysql&gt; show global variables like &apos;gtid_purged&apos;;
-+---------------+-------+
-| Variable_name | Value |
-+---------------+-------+
-| gtid_purged   |       |
-+---------------+-------+
-mysql&gt; source backup.sql
-
-mysql&gt; show global variables like &apos;gtid_executed&apos;;
-+---------------+-------------------------------------------+
-| Variable_name | Value                                     |
-+---------------+-------------------------------------------+
-| gtid_executed | 9a511b7b-7059-11e2-9a24-08002762b8af:1-13 |
-+---------------+-------------------------------------------+
-mysql&gt; show global variables like &apos;gtid_purged&apos;;
-+---------------+-------------------------------------------+
-| Variable_name | Value                                     |
-+---------------+-------------------------------------------+
-| gtid_purged   | 9a511b7b-7059-11e2-9a24-08002762b8af:1-13 |
-+---------------+-------------------------------------------+
-</code></pre></li>
-<li><p>执行同步命令</p>
-<pre><code>mysql&gt; change master to
-    master_host = host,
-    master_port = port,
-    master_user = user,
-    master_password = password,
-    master_auto_position = 1;
-mysql&gt; start slave;
-</code></pre></li>
-<li><p>主从复制常见错误<br> Slave_IO_Running: No<br> Slave_SQL_Running: Yes<br> Last_IO_Error: Got fatal error 1236 from master when reading data from binary log: ‘The slave is connecting using CHANGE MASTER TO MASTER_AUTO_POSITION = 1, but the master has purged binary logs containing GTIDs that the slave requires.’</p>
-<p> 在master上查看GTID_EXECUTED</p>
-<pre><code>mysql&gt; show global variables like &apos;GTID_EXECUTED&apos;;
-+---------------+-------------------------------------------+
-| Variable_name | Value                                     |
-+---------------+-------------------------------------------+
-| gtid_executed | 9a511b7b-7059-11e2-9a24-08002762b8af:1-14 |
-+---------------+-------------------------------------------+
-</code></pre><p>解决：</p>
-<pre><code>mysql&gt;reset master;
-mysql&gt;show global variables like &apos;GTID_EXECUTED&apos;;
-    +---------------+-------+
-    | Variable_name | Value |
-    +---------------+-------+
-    | gtid_executed |       |
-    +---------------+-------+
-mysql&gt; set global GTID_PURGED=&quot;9a511b7b-7059-11e2-9a24-08002762b8af:1-14&quot;;
-mysql&gt; start slave io_thread;
-mysql&gt; show slave status\G;
-</code></pre></li>
-</ul>
-<ul>
-<li>工具<br><a href="https://www.percona.com/software/mysql-database/percona-xtrabackup" target="_blank" rel="external">Percona XtraBackup</a></li>
-</ul>
+						<p>Docker2016年就明确了将会在企业级方面重点跟进，惊喜就这样来了，在2017年的3月1号之后，Docker的版本命名开始发生变化，同时将CE版本和EE版本进行分开，而这些也是新安装docker时候发现的，一起简单来看一下具体情况吧</p>
+<h5 id="版本说明"><a href="#版本说明" class="headerlink" title="版本说明"></a><b>版本说明</b></h5><p>在此之前docker的最新版本更新到docker1.13，而在1.13的基础之上，在2017年的3月1号开始，版本的格式变为如下</p>
+<p>项目    说明<br>版本格式    YY.MM<br>stable版本    每个季度发行<br>edge版本    每个月发行<br>当前CE版本    17.03.0-ce</p>
+<p>同时将Docker分成CE和EE2个版本。CE版本即社区版(免费，支持周期三个月),EE企业版，强调安全，付费使用。<br>当前的CE版本为17.03.0-ce，基于V1.13.0.主要修复错误，没有重大功能增加，API亦保持不变。</p>
+<h5 id="安装CE版本的Docker"><a href="#安装CE版本的Docker" class="headerlink" title="安装CE版本的Docker"></a><b>安装CE版本的Docker</b></h5><p>安装参看官方提供Manual如下</p>
+<p>项目    详细<br>CENTOS安装CE版    <a href="https://store.docker.com/editions/community/docker-ce-server-centos?tab=description" target="_blank" rel="external">https://store.docker.com/editions/community/docker-ce-server-centos?tab=description</a><br>也可以使用Easypack下面提供的脚本，只是将上面的内容顺次写进去，加上enable和start以及firewall的关闭等操作而已。</p>
+<p>项目    详细<br>CENTOS安装CE（Easypack）版    <a href="https://github.com/liumiaocn/easypack/tree/master/docker" target="_blank" rel="external">https://github.com/liumiaocn/easypack/tree/master/docker</a></p>
+<h5 id="安装FAQ"><a href="#安装FAQ" class="headerlink" title="安装FAQ"></a><b>安装FAQ</b></h5><p>在yum 安装时候，报出Peer’s Certificate has expired的错误</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">failure: repodata/repomd.xml from docker-ce-stable: [Errno 256] No more mirrors to try.</div><div class="line">https://download.docker.com/linux/centos/7/x86_64/stable/repodata/repomd.xml: [Errno 14] curl#60 - &quot;Peer&apos;s Certificate has expired.&quot;</div></pre></td></tr></table></figure>
+<p>搜索很久，终于看到有位兄弟碰到过，原来是本地时间不正确造成的，详情见<a href="https://xuxinkun.github.io/2016/04/21/curl-ca-problem/" target="_blank" rel="external">这里</a></p>
+<p>进行一次ntp同步时间同步，问题解决<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ntpdate pool.ntp.org</div></pre></td></tr></table></figure></p>
+<p>ref<br><a href="https://docs.docker.com/engine/installation/linux/centos/" target="_blank" rel="external">Get Docker for CentOS</a><br><a href="https://xuxinkun.github.io/2016/04/21/curl-ca-problem/" target="_blank" rel="external">记一次解决curl https证书问题</a><br><a href="https://github.com/tiny1990/aboutTest" target="_blank" rel="external">docker的环境部署</a></p>
 <hr>
 <p>您的鼓励是我写作最大的动力</p>
 <p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
