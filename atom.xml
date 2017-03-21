@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-03-14T08:45:27.454Z</updated>
+  <updated>2017-03-21T07:15:16.339Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,49 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Deploy VM to vCenter with Ansible</title>
+    <link href="https://t1ger.github.io/2017/03/21/Deploy-VM-to-vCenter-with-Ansible/"/>
+    <id>https://t1ger.github.io/2017/03/21/Deploy-VM-to-vCenter-with-Ansible/</id>
+    <published>2017-03-21T07:19:51.000Z</published>
+    <updated>2017-03-21T07:15:16.339Z</updated>
+    
+    <content type="html"><![CDATA[<p>ready work </p>
+<ul>
+<li>install ansible<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># yum install epel-release -y</div><div class="line"># yum install python2-pip -y</div><div class="line"># pip install pysphere</div><div class="line"># yum install ansible -y</div><div class="line">[root@localhost ~]# ansible --version</div><div class="line">ansible 2.2.1.0</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>ansible config</p>
+<ul>
+<li><p>create our inventory list</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">[root@localhost vm-playbook]# cat create_hosts </div><div class="line">[dev-vms]</div><div class="line">ans-dev[127:128] disk=&apos;50&apos; datastore=&apos;datastore1&apos; network=&apos;VM Network&apos; memory=&apos;256&apos; cpucount=&apos;2&apos; osid=&apos;centos64Guest&apos;</div><div class="line"></div><div class="line">ans-dev[127:128]= -  actual VM names that we will be creating</div><div class="line">disk= — is the size in GB to create for each VM</div><div class="line">datastore= — name of the datastore to create the VMs on</div><div class="line">network= — name of network (portgroup) to place the VMs on</div><div class="line">memory= — the amount of memory in MB to allocate to the VMs</div><div class="line">cpucount= — the number of vCPU’s to allocate to the VMs</div><div class="line">osid= — the OS Identifier to specify for the OS type…. reference this guide for OSID’s</div></pre></td></tr></table></figure>
+</li>
+<li><p>create the actual ansible playbook to run to create the VMs</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div></pre></td><td class="code"><pre><div class="line">[root@localhost vm-playbook]# cat create_vms.yml </div><div class="line">---</div><div class="line">- hosts: all</div><div class="line">  gather_facts: false</div><div class="line">  connection: local</div><div class="line">  user: root</div><div class="line">  sudo: false</div><div class="line">  serial: 1</div><div class="line"></div><div class="line">  vars_prompt:</div><div class="line">    - name: &quot;vcenter_hostname&quot;</div><div class="line">      prompt: &quot;Enter vcenter hostname&quot;</div><div class="line">      private: no</div><div class="line">      default: &quot;vcsa&quot;</div><div class="line">    - name: &quot;vcenter_user&quot;</div><div class="line">      prompt: &quot;Enter vcenter username&quot;</div><div class="line">      private: no</div><div class="line">    - name: &quot;vcenter_pass&quot;</div><div class="line">      prompt: &quot;Enter vcenter password&quot;</div><div class="line">      private: yes</div><div class="line"></div><div class="line">  vars:</div><div class="line">    datacenter: &apos;whistle&apos;</div><div class="line">    esxi_host: &apos;192.168.100.120&apos;</div><div class="line">    notes: &apos;Created by Ansible&apos;</div><div class="line"></div><div class="line">  tasks:</div><div class="line">    - vsphere_guest:</div><div class="line">        vcenter_hostname: &quot;&#123;&#123; vcenter_hostname &#125;&#125;&quot;</div><div class="line">        username: &quot;&#123;&#123; vcenter_user &#125;&#125;&quot;</div><div class="line">        password: &quot;&#123;&#123; vcenter_pass &#125;&#125;&quot;</div><div class="line">        guest: &quot;&#123;&#123; inventory_hostname &#125;&#125;&quot;</div><div class="line">        state: present</div><div class="line">        vm_extra_config:</div><div class="line">          notes: &quot;&#123;&#123; notes &#125;&#125;&quot;</div><div class="line">          vcpu.hotadd: yes</div><div class="line">          mem.hotadd:  yes</div><div class="line">          #folder: ansible_test</div><div class="line">        vm_disk:</div><div class="line">          disk1:</div><div class="line">            size_gb: &quot;&#123;&#123; disk &#125;&#125;&quot;</div><div class="line">            type: thin</div><div class="line">            datastore: &quot;&#123;&#123; datastore &#125;&#125;&quot;</div><div class="line">            # VMs can be put into folders. The value given here is either the full path</div><div class="line">            # to the folder (e.g. production/customerA/lamp) or just the last component</div><div class="line">            # of the path (e.g. lamp):</div><div class="line">            #folder: production/customerA/lamp</div><div class="line">        vm_nic:</div><div class="line">          nic1:</div><div class="line">            type: e1000</div><div class="line">            network: &quot;&#123;&#123; network &#125;&#125;&quot;</div><div class="line">            network_type: standard</div><div class="line">        vm_hardware:</div><div class="line">          memory_mb: &quot;&#123;&#123; memory &#125;&#125;&quot;</div><div class="line">          num_cpus: &quot;&#123;&#123; cpucount &#125;&#125;&quot;</div><div class="line">          osid: &quot;&#123;&#123; osid &#125;&#125;&quot;</div><div class="line">          scsi: paravirtual</div><div class="line">          vm_cdrom:</div><div class="line">                type: &quot;iso&quot;</div><div class="line">                iso_path: &quot;datastore1/iso/CentOS-Basic7.3-01071715.iso&quot;</div><div class="line">        esxi:</div><div class="line">          datacenter: &quot;&#123;&#123; datacenter &#125;&#125;&quot;</div><div class="line">          hostname: &quot;&#123;&#123; esxi_host &#125;&#125;&quot;</div></pre></td></tr></table></figure>
+<ul>
+<li>now ready to run your playbook</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">[root@localhost vm-playbook]# ansible-playbook -i create_hosts create_vms.yml </div><div class="line">SSH password: </div><div class="line">[DEPRECATION WARNING]: Instead of sudo/sudo_user, use become/become_user and make sure become_method is &apos;sudo&apos; (default).</div><div class="line">This feature will be removed in a future release. Deprecation </div><div class="line">warnings can be disabled by setting deprecation_warnings=False in ansible.cfg.</div><div class="line">Enter vcenter hostname [vcsa]: 192.168.100.120</div><div class="line">Enter vcenter username: administrator</div><div class="line">Enter vcenter password: </div><div class="line"></div><div class="line">PLAY [all] *********************************************************************</div><div class="line"></div><div class="line">TASK [vsphere_guest] ***********************************************************</div><div class="line">changed: [ans-dev127]</div><div class="line"></div><div class="line">PLAY [all] *********************************************************************</div><div class="line"></div><div class="line">TASK [vsphere_guest] ***********************************************************</div><div class="line">changed: [ans-dev128]</div><div class="line"></div><div class="line">PLAY RECAP *********************************************************************</div><div class="line">ans-dev127                 : ok=1    changed=1    unreachable=0    failed=0   </div><div class="line">ans-dev128                 : ok=1    changed=1    unreachable=0    failed=0</div></pre></td></tr></table></figure>
+<p>ref</p>
+<p><a href="http://docs.ansible.com/ansible/vsphere_guest_module.html" target="_blank" rel="external">vsphere_guest - Create/delete/manage a guest VM through VMware vSphere</a><br><a href="http://everythingshouldbevirtual.com/creating-vsphere-vms-using-ansible" target="_blank" rel="external">Creating vSphere VM’s using Ansible</a><br><a href="http://serverfault.com/questions/740193/create-multiple-vmware-guests-with-vsphere-guest-module" target="_blank" rel="external">Create multiple VMware guests with vsphere_guest module</a><br><a href="http://probably.co.uk/managing-vmware-vsphere-guests-with-ansible-tower.html" target="_blank" rel="external">Managing VMware vSphere guests with Ansible Tower</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;ready work &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;install ansible&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div 
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Docker CE vs Docker EE</title>
@@ -543,64 +586,6 @@
       <category term="mysql" scheme="https://t1ger.github.io/tags/mysql/"/>
     
       <category term="ssl" scheme="https://t1ger.github.io/tags/ssl/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>五分钟了解Redis4.0新特性</title>
-    <link href="https://t1ger.github.io/2016/12/09/%E4%BA%94%E5%88%86%E9%92%9F%E4%BA%86%E8%A7%A3Redis4-0%E6%96%B0%E7%89%B9%E6%80%A7/"/>
-    <id>https://t1ger.github.io/2016/12/09/五分钟了解Redis4-0新特性/</id>
-    <published>2016-12-09T03:05:05.000Z</published>
-    <updated>2016-12-09T03:13:36.828Z</updated>
-    
-    <content type="html"><![CDATA[<p>看到redis版本变成4.0，好多同学可能会有疑惑，咋的从3.x直接就跳到4.0了么，这里引用antirez大神的博客来说明原因：<br>Redis 4.0 is not called 3.4 because it is a major release that adds a number<br>of important and non trivial features. Many core functionalities of Redis were<br>seriously reworked.</p>
-<p>这段话大意是说，新版本的 Redis 出现了多项改变， 所以他决定从原来的 3.x 版本直接跳到 4.0 版本， 以此来强调这次更新的变化之大</p>
-<p>闲言少续，我们来看看到底有哪些变化呢</p>
-<ul>
-<li>Redis modules system<br>Redis允许开发者开发modules去扩展Redis功能，这样开发者可以使用新的数据类型，Module api 与Redis内核完全分离，互不干扰</li>
-<li>Partial Replication (PSYNC) version 2<br>Redis解决了旧版本从服务器重启，必须与主服务器重新进行全量复制，在新版中，只要条件允许，主从在处理这种情况时将使用部分复制<br>Redis解决了从服务器在failover后成为新的主节点，在旧版中其他从节点在复制这个新主的时候就必须进行全量复制，新版中将在条件允许的情况下使用部分复制</li>
-<li>Cache eviction improvements<br>添加了Last Frequently Used 缓存驱逐策略，对已有的缓存策略进行了优化。</li>
-<li><p>Lazy freeing of keys<br>在旧版中，使用del、flushdb、flushall删除包含体积较大的键，都可能造成服务器阻塞<br>新版中，增加ulink命令，是del命令的异步版本，将删除制动键的曹组放在后台线程执行，尽可能避免服务器阻塞<br>由于历史原因，del将会继续保留，flushdb和flushall命令都新添加了async选项，带这个选项的数据库删除都将在后台线程进行</p>
-</li>
-<li><p>Mixed RDB-AOF format<br>在开启了这个功能之后， AOF 重写产生的文件将同时包含 RDB 格式的内容和 AOF 格式的内容， 其中 RDB 格式的内容用于记录已有的数据， 而 AOF 格式的内存则用于记录最近发生了变化的数据， 这样 Redis 就可以同时兼有 RDB 持久化和 AOF 持久化的优点 —— 既能够快速地生成重写文件， 也能够在出现问题时， 快速地载入数据</p>
-</li>
-<li><p>A new MEMORY command<br>命令可以用于视察内存使用情况， 并进行相应的内存管理操作<br>redis&gt; MEMORY HELP<br>1) “MEMORY USAGE <key> [SAMPLES <count>] - Estimate memory usage of key”<br>2) “MEMORY STATS                         - Show memory usage details”<br>3) “MEMORY PURGE                         - Ask the allocator to release memory”<br>4) “MEMORY MALLOC-STATS                  - Show allocator internal stats”<br>redis&gt; SET msg “hello world”<br>OK<br>redis&gt; SADD fruits apple banana cherry<br>(integer) 3<br>redis&gt; MEMORY USAGE msg<br>(integer) 62<br>redis&gt; MEMORY USAGE fruits<br>(integer) 375</count></key></p>
-</li>
-<li><p>Redis Cluster support for NAT / Docker. There are new functionalities in order to force cluster instances to announce specific sets of IP address, client and bus ports, to the rest of the cluster, regardless of the auto detected IP. This required a bus protocol change that will force users to mass-restart all the nodes of a Redis 3.2 installation in order to upgrade to 4.0</p>
-</li>
-<li><p>Redis uses now less memory in order to store the same amount of data</p>
-</li>
-</ul>
-<p>这里基本都是比较大的特性了，还有些小惊喜等着你哦</p>
-<ul>
-<li><p>Improvements to the RDB format to support 64 bit lengths, binary sorted set scores, and more.The RDB file check utility now uses the same code base of the one used by Redis itself in order to load the RDB file in memory.</p>
-</li>
-<li><p>SWAPDB command: ability to completely and immediately (no latency) replace two Redis databases.<br>可以对指定的两个数据库进行互换： 比如说， 通过执行命令 SWAPDB 0 1 ， 我们可以将原来的数据库 0 变成数据库 1 ， 而原来的数据库 1 则变成数据库 0</p>
-</li>
-<li><p>Improvements to <code>dict.c</code>, the Redis hash table implementation.</p>
-</li>
-<li><p>Security improvements mapping POST and Host: commands to QUIT in order to prevent cross protocol scripting attacks.</p>
-</li>
-<li><p>RPUSHX and LPUSHX now accept a variable number of elements.</p>
-</li>
-<li><p>Reporting of additional memory used by copy on write in the INFO output.</p>
-</li>
-<li><p>Serious refactoring of many core parts of Redis.</p>
-</li>
-</ul>
-<p>ref</p>
-<p><a href="https://raw.githubusercontent.com/antirez/redis/4.0/00-RELEASENOTES" target="_blank" rel="external">Redis 4.0 release notes</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;看到redis版本变成4.0，好多同学可能会有疑惑，咋的从3.x直接就跳到4.0了么，这里引用antirez大神的博客来说明原因：&lt;br&gt;Redis 4.0 is not called 3.4 because it is a major release that adds 
-    
-    </summary>
-    
     
   </entry>
   
