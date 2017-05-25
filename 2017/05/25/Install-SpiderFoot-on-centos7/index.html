@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
   
-  <title>Archives: 2017 | t1ger的茶馆</title>
+  <title>Install SpiderFoot on Centos7 | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
   
   <meta name="description" content="https://t1ger.github.io/">
@@ -13,7 +13,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  
+  <meta property="og:title" content="Install SpiderFoot on Centos7"/>
   <meta property="og:site_name" content="t1ger的茶馆"/>
 
   
@@ -116,70 +116,48 @@
 		<div class="content">
 			<!-- index -->
 		   
-			  	<h2>归档</h2>
-		  		
-	              <p class="archive-item">
-						<a href="/2017/05/25/Install-SpiderFoot-on-centos7/" class="archive-title">Install SpiderFoot on Centos7</a><span class="archive post-time">2017-05-25</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/05/22/mysql5-7-Replication-with-Gtid/" class="archive-title">mysql5.7 Replication with Gtid</a><span class="archive post-time">2017-05-22</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/05/19/有趣的网址-不断更新中/" class="archive-title">有趣的网址-不断更新中</a><span class="archive post-time">2017-05-19</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/05/16/方程式-ms17-010复现/" class="archive-title">方程式-ms17-010复现</a><span class="archive post-time">2017-05-16</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/04/25/docker私有registry配置nginx反向代理/" class="archive-title">docker私有registry配置nginx反向代理</a><span class="archive post-time">2017-04-25</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/04/13/如何生成自签名证书/" class="archive-title">如何生成自签名证书</a><span class="archive post-time">2017-04-13</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/04/07/faster-way-to-navigate-your-filesystem-for-CentOS/" class="archive-title">faster way to navigate your filesystem for CentOS</a><span class="archive post-time">2017-04-07</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/03/21/Deploy-VM-to-vCenter-with-Ansible/" class="archive-title">Deploy VM to vCenter with Ansible</a><span class="archive post-time">2017-03-21</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/03/14/Docker-CE-vs-Docker-EE/" class="archive-title">Docker CE vs Docker EE</a><span class="archive post-time">2017-03-14</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/03/13/SQLAdvisor简明教程/" class="archive-title">SQLAdvisor简明教程</a><span class="archive post-time">2017-03-13</span>
-					</p>
-			  	
-			  <!-- post -->
+
+			  		<h2>Install SpiderFoot on Centos7</h2>
+					
+					<div>
+						<span class="post-time">2017-05-25 18:48:22</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<h5 id="简介"><a href="#简介" class="headerlink" title="简介"></a><b>简介</b></h5><p>SpiderFoot是一个Python编写的免费开源的网站信息收集类工具，并且支持跨平台运行，适用于Linux、*BSD和Windows系统。<br>此外，它还为用户提供了一个易于使用的GUI界面。<br>在功能方面SpiderFoot也为我们考虑的非常周全，通过SpiderFoot我们可以获取相关目标的各种信息，例如网站子域、电子邮件地址、web服务器版本等等。<br>SpiderFoot简单的基于Web的界面，使你能够在安装后立即启动扫描 – 只需简单的设置扫描目标域名，并启用相应的扫描模块即可</p>
+<h5 id="环境依赖"><a href="#环境依赖" class="headerlink" title="环境依赖"></a><b>环境依赖</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip install lxml netaddr M2Crypto cherrypy mako requests bs4</div></pre></td></tr></table></figure>
+<h5 id="安装"><a href="#安装" class="headerlink" title="安装"></a><b>安装</b></h5><p><a href="http://www.spiderfoot.net/download/" target="_blank" rel="external">点击这里下载</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">~$ tar zxvf spiderfoot-X.X.X-src.tar.gz</div><div class="line">~$ cd spiderfoot-X.X.X</div><div class="line">~/spiderfoot-X.X.X$</div></pre></td></tr></table></figure></p>
+<h6 id=""><a href="#" class="headerlink" title=""></a><b?启动 spiderfoot<="" b=""></b?启动></h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">python ./sf.py</div><div class="line">or</div><div class="line">python ./sf.py 0.0.0.0:5001</div><div class="line"></div><div class="line">也可以指定端口</div><div class="line">python ./sf.py 127.0.0.1:9999</div></pre></td></tr></table></figure>
+<h5 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a><b>遇到的问题</b></h5><ol>
+<li><p>Python.h：No such file or directory<br>出现No such file or directory的错误，有两种情况，一种是真的没有Python.h这个文件，一种是Python的版本不对<br>可以进入/usr/include/文件夹下的Python2.x文件夹里查找是否有Python.h这个文件<br>这里是第一种,yum install python-devel 解决</p>
+</li>
+<li><p>fatal error: openssl/err.h:<br>执行 yum install openssl-devel 解决</p>
+</li>
+</ol>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
 			  
 		</div>
 
 		<!-- pagination -->
 	  
 
-			<div class="btn-group btn-group-justified">
-				
-
-					<a class="btn btn-default disabled" href="/" >上一页</a>
-
-					<a class="btn btn-default" href="/">首页</a>
-
-					<a class="btn btn-default " href="/archives/2017/page/2/" >下一页</a>
-
-	    	
-			</div>
-	  
-
 		<div class="comment-section">
   
+  
+
 
 </div>
 	</div>

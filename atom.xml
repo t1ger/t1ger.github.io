@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-05-23T07:44:30.068Z</updated>
+  <updated>2017-05-25T09:20:40.754Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,37 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Install SpiderFoot on Centos7</title>
+    <link href="https://t1ger.github.io/2017/05/25/Install-SpiderFoot-on-centos7/"/>
+    <id>https://t1ger.github.io/2017/05/25/Install-SpiderFoot-on-centos7/</id>
+    <published>2017-05-25T09:48:22.000Z</published>
+    <updated>2017-05-25T09:20:40.754Z</updated>
+    
+    <content type="html"><![CDATA[<h5 id="简介"><a href="#简介" class="headerlink" title="简介"></a><b>简介</b></h5><p>SpiderFoot是一个Python编写的免费开源的网站信息收集类工具，并且支持跨平台运行，适用于Linux、*BSD和Windows系统。<br>此外，它还为用户提供了一个易于使用的GUI界面。<br>在功能方面SpiderFoot也为我们考虑的非常周全，通过SpiderFoot我们可以获取相关目标的各种信息，例如网站子域、电子邮件地址、web服务器版本等等。<br>SpiderFoot简单的基于Web的界面，使你能够在安装后立即启动扫描 – 只需简单的设置扫描目标域名，并启用相应的扫描模块即可</p>
+<h5 id="环境依赖"><a href="#环境依赖" class="headerlink" title="环境依赖"></a><b>环境依赖</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip install lxml netaddr M2Crypto cherrypy mako requests bs4</div></pre></td></tr></table></figure>
+<h5 id="安装"><a href="#安装" class="headerlink" title="安装"></a><b>安装</b></h5><p><a href="http://www.spiderfoot.net/download/" target="_blank" rel="external">点击这里下载</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">~$ tar zxvf spiderfoot-X.X.X-src.tar.gz</div><div class="line">~$ cd spiderfoot-X.X.X</div><div class="line">~/spiderfoot-X.X.X$</div></pre></td></tr></table></figure></p>
+<h6 id=""><a href="#" class="headerlink" title=""></a><b?启动 spiderfoot<="" b=""></b?启动></h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">python ./sf.py</div><div class="line">or</div><div class="line">python ./sf.py 0.0.0.0:5001</div><div class="line"></div><div class="line">也可以指定端口</div><div class="line">python ./sf.py 127.0.0.1:9999</div></pre></td></tr></table></figure>
+<h5 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a><b>遇到的问题</b></h5><ol>
+<li><p>Python.h：No such file or directory<br>出现No such file or directory的错误，有两种情况，一种是真的没有Python.h这个文件，一种是Python的版本不对<br>可以进入/usr/include/文件夹下的Python2.x文件夹里查找是否有Python.h这个文件<br>这里是第一种,yum install python-devel 解决</p>
+</li>
+<li><p>fatal error: openssl/err.h:<br>执行 yum install openssl-devel 解决</p>
+</li>
+</ol>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h5 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;&lt;b&gt;简介&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;SpiderFoot是一个Python编写的免费开源的网站信息收集类工具，并且支持跨平台运行，适用于Linux、*BSD和Wi
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>mysql5.7 Replication with Gtid</title>
@@ -409,66 +440,6 @@ then the default (AUTO) value will be considered.
     <summary type="html">
     
       &lt;h5 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;&lt;b&gt;简介&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;SQLAdvisor是由美团点评公司技术工程部DBA团队（北京）开发维护的一个分析SQL给出索引优化建议的工具。它基于MySQ
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>lua基本语法</title>
-    <link href="https://t1ger.github.io/2017/02/14/lua%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95/"/>
-    <id>https://t1ger.github.io/2017/02/14/lua基本语法/</id>
-    <published>2017-02-14T09:46:12.000Z</published>
-    <updated>2017-02-17T10:00:12.371Z</updated>
-    
-    <content type="html"><![CDATA[<h5 id="关键字"><a href="#关键字" class="headerlink" title="关键字"></a><b>关键字</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">and	break	do	else	elseif</div><div class="line">end	false	for	function	if</div><div class="line">in	local	nil	not	or</div><div class="line">repeat	return	then	true	until	while</div></pre></td></tr></table></figure>
-<h5 id="运算"><a href="#运算" class="headerlink" title="运算"></a><b>运算</b></h5><ul>
-<li><p>数字运算</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">支持+，-，*，/，…… 比如2^2 结果为4,2^4结果为16</div><div class="line">连接两个字符串，用&quot;..&quot;运算符</div></pre></td></tr></table></figure>
-</li>
-<li><p>赋值运算</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">a,b,c,d=1,2,3,4  --多变量一起赋值</div><div class="line">a,b=b,a --交换变量功能</div><div class="line">在默认情况下，变量是全局的。如果需要使用局部变量，使用关键字loacal</div><div class="line">local a,b,c =1,2,3 --a,b,c都是局部变量</div></pre></td></tr></table></figure>
-</li>
-<li><p>逻辑运算</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">and,or,not</div><div class="line">在lua 中，只有false和nil被计算为false,其他数据都被计算为true,0也是true</div><div class="line">and和or 的运算结果不是true和false,而是和它的两个操作数相关</div><div class="line"></div><div class="line">a and b :如果a为false,则返回a,否则返回b</div><div class="line">a or  b :如果a为true,则返回a,否则返回b</div><div class="line"></div><div class="line">模拟c语言中的语句：x=a?b:c,在lua中，可以写成：x=a and b or c都是局部变量</div><div class="line">有用的语句：x=x or v,相当于： if not x then x=v end</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<h5 id="条件判断语句"><a href="#条件判断语句" class="headerlink" title="条件判断语句"></a><b>条件判断语句</b></h5><ul>
-<li><p>if</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">if condition then</div><div class="line">		...</div><div class="line">elseif condition then</div><div class="line">		... else ...</div><div class="line">end</div></pre></td></tr></table></figure>
-</li>
-<li><p>repeat</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">repeat ... until condition</div></pre></td></tr></table></figure>
-</li>
-<li><p>while</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">while condition</div><div class="line">do</div><div class="line">	...</div><div class="line">end</div></pre></td></tr></table></figure>
-</li>
-<li><p>for</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">for var=v1,vn,step</div><div class="line">do</div><div class="line">	...</div><div class="line">end</div><div class="line"></div><div class="line">for var1,var2,... varn in table</div><div class="line">do</div><div class="line">	...</div><div class="line">end</div></pre></td></tr></table></figure>
-</li>
-<li><p>闭包</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">eg one.</div><div class="line">function newCounter()</div><div class="line">	local i=0</div><div class="line">	return function()  -- anonymous function</div><div class="line">		i=i+1</div><div class="line">			return i</div><div class="line">	end</div><div class="line">end</div><div class="line"></div><div class="line">c1=newCounter()</div><div class="line">print(c1()) --&gt;1</div><div class="line">print(c1()) --&gt;2</div><div class="line"></div><div class="line">eg two.</div><div class="line">function myPower(x)</div><div class="line">	return function(y) return y^x end</div><div class="line">end</div><div class="line"></div><div class="line">power2=myPower(2)</div><div class="line">power3=myPower(3)</div><div class="line"></div><div class="line">print(power2(4)) </div><div class="line">print(power3(5))</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<h5 id="常用结构"><a href="#常用结构" class="headerlink" title="常用结构"></a><b>常用结构</b></h5><ul>
-<li>table<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">table 是lua的重要数据类型</div><div class="line">table 类似于 python中的字典</div><div class="line">table 只能通过构造式来创建</div><div class="line"></div><div class="line">lua code</div><div class="line"></div><div class="line">tab=&#123;a=10,b=20,c=30,d=40&#125;</div><div class="line">print(tab[&quot;a&quot;])</div><div class="line"></div><div class="line">comment:</div><div class="line">a)table中的每项要求是 key=value的形式</div><div class="line">b)key只能是字符串，这里的a,b,c,d都是字符串，但是不能加引号</div><div class="line">c)通过key来访问table的值，这时候 a必须加引号</div><div class="line"></div><div class="line"></div><div class="line">tab=&#123;10,m=20,11,12,13&#125;</div><div class="line">print(tab[1]) =10</div><div class="line">print(tab[2]) =11</div><div class="line">print(tab[3]) =12</div><div class="line">print(tab[4]) =13</div><div class="line"></div><div class="line">get table length</div><div class="line">print(table.getn(tab))  -&gt; 4</div><div class="line">print(#tab)             -&gt; 4</div><div class="line"></div><div class="line">for k,v in pairs(tab) do</div><div class="line">		print(k,&quot;:&quot;,v)</div><div class="line">end</div><div class="line"></div><div class="line">1:10</div><div class="line">2:11</div><div class="line">3:12</div><div class="line">4:13</div><div class="line">m:20</div><div class="line"></div><div class="line">注释：</div><div class="line">a)省略key,会自动以1开始编号，并跳过设置过的key</div><div class="line">b)获取表长度，只有当表使用1自动编号开始，可以获取</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<h5 id="lua表空判断"><a href="#lua表空判断" class="headerlink" title="lua表空判断"></a><b>lua表空判断</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">local a =&#123;&#125;</div><div class="line">判断table a是否为空，有提供api table.maxn(a) 或 #a 获取表a长度，</div><div class="line">该情况只针对key为数字且安装递增方式。</div><div class="line"></div><div class="line">对于自定义key的情况下，获取表长度会失败，可通过lua内置next函数解决</div></pre></td></tr></table></figure>
-<h5 id="MetaTable和MetaMethod"><a href="#MetaTable和MetaMethod" class="headerlink" title="MetaTable和MetaMethod"></a><b>MetaTable和MetaMethod</b></h5><p>MetaTable和MetaMethod是lua中的重要语法，MetaTable用来做类似C++重载操作符的功能</p>
-<p>假如有两个函数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">fraction_a =&#123;numerator=2,denominator=3&#125;</div><div class="line">fraction_b =&#123;numerator=4,denominator=7&#125;</div></pre></td></tr></table></figure></p>
-<p>如果要实现分数见相加：2/3+4/7,执行fraction_a+fraction_b会报错<br>如果使用MetaTable,则如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">fraction_op=&#123;&#125;</div><div class="line">function fraction_op.__add(f1,f2)</div><div class="line">	ret = &#123;&#125;</div><div class="line">	ret.numerator=f1.numerator*f2.denominator+f2.numerator*f1.denominator</div><div class="line">	ret.denominator=f1.denominator*f2.denominator</div><div class="line">	return ret</div><div class="line">end</div><div class="line"></div><div class="line">setmetatable(fraction_a,fraction_op)</div><div class="line">setmetatable(fraction_a,fraction_op)</div><div class="line"></div><div class="line">fraction_s = fraction_a + fraction_b</div></pre></td></tr></table></figure></p>
-<p>至于__add是MetaMethod,这是lua内建约定的，还有如下的MetaMethod：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">__add(a,b)  	对应a+b</div><div class="line">__sub(a,b)  	对应a-b</div><div class="line">__mul(a,b)		对应a*b</div><div class="line">__div(a,b)		对应a/b</div><div class="line">__mod(a,b)		对应a%b</div><div class="line">__pow(a,b)		对应a^b </div><div class="line">__unm(a)		对应-a</div><div class="line">__concat(a,b) 	对应a .. b</div><div class="line">__len(a)		对应#a</div><div class="line">__eq(a,b)		对应a==b</div><div class="line">__lt(a,b)		对应a&lt;b</div><div class="line">__le(a,b)   	对应a&lt;=b</div><div class="line">__index(a,b) 	对应a.b</div><div class="line">__newindex(a,b,c)		对应a.b=c</div><div class="line">__call(a,...)		对应a(...)</div></pre></td></tr></table></figure></p>
-<p><a href="http://www.codingnow.com/2000/download/lua_manual.html" target="_blank" rel="external">Lua 5.1 参考手册</a><br><a href="http://17173ops.com/2013/11/01/17173-ngx-lua-manual.shtml#toc9" target="_blank" rel="external">lua基本语法</a><br><a href="http://book.luaer.cn/" target="_blank" rel="external">Programming in Lua</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h5 id=&quot;关键字&quot;&gt;&lt;a href=&quot;#关键字&quot; class=&quot;headerlink&quot; title=&quot;关键字&quot;&gt;&lt;/a&gt;&lt;b&gt;关键字&lt;/b&gt;&lt;/h5&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;
     
     </summary>
     
