@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://t1ger.github.io/2017/05/26/INSTALL-CEPH-QUICK/</loc>
+    
+    <lastmod>2017-05-27T09:48:11.587Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://t1ger.github.io/2017/05/25/Install-SpiderFoot-on-centos7/</loc>
     
     <lastmod>2017-05-25T09:20:40.754Z</lastmod>

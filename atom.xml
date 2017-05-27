@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-05-25T09:20:40.754Z</updated>
+  <updated>2017-05-27T09:48:11.587Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,62 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>INSTALL CEPH (QUICK)</title>
+    <link href="https://t1ger.github.io/2017/05/26/INSTALL-CEPH-QUICK/"/>
+    <id>https://t1ger.github.io/2017/05/26/INSTALL-CEPH-QUICK/</id>
+    <published>2017-05-26T08:25:56.000Z</published>
+    <updated>2017-05-27T09:48:11.587Z</updated>
+    
+    <content type="html"><![CDATA[<h5 id="概念介绍"><a href="#概念介绍" class="headerlink" title="概念介绍"></a><b>概念介绍</b></h5><p>Ceph的部署模式下主要包含以下几个类型的节点:</p>
+<ul>
+<li>Ceph OSD: 主要用来存储数据，处理数据的replication,恢复，填充，调整资源组合以及通过检查其他OSD进程的心跳信息提供一些监控信息给Ceph Monitors . 当Ceph Storage Cluster 要准备2份数据备份时，要求至少有2个Ceph OSD进程的状态是active+clean状态</li>
+<li>Monitor: 维护集群map的状态，主要包括monitor map, OSD map, Placement Group (PG) map, 以及CRUSH map. Ceph 维护了 Ceph Monitors, Ceph OSD Daemons, 以及PGs状态变化的历史记录 (called an “epoch”)</li>
+<li>MDS: Ceph Metadata Server (MDS)存储的元数据代表Ceph的文件系统 (i.e., Ceph Block Devices 以及Ceph Object Storage 不适用 MDS). Ceph Metadata Servers 让系统用户可以执行一些POSIX文件系统的基本命令，例如ls,find 等</li>
+<li>PG全称Placement Grouops，是一个逻辑的概念，一个PG包含多个OSD。引入PG这一层其实是为了更好的分配数据和定位数据</li>
+<li>RBD全称RADOS block device，是Ceph对外提供的块设备服务</li>
+<li>RGW全称RADOS gateway，是Ceph对外提供的对象存储服务，接口与S3和Swift兼容</li>
+<li>RADOS全称Reliable Autonomic Distributed Object Store，是Ceph集群的精华，用户实现数据分配、Failover等集群操作</li>
+<li>Librados是Rados提供库，因为RADOS是协议很难直接访问，因此上层的RBD、RGW和CephFS都是通过librados访问的，目前提供PHP、Ruby、Java、Python、C和C++支持</li>
+<li>CephFS全称Ceph File System，是Ceph对外提供的文件系统服务</li>
+<li>CRUSH是Ceph使用的数据分布算法，类似一致性哈希，让数据分配到预期的地方</li>
+</ul>
+<h5 id="快速部署方案"><a href="#快速部署方案" class="headerlink" title="快速部署方案"></a><b>快速部署方案</b></h5><p>通过ceph-deploy可以快速便捷的安装上ceph,此方法部署需要一个管理节点（admin node)和3个节点来做ceph的存储集群<br>三台装有CentOS 7的主机，每台主机有三个磁盘(虚拟机磁盘要大于100G),详细信息如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">[root@node1 ~]# cat /etc/redhat-release </div><div class="line">CentOS Linux release 7.3.1611 (Core) </div><div class="line"></div><div class="line">[root@node1 ~]# lsblk</div><div class="line">NAME            MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT</div><div class="line">sda               8:0    0  100G  0 disk </div><div class="line">├─sda1            8:1    0  500M  0 part /boot</div><div class="line">└─sda2            8:2    0 99.5G  0 part </div><div class="line">  ├─system-root 253:0    0 95.6G  0 lvm  /</div><div class="line">  └─system-swap 253:1    0  3.9G  0 lvm  [SWAP]</div><div class="line">sdb               8:16   0    2T  0 disk </div><div class="line">sdc               8:32   0    2T  0 disk </div><div class="line">sdd               8:48   0    2T  0 disk </div><div class="line"></div><div class="line">[root@node1 ~]# cat /etc/hosts</div><div class="line">192.168.138.140 admin</div><div class="line">192.168.138.141 node1</div><div class="line">192.168.138.142 node2</div><div class="line">192.168.138.143 node3</div></pre></td></tr></table></figure>
+<p>集群配置如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">admin	192.168.138.140  deploy</div><div class="line">node1   192.168.138.141  mon*1 osd*3</div><div class="line">node2   192.168.138.142  mon*1 osd*3</div><div class="line">node3   192.168.138.143  mon*1 osd*3</div></pre></td></tr></table></figure></p>
+<p>备注:在生产环境,每个osd对应一块硬盘,每个osd需要一个journal,建议使用ssd作为osd硬盘的journal.<br>这里测试环境将采用data和journal在一个硬盘的做法</p>
+<h5 id="预检Preflight"><a href="#预检Preflight" class="headerlink" title="预检Preflight"></a><b>预检Preflight</b></h5><p>在admin node 节点<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">1. install epel</div><div class="line">sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</div><div class="line">2. add ceph source</div><div class="line">sudo cat &gt; /etc/yum.repos.d/ceph-deploy.repo &lt;&lt; EOF</div><div class="line">[ceph-noarch]</div><div class="line">name=Ceph noarch packages</div><div class="line">baseurl=https://download.ceph.com/rpm-kraken/el7/noarch</div><div class="line">enabled=1</div><div class="line">gpgcheck=1</div><div class="line">type=rpm-md</div><div class="line">gpgkey=https://download.ceph.com/keys/release.asc</div><div class="line">EOF</div><div class="line">3. install ceph-deploy</div><div class="line">sudo yum update &amp;&amp; sudo yum install ceph-deploy -y</div></pre></td></tr></table></figure></p>
+<p>在admin node上创建一个拥有sudo权限的用户，并有sudo权限,不要使用ceph这个用户名<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">sudo useradd -g wheel  neo &amp;&amp; su - neo</div><div class="line"></div><div class="line">ssh-keygen</div><div class="line">ssh-copy-id neo@node1</div><div class="line">ssh-copy-id neo@node2</div><div class="line">ssh-copy-id neo@node3</div></pre></td></tr></table></figure></p>
+<p>如果开启了防火墙需要<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">sudo firewall-cmd --zone=public --add-service=ceph-mon --permanent</div><div class="line">sudo firewall-cmd --zone=public --add-service=ceph --permanent</div><div class="line">sudo firewalld-cmd --reload</div><div class="line">或者</div><div class="line"># firewall-cmd --zone=public --add-port=6789/tcp --permanent</div><div class="line"># firewall-cmd --zone=public --add-port=6800-7100/tcp --permanent</div><div class="line"># firewall-cmd --reload</div></pre></td></tr></table></figure></p>
+<p>For iptables, add port 6789 for Ceph Monitors and ports 6800:7300 for Ceph OSDs</p>
+<h5 id="开始安装"><a href="#开始安装" class="headerlink" title="开始安装"></a><b>开始安装</b></h5><p>1.建立部署目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">[neo@admin ~]$ ceph-deploy --version</div><div class="line">1.5.37</div><div class="line">[neo@admin ~]$ mkdir cluster</div><div class="line">[neo@admin ~]$ cd cluster/</div></pre></td></tr></table></figure></p>
+<p>2.清理旧配置,全新安装略过<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ceph-deploy purge node1 node2 node3</div><div class="line">ceph-deploy purgedata node1 node2 node3</div><div class="line">ceph-deploy forgetkeys</div></pre></td></tr></table></figure></p>
+<p>3.Create the cluster<br>初始化集群，告诉 ceph-deploy 哪些节点是监控节点，命令成功执行后会在 cluster 目录下生成 ceph.conf, ceph.log, ceph.mon.keyring 等相关文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[neo@admin cluster]$ ceph-deploy new node1 node2 node3</div></pre></td></tr></table></figure></p>
+<p>4.在每个 Ceph 节点上都安装 Ceph：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[neo@admin cluster]$ ceph-deploy install node1 node2 node3</div><div class="line">或者登陆节点,手动安装</div><div class="line">yum -y install ceph ceph-radosgw</div></pre></td></tr></table></figure></p>
+<p>5.初始化监控节点：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[neo@admin cluster]$ ceph-deploy mon create-initial</div></pre></td></tr></table></figure></p>
+<p>6.查看一下 Ceph 存储节点的硬盘情况<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[neo@admin cluster]$ ceph-deploy disk list node1</div><div class="line">[neo@admin cluster]$ ceph-deploy disk list node2</div><div class="line">[neo@admin cluster]$ ceph-deploy disk list node3</div></pre></td></tr></table></figure></p>
+<p>7.初始化 Ceph 硬盘，然后创建 osd 存储节点,(存储节点:单个硬盘:对应的 journal 分区，一一对应)：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">ceph-deploy disk zap node1:sdb node1:sdc node1:sdd </div><div class="line">ceph-deploy osd create node1:sdb node1:sdc node1:sdd </div><div class="line"></div><div class="line">ceph-deploy disk zap node2:sdb node2:sdc node2:sdd </div><div class="line">ceph-deploy osd create node2:sdb node2:sdc node2:sdd </div><div class="line"></div><div class="line">ceph-deploy disk zap node3:sdb node3:sdc node3:sdd</div><div class="line">ceph-deploy osd create node3:sdb node3:sdc node3:sdd</div></pre></td></tr></table></figure></p>
+<p>8.最后，我们把生成的配置文件从 ceph-adm 同步部署到其他几个节点，使得每个节点的 ceph 配置一致：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[neo@admin cluster]$ ceph-deploy --overwrite-conf admin admin node1 node2 node3</div></pre></td></tr></table></figure>
+<h5 id="测试"><a href="#测试" class="headerlink" title="测试"></a><b>测试</b></h5><p>看一下配置成功了没？<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">[root@admin ~]# ceph -s</div><div class="line">    cluster d6d92de4-2a08-4bd6-a749-6c104c88fc40</div><div class="line">     health HEALTH_WARN</div><div class="line">            too few PGs per OSD (21 &lt; min 30)</div><div class="line">     monmap e1: 3 mons at &#123;node1=192.168.138.141:6789/0,node2=192.168.138.142:6789/0,node3=192.168.138.143:6789/0&#125;</div><div class="line">            election epoch 6, quorum 0,1,2 node1,node2,node3</div><div class="line">     osdmap e53: 9 osds: 9 up, 9 in</div><div class="line">            flags sortbitwise,require_jewel_osds</div><div class="line">      pgmap v148: 64 pgs, 1 pools, 0 bytes data, 0 objects</div><div class="line">            307 MB used, 18377 GB / 18378 GB avail</div><div class="line">                  64 active+clean</div><div class="line">[root@admin ~]# ceph health</div><div class="line">HEALTH_WARN too few PGs per OSD (21 &lt; min 30)</div><div class="line"></div><div class="line">这里警告PG太少</div></pre></td></tr></table></figure></p>
+<p>备注: 这里需要注意的事执行命令是在root权限下执行的，<br>因为etc/ceph/ceph.client.admin.keyring权限只允许root读写导致，亦可以给文件加权限解决<br>如果在neo权限下,报错如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">[neo@admin cluster]$ ceph health</div><div class="line">2017-05-27 16:58:23.374074 7f567813a700 -1 auth: unable to find a keyring on /etc/ceph/ceph.client.admin.keyring,/etc/ceph/ceph.keyring,/etc/ceph/keyring,/etc/ceph/keyring.bin: (2) No such file or directory</div><div class="line">2017-05-27 16:58:23.374109 7f567813a700 -1 monclient(hunting): ERROR: missing keyring, cannot use cephx for authentication</div><div class="line">2017-05-27 16:58:23.374113 7f567813a700  0 librados: client.admin initialization error (2) No such file or directory</div><div class="line">Error connecting to cluster: ObjectNotFound</div></pre></td></tr></table></figure></p>
+<p>ref<br><a href="http://ceph.com/install/" target="_blank" rel="external">INSTALL CEPH (QUICK)</a><br><a href="http://www.codexiu.cn/linux/blog/42056/" target="_blank" rel="external">centos7 ceph-deploy 安装jewel</a><br><a href="http://zedshadow.leanote.com/post/%E4%BD%BF%E7%94%A8ceph-deploy%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2Ceph" target="_blank" rel="external">centos7使用ceph-deploy快速部署Kraken版Ceph</a><br><a href="http://www.vpsee.com/2015/07/install-ceph-on-centos-7/" target="_blank" rel="external">在 CentOS 7.1 上安装分布式存储系统 Ceph</a><br><a href="http://www.cnblogs.com/zhangzhengyan/p/5839897.html" target="_blank" rel="external">ceph 创建和删除osd</a><br><a href="http://blog.csdn.net/xiongwenwu/article/details/53120415" target="_blank" rel="external">三种增删osd的方法数据量迁移大小</a><br><a href="https://www.virtualtothecore.com/en/quickly-build-a-new-ceph-cluster-with-ceph-deploy-on-centos-7/" target="_blank" rel="external">Quickly build a new Ceph cluster with ceph-deploy on CentOS 7</a><br><a href="http://blog.csdn.net/chinagissoft/article/details/50491429" target="_blank" rel="external">Ceph 集群部署</a><br><a href="https://my.oschina.net/diluga/blog/528618" target="_blank" rel="external">PG设置与规划</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h5 id=&quot;概念介绍&quot;&gt;&lt;a href=&quot;#概念介绍&quot; class=&quot;headerlink&quot; title=&quot;概念介绍&quot;&gt;&lt;/a&gt;&lt;b&gt;概念介绍&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;Ceph的部署模式下主要包含以下几个类型的节点:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Ceph OSD: 主要用来存储数
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Install SpiderFoot on Centos7</title>
@@ -391,55 +447,6 @@ then the default (AUTO) value will be considered.
     
       &lt;p&gt;Docker2016年就明确了将会在企业级方面重点跟进，惊喜就这样来了，在2017年的3月1号之后，Docker的版本命名开始发生变化，同时将CE版本和EE版本进行分开，而这些也是新安装docker时候发现的，一起简单来看一下具体情况吧&lt;/p&gt;
 &lt;h5 id=&quot;版本说明&quot;&gt;
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>SQLAdvisor简明教程</title>
-    <link href="https://t1ger.github.io/2017/03/13/SQLAdvisor%E7%AE%80%E6%98%8E%E6%95%99%E7%A8%8B/"/>
-    <id>https://t1ger.github.io/2017/03/13/SQLAdvisor简明教程/</id>
-    <published>2017-03-13T03:49:52.000Z</published>
-    <updated>2017-03-13T03:46:10.352Z</updated>
-    
-    <content type="html"><![CDATA[<h5 id="简介"><a href="#简介" class="headerlink" title="简介"></a><b>简介</b></h5><p>SQLAdvisor是由美团点评公司技术工程部DBA团队（北京）开发维护的一个分析SQL给出索引优化建议的工具。它基于MySQL原生态词法解析，结合分析SQL中的where条件、聚合条件、多表Join关系 给出索引优化建议<br>主要功能：输出SQL索引优化建议</p>
-<h5 id="SQLAdvisor安装"><a href="#SQLAdvisor安装" class="headerlink" title="SQLAdvisor安装"></a><b>SQLAdvisor安装</b></h5><ul>
-<li><p>安装依赖项</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">1. 配置percona56 yum源: </div><div class="line">   yum install http://www.percona.com/downloads/percona-release/redhat/0.1-3/percona-release-0.1-3.noarch.rpm</div><div class="line"></div><div class="line">2. yum | apt-get  install cmake libaio-devel libffi-devel glib2 glib2-devel</div><div class="line">3. yum | apt-get  install --enablerepo=Percona56 Percona-Server-shared-56</div></pre></td></tr></table></figure>
-</li>
-<li><p>拉取最新代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/Meituan-Dianping/SQLAdvisor.git</div></pre></td></tr></table></figure>
-</li>
-<li><p>编译依赖项sqlparser</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">1. cmake -DBUILD_CONFIG=mysql_release -DCMAKE_BUILD_TYPE=debug -DCMAKE_INSTALL_PREFIX=/usr/local/sqlparser ./</div><div class="line">2. make &amp;&amp; make install</div><div class="line"></div><div class="line">编译sqladvisor时依赖perconaserverclient_r, 因此需要安装Percona-Server-shared-56</div><div class="line">有可能需要配置软链接例如:</div><div class="line">1. cd /usr/lib64/ </div><div class="line">2. ln -s libperconaserverclient_r.so.18 libperconaserverclient_r.so</div></pre></td></tr></table></figure>
-</li>
-<li><p>安装SQLAdvisor源码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">1. cd SQLAdvisor/sqladvisor/</div><div class="line">2. cmake -DCMAKE_BUILD_TYPE=debug ./</div><div class="line">3. make</div><div class="line">4. 在本路径下生成一个sqladvisor可执行文件，这即是我们想要的。</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<h5 id="SQLAdvisor使用"><a href="#SQLAdvisor使用" class="headerlink" title="SQLAdvisor使用"></a><b>SQLAdvisor使用</b></h5><ul>
-<li><p>–help输出</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">[root@localhost sqladvisor]# ./sqladvisor --help</div><div class="line">Usage:</div><div class="line">  sqladvisor [OPTION...] sqladvisor</div><div class="line"></div><div class="line">SQL Advisor Summary</div><div class="line"></div><div class="line">Help Options:</div><div class="line">  -?, --help              Show help options</div><div class="line"></div><div class="line">Application Options:</div><div class="line">  -f, --defaults-file     sqls file</div><div class="line">  -u, --username          username</div><div class="line">  -p, --password          password</div><div class="line">  -P, --port              port</div><div class="line">  -h, --host              host</div><div class="line">  -d, --dbname            database name</div><div class="line">  -q, --sqls              sqls</div><div class="line">  -v, --verbose           1:output logs 0:output nothing</div></pre></td></tr></table></figure>
-</li>
-<li><p>命令行传参调用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">./sqladvisor -h xx  -P xx  -u xx -p &apos;xx&apos; -d xx -q &quot;sql&quot; -v 1</div><div class="line"></div><div class="line">注意：命令行传参时，参数名与值需要用空格隔开</div></pre></td></tr></table></figure>
-</li>
-<li><p>配置文件传参调用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">$&gt; cat sql.cnf</div><div class="line">[sqladvisor]</div><div class="line">username=xx</div><div class="line">password=xx</div><div class="line">host=xx</div><div class="line">port=xx</div><div class="line">dbname=xx</div><div class="line">sqls=sql1;sql2;sql3....</div><div class="line"></div><div class="line">cmd: ./sqladvisor -f sql.cnf  -v 1</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<h5 id="常见错误FAQ"><a href="#常见错误FAQ" class="headerlink" title="常见错误FAQ"></a><b>常见错误FAQ</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">我已经安装了libaio-devel库：</div><div class="line">-- Running cmake version 2.8.12.2</div><div class="line">CMake Error at cmake/build_configurations/mysql_release.cmake:46 (MESSAGE):</div><div class="line">          aio is required on Linux, you need to install the required library:</div><div class="line">            Debian/Ubuntu:              apt-get install libaio-dev</div><div class="line">            RedHat/Fedora/Oracle Linux: yum install libaio-devel</div><div class="line">            SuSE:                       zypper install libaio-devel</div><div class="line">          If you really do not want it, pass -DIGNORE_AIO_CHECK to cmake.          </div><div class="line">Call Stack (most recent call first):</div><div class="line">  CMakeLists.txt:131 (INCLUDE)</div><div class="line">  </div><div class="line">原因：刚开始第一次执行cmake的时候就产生了CMakeCache.txt，</div><div class="line">这个时候我并没有安装libaio-devel库，</div><div class="line">然后继续安装依赖库后再执行cmake其实读取的依然是前面生成的cache文件,</div><div class="line">导致cmake判断libaio-devel一直未被安装。</div><div class="line"></div><div class="line">解决：我们rm删除CMakeCache.txt文件后重新执行cmake命令</div></pre></td></tr></table></figure>
-<p>ref<br><a href="https://github.com/Meituan-Dianping/SQLAdvisor/blob/master/doc/QUICK_START.md" target="_blank" rel="external">QUICK_START</a><br><a href="https://github.com/Meituan-Dianping/SQLAdvisor/blob/master/doc/THEORY_PRACTICES.md" target="_blank" rel="external">THEORY_PRACTICES</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h5 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;&lt;b&gt;简介&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;SQLAdvisor是由美团点评公司技术工程部DBA团队（北京）开发维护的一个分析SQL给出索引优化建议的工具。它基于MySQ
     
     </summary>
     
