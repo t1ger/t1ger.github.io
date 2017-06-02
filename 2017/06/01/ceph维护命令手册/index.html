@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
   
-  <title>第 2 页 | Archives: 2017 | t1ger的茶馆</title>
+  <title>ceph维护命令手册 | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
   
   <meta name="description" content="https://t1ger.github.io/">
@@ -13,7 +13,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  
+  <meta property="og:title" content="ceph维护命令手册"/>
   <meta property="og:site_name" content="t1ger的茶馆"/>
 
   
@@ -116,54 +116,49 @@
 		<div class="content">
 			<!-- index -->
 		   
-			  	<h2>归档</h2>
-		  		
-	              <p class="archive-item">
-						<a href="/2017/04/07/faster-way-to-navigate-your-filesystem-for-CentOS/" class="archive-title">faster way to navigate your filesystem for CentOS</a><span class="archive post-time">2017-04-07</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/03/21/Deploy-VM-to-vCenter-with-Ansible/" class="archive-title">Deploy VM to vCenter with Ansible</a><span class="archive post-time">2017-03-21</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/03/14/Docker-CE-vs-Docker-EE/" class="archive-title">Docker CE vs Docker EE</a><span class="archive post-time">2017-03-14</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/03/13/SQLAdvisor简明教程/" class="archive-title">SQLAdvisor简明教程</a><span class="archive post-time">2017-03-13</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/02/14/lua基本语法/" class="archive-title">lua基本语法</a><span class="archive post-time">2017-02-14</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/01/19/HTTP调试工具HTTPie/" class="archive-title">HTTP调试工具HTTPie</a><span class="archive post-time">2017-01-19</span>
-					</p>
-			  	
-			  <!-- post -->
+
+			  		<h2>ceph维护命令手册</h2>
+					
+					<div>
+						<span class="post-time">2017-06-01 18:09:48</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<p>本文操作都是centos7环境</p>
+<h5 id="MON操作"><a href="#MON操作" class="headerlink" title="MON操作"></a><b>MON操作</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">systemctl start ceph-mon@mon-host</div><div class="line">systemctl stop ceph-mon@mon-host</div><div class="line">systemctl restart ceph-mon@mon-host</div><div class="line">systemctl status ceph-mon@mon-host</div></pre></td></tr></table></figure>
+<h5 id="OSD操作"><a href="#OSD操作" class="headerlink" title="OSD操作"></a><b>OSD操作</b></h5><p>把@*替换为OSD的ID 如@1，即可执行对应ID OSD的操作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">systemctl start ceph-osd@*</div><div class="line">systemctl stop  ceph-osd@*</div><div class="line">systemctl restart ceph-osd@*</div><div class="line">systemctl status  ceph-osd@*</div></pre></td></tr></table></figure></p>
+<h5 id="OSD机器重启"><a href="#OSD机器重启" class="headerlink" title="OSD机器重启"></a><b>OSD机器重启</b></h5><p>1.设置noout 避免在异常情况下触发集群数据重新平衡<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ceph osd set noout</div></pre></td></tr></table></figure></p>
+<p>2.关闭OSD机器上所有OSD进程<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ceph osd down x    #把这个机器上的OSD都设置为down状态</div><div class="line">systemctl stop ceph-osd@* #用systemctl重启OSD进程</div></pre></td></tr></table></figure></p>
+<p>3.重启OSD机器<br>4.恢复noout 设置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ceph osd unset noout</div></pre></td></tr></table></figure></p>
+<h5 id="扩容"><a href="#扩容" class="headerlink" title="扩容"></a><b>扩容</b></h5><ul>
+<li>PB级的集群的容量超过50%，就要考虑扩容了。 假如OSD主机的磁盘容量为48TB（12 4TB），则需要backfill的数据为24TB（48TB 50%） ，假设网卡为10Gb，则新加一个OSD时，集群大约需要19200s（24TB/(10Gb/8)） 约3小时完成backfill，而backfill后台数据填充将会涉及大量的IO读和网络传输，必将影响生产业务运行。 如果集群容量到80%再扩容会导致更长的backfill时间，近8个小时。</li>
+<li>OSD对应的磁盘利用率如果超过50%，也需要尽快扩容。<br>在业务闲时,向集群中增加OSD主机。</li>
+</ul>
+<h5 id="升级Ceph软件版本"><a href="#升级Ceph软件版本" class="headerlink" title="升级Ceph软件版本"></a><b>升级Ceph软件版本</b></h5><p>1.在MON和OSD机器上升级安装指定的ceph版本的软件包<br>2.逐个重启MON进程<br>3.设置noout 避免在异常情况下触发集群数据重新平衡<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ceph osd set noout</div></pre></td></tr></table></figure></p>
+<p>4.逐个重启OSD进程<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ceph osd down x        #提前mark down， 减少slow request</div><div class="line">systemctl restart ceph-osd@x #用systemctl重启OSD进程</div></pre></td></tr></table></figure></p>
+<p>5.恢复noout 设置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ceph osd unset noout</div></pre></td></tr></table></figure></p>
+<p>ref<br><a href="https://forest.gitbooks.io/ceph-practice/content/operation.html" target="_blank" rel="external">维护操作</a><br><a href="https://forest.gitbooks.io/ceph-practice/content/troubleshoot.html" target="_blank" rel="external">故障定位和处理</a></p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
 			  
 		</div>
 
 		<!-- pagination -->
 	  
 
-			<div class="btn-group btn-group-justified">
-				
-
-					<a class="btn btn-default " href="/archives/2017/" >上一页</a>
-
-					<a class="btn btn-default" href="/">首页</a>
-
-					<a class="btn btn-default disabled" href="/" >下一页</a>
-
-	    	
-			</div>
-	  
-
 		<div class="comment-section">
   
+  
+
 
 </div>
 	</div>

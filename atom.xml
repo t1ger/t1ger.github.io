@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-05-31T02:50:53.280Z</updated>
+  <updated>2017-06-02T03:07:49.559Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -16,11 +16,163 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>ceph硬件推荐</title>
+    <link href="https://t1ger.github.io/2017/06/01/ceph%E7%A1%AC%E4%BB%B6%E6%8E%A8%E8%8D%90/"/>
+    <id>https://t1ger.github.io/2017/06/01/ceph硬件推荐/</id>
+    <published>2017-06-01T11:41:45.000Z</published>
+    <updated>2017-06-02T03:07:49.559Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="cpu和内存"><a href="#cpu和内存" class="headerlink" title="cpu和内存"></a><b>cpu和内存</b></h4><ul>
+<li>CPU<br>metadata servers：属于CPU敏感型的角色服务器<br>OSDs：负责运行RADOS service，使用CRUSH算法计算数据分布，复制数据，并维护它们自己的拷贝，所以CPU也需要较好的<br>Monitors：监控服务器芝士简单的维护一份集群mapping的主拷贝，所以并非是CPU敏感的</li>
+<li>内存<br>metadata servers和monitors需要快速响应它们存储的数据，所以它们需要不少的内存<br>每个daemon实例最少1GB<br>OSDs不需要太多的内存做日常的操作，500MB即可，但是在recovery阶段<br>每1TB的存储，需要消耗约1GB的内存，所以说，内存是越多越好</li>
+</ul>
+<h4 id="硬盘"><a href="#硬盘" class="headerlink" title="硬盘"></a><b>硬盘</b></h4><p>这里说下固态盘</p>
+<ul>
+<li>固态硬盘: SSD 和硬盘相比每 GB 成本通常要高 10 倍以上，但访问时间至少比硬盘快 100 倍.SSD 没有可移动机械部件，所以不存在和硬盘一样的局限性。但 SSD 也有局限性，评估SSD 时，顺序读写性能很重要，在为多个 OSD 存储日志时，有着 400MB/s 顺序读写吞吐量的 SSD 其性能远高于 120MB/s 的.<br>备注:我们建议发掘 SSD 的用法来提升性能。然而在大量投入 SSD 前，我们强烈建议核实 SSD 的性能指标，并在测试环境下衡量性能<br>可接受的 IOPS 指标对选择用于 Ceph 的 SSD 还不够，用于日志和 SSD 时还有几个重要考量：<br>写密集语义： 记日志涉及写密集语义，所以你要确保选用的 SSD 写入性能和硬盘相当或好于硬盘。廉价 SSD 可能在加速访问的同时引入写延时，有时候高性能硬盘的写入速度可以和便宜 SSD 相媲美<br>顺序写入： 在一个 SSD 上为多个 OSD 存储多个日志时也必须考虑 SSD 的顺序写入极限，因为它们要同时处理多个 OSD 日志的写入请求。<br>分区对齐： 采用了 SSD 的一个常见问题是人们喜欢分区，却常常忽略了分区对齐，这会导致 SSD 的数据传输速率慢很多，所以请确保分区对齐了</li>
+<li>其他注意事项<br>你可以在同一主机上运行多个 OSD ，但要确保 OSD 硬盘总吞吐量不超过为客户端提供读写服务所需的网络带宽；还要考虑集群在每台主机上所存储的数据占总体的百分比，如果一台主机所占百分比太大而它挂了，就可能导致诸如超过 full ratio 的问题，此问题会使 Ceph 中止运作以防数据丢失。<br>如果每台主机运行多个 OSD ，也得保证内核是最新的。参阅<a href="http://docs.ceph.org.cn/start/os-recommendations/" target="_blank" rel="external">操作系统推荐</a>里关于 glibc 和 syncfs(2) 的部分，确保硬件性能可达期望值。<br>OSD 数量较多（如 20 个以上）的主机会派生出大量线程，尤其是在恢复和重均衡期间。很多 Linux 内核默认的最大线程数较小（如 32k 个），如果您遇到了这类问题，可以把 kernel.pid_max 值调高些。理论最大值是 4194303 。例如把下列这行加入 /etc/sysctl.conf 文件：<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">kernel.pid_max = 4194303</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><b>结论: OSDs建议最小1TB,Ceph 最佳实践指示，应该分别在单独的硬盘运行操作系统、 OSD 数据和 OSD 日志</b></p>
+<h4 id="网络"><a href="#网络" class="headerlink" title="网络"></a><b>网络</b></h4><p>建议每台机器最少两个千兆网卡，现在大多数机械硬盘都能达到大概 100MB/s 的吞吐量，网卡应该能处理所有 OSD 硬盘总吞吐量，所以推荐最少两个千兆网卡，分别用于公网（前端）和集群网络（后端）。集群网络（最好别连接到国际互联网）用于处理由数据复制产生的额外负载，而且可防止拒绝服务攻击，拒绝服务攻击会干扰数据归置组，使之在 OSD 数据复制时不能回到 active + clean 状态。请考虑部署万兆网卡。通过 1Gbps 网络复制 1TB 数据耗时 3 小时，而 3TB （典型配置）需要 9 小时，相比之下，如果使用 10Gbps 复制时间可分别缩减到 20 分钟和 1 小时。在一个 PB 级集群中， OSD 磁盘失败是常态，而非异常；在性价比合理的的前提下，系统管理员想让 PG 尽快从 degraded （降级）状态恢复到 active + clean 状态。另外，一些部署工具（如 Dell 的 Crowbar ）部署了 5 个不同的网络，但使用了 VLAN 以提高网络和硬件可管理性。 VLAN 使用 802.1q 协议，还需要采用支持 VLAN 功能的网卡和交换机，增加的硬件成本可用节省的运营（网络安装、维护）成本抵消。使用 VLAN 来处理集群和计算栈（如 OpenStack 、 CloudStack 等等）之间的 VM 流量时，采用 10G 网卡仍然值得。每个网络的机架路由器到核心路由器应该有更大的带宽，如 40Gbps 到 100Gbps 。</p>
+<p>服务器应配置底板管理控制器（ Baseboard Management Controller, BMC ），管理和部署工具也应该大规模使用 BMC ，所以请考虑带外网络管理的成本/效益平衡，此程序管理着 SSH 访问、 VM 映像上传、操作系统安装、端口管理、等等，会徒增网络负载。运营 3 个网络有点过分，但是每条流量路径都指示了部署一个大型数据集群前要仔细考虑的潜能力、吞吐量、性能瓶颈</p>
+<p><b>结论:每台机器最少是两块前兆网卡（物理交换机也需要隔离）,最少是10Gbps在机架</b></p>
+<h4 id="故障域"><a href="#故障域" class="headerlink" title="故障域"></a><b>故障域</b></h4><p>故障域指任何导致不能访问一个或多个 OSD 的故障，可以是主机上停止的进程、硬盘故障、操作系统崩溃、有问题的网卡、损坏的电源、断网、断电等等。规划硬件需求时，要在多个需求间寻求平衡点，像付出很多努力减少故障域带来的成本削减、隔离每个潜在故障域增加的成本。</p>
+<h4 id="最低硬件推荐"><a href="#最低硬件推荐" class="headerlink" title="最低硬件推荐"></a><b>最低硬件推荐</b></h4><ul>
+<li><p>Dell 实例: Ceph 集群项目(2012年)使用了 2 个相当强悍的 OSD 硬件配置，和稍逊的监视器配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">|Configuration	|Criteria      	|Minimum Recommended</div><div class="line">|---		|---		|---</div><div class="line">|Dell PE R510  	|Processor	|2x 64-bit quad-core Xeon CPUs</div><div class="line">|		|RAM		|16 GB</div><div class="line">|		|Volume Storage	|8x 2TB drives. 1 OS, 7 Storage</div><div class="line">|		|Client Network	|2x 1GB Ethernet NICs</div><div class="line">|		|OSD Network	|2x 1GB Ethernet NICs</div><div class="line">|		|Mgmt. Network	|2x 1GB Ethernet NICs</div><div class="line">|Dell PE R515   |Processor	|1x hex-core Opteron CPU</div><div class="line">|		|RAM		|16 GB</div><div class="line">|		|Volume Storage	|12x 3TB drives. Storage</div><div class="line">|		|OS Storage	|1x 500GB drive. Operating System.</div><div class="line">|		|Client Network	|2x 1GB Ethernet NICs</div><div class="line">|		|OSD Network	|2x 1GB Ethernet NICs</div><div class="line">|		|Mgmt. Network	|2x 1GB Ethernet NICs</div></pre></td></tr></table></figure>
+</li>
+<li><p>低配(RedHat提供)<br>1.osd</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">|Criteria	|Minimum Recommended|</div><div class="line">|: --:		|:–		|</div><div class="line">|Processor	|1x AMD64 and Intel 64|</div><div class="line">|RAM 		|2 GB of RAM per deamon|</div><div class="line">|Volume Storage	|1x storage drive per daemon|</div><div class="line">|Journal	|1x SSD partition per daemon (optional)|</div><div class="line">|Network	|2x 1GB Ethernet NICs|</div></pre></td></tr></table></figure>
+<p>  2.mon</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">| Criteria	| Minimum Recommended|</div><div class="line">| : --:		| :–		|</div><div class="line">|Processor	| 1x AMD64 and Intel 64|</div><div class="line">|RAM 		| 1 GB of RAM per deamon|</div><div class="line">|Disk Space	| 10 GB per daemon|</div><div class="line">| Network	| 2x 1GB Ethernet NICs|</div></pre></td></tr></table></figure>
+</li>
+<li><p>高配(Intel提供)<br>1.osd –Good</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">|Criteria	|Minimum Recommended|</div><div class="line">|: --:		|:–		|</div><div class="line">|Processor	|Inter(R) Xeon(R)CPU E5-2650v3|</div><div class="line">|RAM 		|64GB |</div><div class="line">|Volume Storage	|1x1.6TB P3700+12x4TB HDDs(1:12 ratio) P3700 as Journal and caching|</div><div class="line">|Caching software	|Intel(R) CAS3.0,option: Intel(R) RSTe/MD4.3|</div><div class="line">|Network	|10Gbe|</div></pre></td></tr></table></figure>
+<p>  2.osd –Better</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">|Criteria	|Minimum Recommended|</div><div class="line">|: --:		|:–		|</div><div class="line">|Processor	|Inter(R) Xeon(R)CPU E5-2690|</div><div class="line">|RAM 		|128GB |</div><div class="line">|Volume Storage	|1xIntel(R) DC P3700(800G)+4xIntel(R) DC S3510 1.6TB|</div><div class="line">|Network	|Duel 10Gbe|</div></pre></td></tr></table></figure>
+<p>  2.osd –Best</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">|Criteria	|Minimum Recommended|</div><div class="line">|: --:		|:–		|</div><div class="line">|Processor	|Inter(R) Xeon(R)CPU E5-2699v3|</div><div class="line">|RAM 		|&gt;=128GB |</div><div class="line">|Volume Storage	|4 to 6xIntel(R)DC P3700 2TB|</div><div class="line">|Network	|2x 40GbE,4xdual 10GbE|</div></pre></td></tr></table></figure>
+</li>
+<li><p>vpsee生产实例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">| Hostname  | IP Address    | Role  |                                           Hardware Info |</div><div class="line">|-----------+---------------+-------|---------------------------------------------------------|</div><div class="line">| ceph-adm  | 192.168.2.100 | adm   |                             2 Cores, 4GB RAM, 20GB DISK |</div><div class="line">| ceph-mon1 | 192.168.2.101 | mon   |                         24 Cores，64GB RAM, 2x750GB SAS |</div><div class="line">| ceph-mon2 | 192.168.2.102 | mon   |                         24 Cores，64GB RAM, 2x750GB SAS |</div><div class="line">| ceph-mon3 | 192.168.2.103 | mon   |                         24 Cores，64GB RAM, 2x750GB SAS |</div><div class="line">| ceph-osd1 | 192.168.2.121 | osd   | 12 Cores，64GB RAM, 10x4TB SAS，2x400GB SSD，2x80GB SSD |</div><div class="line">| ceph-osd2 | 192.168.2.122 | osd   | 12 Cores，64GB RAM, 10x4TB SAS，2x400GB SSD，2x80GB SSD |</div></pre></td></tr></table></figure>
+</li>
+<li><p>ADM 服务器硬件配置比较随意，用1台低配置的虚拟机就可以了，只是用来操作和管理 Ceph；</p>
+</li>
+<li>MON 服务器2块硬盘做成 RAID1，用来安装操作系统；</li>
+<li>OSD 服务器上用10块 4TB 硬盘做 Ceph 存储，每个 osd 对应1块硬盘，每个 osd 需要1个 Journal，所以10块硬盘需要10个 Journal，我们用2块大容量 SSD 硬盘做 journal，每个 SSD 等分成5个区，这样每个区分别对应一个 osd 硬盘的 journal，剩下的2块小容量 SSD 装操作系统，采用 RAID1.</li>
+</ul>
+<p>ref<br><a href="http://docs.ceph.org.cn/start/hardware-recommendations/#id9" target="_blank" rel="external">硬件推荐</a><br><a href="https://github.com/lemonhall/node_note/blob/master/ceph%E7%9A%84%E7%A1%AC%E4%BB%B6%E9%85%8D%E7%BD%AE.txt" target="_blank" rel="external">ceph的硬件配置.txt</a><br><a href="http://www.vpsee.com/2015/07/install-ceph-on-centos-7/" target="_blank" rel="external">在 CentOS 7.1 上安装分布式存储系统 Ceph</a><br><a href="http://www.xuxiaopang.com/2016/10/10/ceph-full-install-el7-jewel/" target="_blank" rel="external">CEPH部署完整版(el7+jewel)</a><br><a href="http://www.xuxiaopang.com/2016/11/11/doc-ceph-table/" target="_blank" rel="external">Ceph常用表格汇总</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;cpu和内存&quot;&gt;&lt;a href=&quot;#cpu和内存&quot; class=&quot;headerlink&quot; title=&quot;cpu和内存&quot;&gt;&lt;/a&gt;&lt;b&gt;cpu和内存&lt;/b&gt;&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;CPU&lt;br&gt;metadata servers：属于CPU敏感型的角色服务器&lt;br
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>ceph维护命令手册</title>
+    <link href="https://t1ger.github.io/2017/06/01/ceph%E7%BB%B4%E6%8A%A4%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/"/>
+    <id>https://t1ger.github.io/2017/06/01/ceph维护命令手册/</id>
+    <published>2017-06-01T09:09:48.000Z</published>
+    <updated>2017-06-01T09:27:11.621Z</updated>
+    
+    <content type="html"><![CDATA[<p>本文操作都是centos7环境</p>
+<h5 id="MON操作"><a href="#MON操作" class="headerlink" title="MON操作"></a><b>MON操作</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">systemctl start ceph-mon@mon-host</div><div class="line">systemctl stop ceph-mon@mon-host</div><div class="line">systemctl restart ceph-mon@mon-host</div><div class="line">systemctl status ceph-mon@mon-host</div></pre></td></tr></table></figure>
+<h5 id="OSD操作"><a href="#OSD操作" class="headerlink" title="OSD操作"></a><b>OSD操作</b></h5><p>把@*替换为OSD的ID 如@1，即可执行对应ID OSD的操作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">systemctl start ceph-osd@*</div><div class="line">systemctl stop  ceph-osd@*</div><div class="line">systemctl restart ceph-osd@*</div><div class="line">systemctl status  ceph-osd@*</div></pre></td></tr></table></figure></p>
+<h5 id="OSD机器重启"><a href="#OSD机器重启" class="headerlink" title="OSD机器重启"></a><b>OSD机器重启</b></h5><p>1.设置noout 避免在异常情况下触发集群数据重新平衡<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ceph osd set noout</div></pre></td></tr></table></figure></p>
+<p>2.关闭OSD机器上所有OSD进程<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ceph osd down x    #把这个机器上的OSD都设置为down状态</div><div class="line">systemctl stop ceph-osd@* #用systemctl重启OSD进程</div></pre></td></tr></table></figure></p>
+<p>3.重启OSD机器<br>4.恢复noout 设置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ceph osd unset noout</div></pre></td></tr></table></figure></p>
+<h5 id="扩容"><a href="#扩容" class="headerlink" title="扩容"></a><b>扩容</b></h5><ul>
+<li>PB级的集群的容量超过50%，就要考虑扩容了。 假如OSD主机的磁盘容量为48TB（12 4TB），则需要backfill的数据为24TB（48TB 50%） ，假设网卡为10Gb，则新加一个OSD时，集群大约需要19200s（24TB/(10Gb/8)） 约3小时完成backfill，而backfill后台数据填充将会涉及大量的IO读和网络传输，必将影响生产业务运行。 如果集群容量到80%再扩容会导致更长的backfill时间，近8个小时。</li>
+<li>OSD对应的磁盘利用率如果超过50%，也需要尽快扩容。<br>在业务闲时,向集群中增加OSD主机。</li>
+</ul>
+<h5 id="升级Ceph软件版本"><a href="#升级Ceph软件版本" class="headerlink" title="升级Ceph软件版本"></a><b>升级Ceph软件版本</b></h5><p>1.在MON和OSD机器上升级安装指定的ceph版本的软件包<br>2.逐个重启MON进程<br>3.设置noout 避免在异常情况下触发集群数据重新平衡<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ceph osd set noout</div></pre></td></tr></table></figure></p>
+<p>4.逐个重启OSD进程<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ceph osd down x        #提前mark down， 减少slow request</div><div class="line">systemctl restart ceph-osd@x #用systemctl重启OSD进程</div></pre></td></tr></table></figure></p>
+<p>5.恢复noout 设置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ceph osd unset noout</div></pre></td></tr></table></figure></p>
+<p>ref<br><a href="https://forest.gitbooks.io/ceph-practice/content/operation.html" target="_blank" rel="external">维护操作</a><br><a href="https://forest.gitbooks.io/ceph-practice/content/troubleshoot.html" target="_blank" rel="external">故障定位和处理</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;本文操作都是centos7环境&lt;/p&gt;
+&lt;h5 id=&quot;MON操作&quot;&gt;&lt;a href=&quot;#MON操作&quot; class=&quot;headerlink&quot; title=&quot;MON操作&quot;&gt;&lt;/a&gt;&lt;b&gt;MON操作&lt;/b&gt;&lt;/h5&gt;&lt;figure class=&quot;highlight plain&quot;
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Ceph-Placement Group States</title>
+    <link href="https://t1ger.github.io/2017/05/31/Ceph-Placement-Group-States/"/>
+    <id>https://t1ger.github.io/2017/05/31/Ceph-Placement-Group-States/</id>
+    <published>2017-05-31T11:02:33.000Z</published>
+    <updated>2017-06-01T08:08:23.953Z</updated>
+    
+    <content type="html"><![CDATA[<h5 id="PG状态简介"><a href="#PG状态简介" class="headerlink" title="PG状态简介"></a><b>PG状态简介</b></h5><p>PG，Placement Group,让我们简单了解几个PG的状态,可以分为:</p>
+<ul>
+<li>Creating: Ceph is still creating the placement group.</li>
+<li>Scrubbing: Ceph is checking the placement group for inconsistencies.</li>
+<li>Degraded: Ceph has not replicated some objects in the placement group the correct number of times yet.</li>
+<li>Inconsistent: Ceph detects inconsistencies in the one or more replicas of an object in the placement group (e.g. objects are the wrong size, objects are missing from one replica after recovery finished, etc.).</li>
+<li>Peering: The placement group is undergoing the peering process</li>
+<li>Repair: Ceph is checking the placement group and repairing any inconsistencies it finds (if possible).</li>
+<li>Recovering: Ceph is migrating/synchronizing objects and their replicas.</li>
+<li>Backfill: Ceph is scanning and synchronizing the entire contents of a placement group instead of inferring what contents need to be synchronized from the logs of recent operations. Backfill is a special case of recovery.</li>
+<li>Wait-backfill: The placement group is waiting in line to start backfill</li>
+<li>Backfill-toofull: A backfill operation is waiting because the destination OSD is over its full ratio.</li>
+<li>Incomplete: Ceph detects that a placement group is missing information about writes that may have occurred, or does not have any healthy copies. If you see this state, try to start any failed OSDs that may contain the needed information. In the case of an erasure coded pool temporarily reducing min_size may allow recovery</li>
+<li>Remapped: The placement group is temporarily mapped to a different set of OSDs from what CRUSH specified.</li>
+<li>Undersized: The placement group fewer copies than the configured pool replication level.</li>
+<li>Peered: The placement group has peered, but cannot serve client IO due to not having enough copies to reach the pool’s configured min_size parameter. Recovery may occur in this state, so the pg may heal up to min_size eventually.<br>具体参考<a href="http://docs.ceph.com/docs/master/rados/operations/pg-states/" target="_blank" rel="external">这里</a></li>
+</ul>
+<h5 id="如何理解-PG"><a href="#如何理解-PG" class="headerlink" title="如何理解 PG"></a><b>如何理解 PG</b></h5><p>让我们来看下先前搭建的集群状态<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">[root@admin ~]# ceph osd tree</div><div class="line">ID WEIGHT   TYPE NAME      UP/DOWN REWEIGHT PRIMARY-AFFINITY </div><div class="line">-1 17.94685 root default                                     </div><div class="line">-2  5.98228     host node1                                   </div><div class="line"> 0  1.99409         osd.0       up  1.00000          1.00000 </div><div class="line"> 1  1.99409         osd.1       up  1.00000          1.00000 </div><div class="line"> 2  1.99409         osd.2       up  1.00000          1.00000 </div><div class="line">-3  5.98228     host node2                                   </div><div class="line"> 3  1.99409         osd.3       up  1.00000          1.00000 </div><div class="line"> 4  1.99409         osd.4       up  1.00000          1.00000 </div><div class="line"> 5  1.99409         osd.5       up  1.00000          1.00000 </div><div class="line">-4  5.98228     host node3                                   </div><div class="line"> 6  1.99409         osd.6       up  1.00000          1.00000 </div><div class="line"> 7  1.99409         osd.7       up  1.00000          1.00000 </div><div class="line"> 8  1.99409         osd.8       up  1.00000          1.00000 </div><div class="line">[root@admin ~]#</div></pre></td></tr></table></figure></p>
+<p>每一个pool都有一个id，系统默认生成的rbd池的id号为0，那么rbd池内的所有PG都会以0.开头，让我们看一下osd.0下面的current目录的内容：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">[root@node1 ~]# ls /var/lib/ceph/osd/ceph-0/current/</div><div class="line">0.0_head   0.16_TEMP  0.1c_head  0.23_TEMP  0.2b_head  0.38_TEMP  0.46_head  0.4d_TEMP  0.50_head  0.55_TEMP  0.64_head  0.6e_TEMP  0.72_head  0.79_TEMP  0.8_head</div><div class="line">0.0_TEMP   0.17_head  0.1c_TEMP  0.24_head  0.2b_TEMP  0.42_head  0.46_TEMP  0.4e_head  0.50_TEMP  0.59_head  0.64_TEMP  0.6_head   0.72_TEMP  0.7b_head  0.8_TEMP</div><div class="line">0.10_head  0.17_TEMP  0.1d_head  0.24_TEMP  0.2c_head  0.42_TEMP  0.48_head  0.4e_TEMP  0.53_head  0.59_TEMP  0.65_head  0.6_TEMP   0.75_head  0.7b_TEMP  commit_op_seq</div><div class="line">0.10_TEMP  0.18_head  0.1d_TEMP  0.25_head  0.2c_TEMP  0.43_head  0.48_TEMP  0.4f_head  0.53_TEMP  0.5c_head  0.65_TEMP  0.70_head  0.75_TEMP  0.7d_head  meta</div><div class="line">0.13_head  0.18_TEMP  0.20_head  0.25_TEMP  0.2_head   0.43_TEMP  0.49_head  0.4f_TEMP  0.54_head  0.5c_TEMP  0.6d_head  0.70_TEMP  0.77_head  0.7d_TEMP  nosnap</div><div class="line">0.13_TEMP  0.19_head  0.20_TEMP  0.2a_head  0.2_TEMP   0.44_head  0.49_TEMP  0.4_head   0.54_TEMP  0.63_head  0.6d_TEMP  0.71_head  0.77_TEMP  0.7e_head  omap</div><div class="line">0.16_head  0.19_TEMP  0.23_head  0.2a_TEMP  0.38_head  0.44_TEMP  0.4d_head  0.4_TEMP   0.55_head  0.63_TEMP  0.6e_head  0.71_TEMP  0.79_head  0.7e_TEMP</div></pre></td></tr></table></figure></p>
+<p>每个OSD的current目录下都保存了部分的PG，而rbd池的PG以0.xxx_head的目录形式存在！</p>
+<p>现在我们通过rados向集群写入一个文件(char.txt)，在集群内保存名为char,通过下面的指令查看该文件实际保存的位置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[root@admin ~]# ceph osd map rbd char</div><div class="line">osdmap e89 pool &apos;rbd&apos; (0) object &apos;char&apos; -&gt; pg 0.98165844 (0.44) -&gt; up ([0,3,8], p0) acting ([0,3,8], p0)</div></pre></td></tr></table></figure></p>
+<p>可见，文件会保存在PG 0.44中，而这个PG位于osd.0,osd.3,osd.8中，之所以有这里有三个OSD，是因为集群副本数为3，可以在0/3/8这三个OSD的current下找到0.44_head目录。而同一份文件(比如这里的char.txt)的三个副本会分别保存在这三个同名的PG中</p>
+<p>执行指令，将char.txt文件存入集群，并查看各个OSD的PG目录内容：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">[root@admin ~]# rados -p rbd put char char.txt </div><div class="line"></div><div class="line">[root@node1 ~]# ll /var/lib/ceph/osd/ceph-0/current/0.44_head/</div><div class="line">total 4</div><div class="line">-rw-r--r-- 1 ceph ceph 4 May 31 18:20 char__head_98165844__0</div><div class="line">-rw-r--r-- 1 ceph ceph 0 May 31 10:41 __head_00000044__0</div><div class="line"></div><div class="line">[root@node2 ~]# ll /var/lib/ceph/osd/ceph-3/current/0.44_head/</div><div class="line">total 4</div><div class="line">-rw-r--r-- 1 ceph ceph 4 May 31 18:20 char__head_98165844__0</div><div class="line">-rw-r--r-- 1 ceph ceph 0 May 31 10:41 __head_00000044__0</div><div class="line"></div><div class="line">[root@node3 ~]# ll /var/lib/ceph/osd/ceph-8/current/0.44_head/</div><div class="line">total 4</div><div class="line">-rw-r--r-- 1 ceph ceph 4 May 31 18:20 char__head_98165844__0</div><div class="line">-rw-r--r-- 1 ceph ceph 0 May 31 10:41 __head_00000044__0</div></pre></td></tr></table></figure></p>
+<p>可见，这三个OSD保存了这个文件的三分副本，这就是ceph的多副本的基础，将一份数据保存成多个副本，按照一定规则分布在各个OSD中，而多副本的数据的一个特点就是，他们都保存在同名的PG下面，也就是同名的目录下。这样，我们就对PG有了一个直接的理解</p>
+<h5 id="PG-troubleshooting"><a href="#PG-troubleshooting" class="headerlink" title="PG troubleshooting"></a><b>PG troubleshooting</b></h5><ul>
+<li><p>Degraded<br>降级：由上文可以得知，每个PG有三个副本，分别保存在不同的OSD中，在非故障情况下，这个PG是a+c状态，那么，如果保存0.44这个PG的osd.3挂掉了，这个PG是什么状态呢，操作如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">[neo@node2 ~]$ sudo systemctl stop  ceph-osd@3</div><div class="line">[neo@node2 ~]$ sudo ceph pg dump_stuck |egrep ^0.44</div><div class="line">ok</div><div class="line">0.44    active+undersized+degraded      [0,8]   0       [0,8]   0</div></pre></td></tr></table></figure>
+<p>  这里我们前往node2节点，手动停止了osd.3，然后查看此时pg 0.44的状态，可见，它此刻的状态是active+undersized+degraded,当一个PG所在的OSD挂掉之后，这个PG就会进入undersized+degraded状态，而后面的[0,8]的意义就是还有两个0.44的副本存活在osd.0和osd.8上。那么现在可以读取刚刚写入的那个文件吗？是可以正常读取的！</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[root@admin test]# rados  -p rbd get char char.txt</div><div class="line">[root@admin test]# cat char.txt </div><div class="line">123</div></pre></td></tr></table></figure>
+<p>  降级就是在发生了一些故障比如OSD挂掉之后，ceph将这个OSD上的所有PG标记为degraded，但是此时的集群还是可以正常读写数据的<br>而另一个词undersized,我的理解就是当前存活的PG 0.44数为2，小于副本数3，将其做此标记，也不是严重的问题</p>
+</li>
+<li>Remapped<br>ceph强大的自我恢复能力,在OSD挂掉5min(default 300s)之后，这个OSD会被标记为out状态，可以理解为ceph认为这个OSD已经不属于集群了，然后就会把PG 0.44 map到别的OSD上去，这个map也是按照一定的规则的，重映射之后呢，就会在另外两个OSD上找到0.44这个PG，而这只是创建了这个目录而已，丢失的数据是要从仅存的OSD上回填到新的OSD上的，处于回填状态的PG就会被标记为backfilling<br>所以当一个PG处于remapped+backfilling状态时，可以认为其处于自我克隆复制的自愈过程</li>
+<li><p>Recover<br>这里我们先来做一个测试,首先开启所有OSD使得集群处于健康状态，然后前往osd.3的PG 0.44下面删除char<strong>head_98165844</strong>0这个文件，再通知ceph扫描(scrub)这个PG：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">[root@node2 0.44_head]# pwd &amp;&amp; rm -f char__head_98165844__0</div><div class="line">/var/lib/ceph/osd/ceph-3/current/0.44_head</div><div class="line">[root@node2 0.44_head]# ceph pg scrub 0.44</div><div class="line">instructing pg 0.44 on osd.0 to scrub</div><div class="line">[root@node2 0.44_head]# ceph pg dump |egrep ^0.44 </div><div class="line">dumped all in format plain</div><div class="line">0.44    1       0       0       0       0       4       1       1       active+clean+inconsistent       2017-06-01 11:54:54.980396      89&apos;1    137:181 [0,3,8] 0       [0,3,8] 0       89&apos;1 2017-06-01 11:54:54.980279       0&apos;0     2017-05-27 11:44:16.205723</div></pre></td></tr></table></figure>
+<p>  可见，0.44多了个inconsistent状态，顾名思义，ceph发现了这个PG的不一致状态，这样就可以理解这个状态的意义了。<br>想要修复丢失的文件呢，只需要执行ceph pg repair 0.44，ceph就会从别的副本中将丢失的文件拷贝过来，这也是ceph自愈的一个情形。<br>现在再假设一个情形，在osd.4挂掉的过程中呢，我们对char文件进行了写操作，因为集群内还存在着两个副本，是可以正常写入的，但是osd.3内的数据并没有得到更新，过了一会，osd.3上线了，ceph就发现，osd.3的char文件是陈旧的，就通过别的OSD向osd.3进行数据的恢复，使其数据为最新的，而这个恢复的过程中，PG就会被标记为recover</p>
+</li>
+</ul>
+<p>ref<br><a href="http://www.xuxiaopang.com/2016/10/09/easy-ceph-PG/" target="_blank" rel="external">大话Ceph–PG那点事儿</a><br><a href="http://docs.ceph.com/docs/master/rados/operations/pg-states/" target="_blank" rel="external">PLACEMENT GROUP STATES</a><br><a href="https://www.gitbook.com/book/forest/ceph-practice/details" target="_blank" rel="external">Ceph 实战</a><br><a href="http://www.wzxue.com/ceph-osd-and-pg/" target="_blank" rel="external">解析 Ceph : OSD , OSDMap 和 PG, PGMap</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h5 id=&quot;PG状态简介&quot;&gt;&lt;a href=&quot;#PG状态简介&quot; class=&quot;headerlink&quot; title=&quot;PG状态简介&quot;&gt;&lt;/a&gt;&lt;b&gt;PG状态简介&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;PG，Placement Group,让我们简单了解几个PG的状态,可以分为:&lt;/p&gt;
+&lt;ul
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
     <title>INSTALL CEPH (QUICK)</title>
     <link href="https://t1ger.github.io/2017/05/26/INSTALL-CEPH-QUICK/"/>
     <id>https://t1ger.github.io/2017/05/26/INSTALL-CEPH-QUICK/</id>
     <published>2017-05-26T08:25:56.000Z</published>
-    <updated>2017-05-31T02:50:53.280Z</updated>
+    <updated>2017-06-02T03:25:35.583Z</updated>
     
     <content type="html"><![CDATA[<h5 id="概念介绍"><a href="#概念介绍" class="headerlink" title="概念介绍"></a><b>概念介绍</b></h5><p>Ceph的部署模式下主要包含以下几个类型的节点:</p>
 <ul>
@@ -35,7 +187,7 @@
 <li>CephFS全称Ceph File System，是Ceph对外提供的文件系统服务</li>
 <li>CRUSH是Ceph使用的数据分布算法，类似一致性哈希，让数据分配到预期的地方</li>
 </ul>
-<h5 id="快速部署方案"><a href="#快速部署方案" class="headerlink" title="快速部署方案"></a><b>快速部署方案</b></h5><p>通过ceph-deploy可以快速便捷的安装上ceph,此方法部署需要一个管理节点（admin node)和3个节点来做ceph的存储集群<br>三台装有CentOS 7的主机，每台主机有三个磁盘(虚拟机磁盘要大于100G),详细信息如</p>
+<h5 id="部署方案"><a href="#部署方案" class="headerlink" title="部署方案"></a><b>部署方案</b></h5><p>通过ceph-deploy可以快速便捷的安装上ceph,此方法部署需要一个管理节点（admin node)和3个节点来做ceph的存储集群<br>三台装有CentOS 7的主机，每台主机有三个磁盘(虚拟机磁盘要大于100G),详细信息如</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">[root@node1 ~]# cat /etc/redhat-release </div><div class="line">CentOS Linux release 7.3.1611 (Core) </div><div class="line"></div><div class="line">[root@node1 ~]# lsblk</div><div class="line">NAME            MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT</div><div class="line">sda               8:0    0  100G  0 disk </div><div class="line">├─sda1            8:1    0  500M  0 part /boot</div><div class="line">└─sda2            8:2    0 99.5G  0 part </div><div class="line">  ├─system-root 253:0    0 95.6G  0 lvm  /</div><div class="line">  └─system-swap 253:1    0  3.9G  0 lvm  [SWAP]</div><div class="line">sdb               8:16   0    2T  0 disk </div><div class="line">sdc               8:32   0    2T  0 disk </div><div class="line">sdd               8:48   0    2T  0 disk </div><div class="line"></div><div class="line">[root@node1 ~]# cat /etc/hosts</div><div class="line">192.168.138.140 admin</div><div class="line">192.168.138.141 node1</div><div class="line">192.168.138.142 node2</div><div class="line">192.168.138.143 node3</div></pre></td></tr></table></figure>
 <p>集群配置如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">admin	192.168.138.140  deploy</div><div class="line">node1   192.168.138.141  mon*1 osd*3</div><div class="line">node2   192.168.138.142  mon*1 osd*3</div><div class="line">node3   192.168.138.143  mon*1 osd*3</div></pre></td></tr></table></figure></p>
 <p>备注:在生产环境,每个osd对应一块硬盘,每个osd需要一个journal,建议使用ssd作为osd硬盘的journal.<br>这里测试环境将采用data和journal在一个硬盘的做法</p>
@@ -54,10 +206,11 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[neo@admin cluster]$ ceph-deploy --overwrite-conf admin admin node1 node2 node3</div></pre></td></tr></table></figure>
 <h5 id="测试"><a href="#测试" class="headerlink" title="测试"></a><b>测试</b></h5><p>看一下配置成功了没？<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">[root@admin ~]# ceph -s</div><div class="line">    cluster d6d92de4-2a08-4bd6-a749-6c104c88fc40</div><div class="line">     health HEALTH_WARN</div><div class="line">            too few PGs per OSD (21 &lt; min 30)</div><div class="line">     monmap e1: 3 mons at &#123;node1=192.168.138.141:6789/0,node2=192.168.138.142:6789/0,node3=192.168.138.143:6789/0&#125;</div><div class="line">            election epoch 6, quorum 0,1,2 node1,node2,node3</div><div class="line">     osdmap e53: 9 osds: 9 up, 9 in</div><div class="line">            flags sortbitwise,require_jewel_osds</div><div class="line">      pgmap v148: 64 pgs, 1 pools, 0 bytes data, 0 objects</div><div class="line">            307 MB used, 18377 GB / 18378 GB avail</div><div class="line">                  64 active+clean</div><div class="line">[root@admin ~]# ceph health</div><div class="line">HEALTH_WARN too few PGs per OSD (21 &lt; min 30)</div></pre></td></tr></table></figure></p>
 <p>备注: 这里需要注意的事执行命令是在root权限下执行的，<br>因为etc/ceph/ceph.client.admin.keyring权限只允许root读写导致，亦可以给文件加权限解决<br>如果在neo权限下,报错如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">[neo@admin cluster]$ ceph health</div><div class="line">2017-05-27 16:58:23.374074 7f567813a700 -1 auth: unable to find a keyring on /etc/ceph/ceph.client.admin.keyring,/etc/ceph/ceph.keyring,/etc/ceph/keyring,/etc/ceph/keyring.bin: (2) No such file or directory</div><div class="line">2017-05-27 16:58:23.374109 7f567813a700 -1 monclient(hunting): ERROR: missing keyring, cannot use cephx for authentication</div><div class="line">2017-05-27 16:58:23.374113 7f567813a700  0 librados: client.admin initialization error (2) No such file or directory</div><div class="line">Error connecting to cluster: ObjectNotFound</div></pre></td></tr></table></figure></p>
-<p>在我们执行ceph -s 时警告PG太少,我们接下来解决,由于是新配置的集群，只有一个pool<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[neo@admin ~]$ sudo ceph osd lspools</div><div class="line">0 rbd,</div></pre></td></tr></table></figure></p>
+<p>在我们执行ceph -s 时警告PG太少,我们接下来解决,由于是新配置的集群，只有一个pool</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[neo@admin ~]$ sudo ceph osd lspools</div><div class="line">0 rbd,</div></pre></td></tr></table></figure>
 <p>查看rbd pool的PGS<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[neo@admin ~]$ sudo ceph osd pool get rbd pg_num</div><div class="line">pg_num: 64</div></pre></td></tr></table></figure></p>
-<p>pgs为64，因为是3副本的配置，所以当有9个osd的时候，每个osd上均分了64/9*3=21个pgs,也就是出现了如上的错误 小于最小配置30个<br>解决办法：修改默认pool rbd的pgs和pgp_num,默认两个pg_num和pgp_num一样大小均为64，此处也将两个的值都设为128<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">[neo@admin ~]$ sudo ceph osd pool set rbd pg_num 128</div><div class="line">set pool 0 pg_num to 128</div><div class="line"></div><div class="line">[neo@admin ~]$ sudo ceph osd pool set rbd pgp_num 128</div><div class="line">set pool 0 pgp_num to 128set pool 0 pgp_num to 128</div><div class="line"></div><div class="line">[neo@admin ~]$ sudo ceph health</div><div class="line">HEALTH_OK</div><div class="line"></div><div class="line">[neo@admin ~]$ sudo ceph -s</div><div class="line">    cluster d6d92de4-2a08-4bd6-a749-6c104c88fc40</div><div class="line">     health HEALTH_OK</div><div class="line">     monmap e1: 3 mons at &#123;node1=192.168.138.141:6789/0,node2=192.168.138.142:6789/0,node3=192.168.138.143:6789/0&#125;</div><div class="line">            election epoch 16, quorum 0,1,2 node1,node2,node3</div><div class="line">     osdmap e89: 9 osds: 9 up, 9 in</div><div class="line">            flags sortbitwise,require_jewel_osds</div><div class="line">      pgmap v329: 128 pgs, 1 pools, 0 bytes data, 0 objects</div><div class="line">            314 MB used, 18377 GB / 18378 GB avail</div><div class="line">                 128 active+clean</div></pre></td></tr></table></figure></p>
-<p>ref<br><a href="http://ceph.com/install/" target="_blank" rel="external">INSTALL CEPH (QUICK)</a><br><a href="http://www.codexiu.cn/linux/blog/42056/" target="_blank" rel="external">centos7 ceph-deploy 安装jewel</a><br><a href="http://zedshadow.leanote.com/post/%E4%BD%BF%E7%94%A8ceph-deploy%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2Ceph" target="_blank" rel="external">centos7使用ceph-deploy快速部署Kraken版Ceph</a><br><a href="http://www.vpsee.com/2015/07/install-ceph-on-centos-7/" target="_blank" rel="external">在 CentOS 7.1 上安装分布式存储系统 Ceph</a><br><a href="http://www.cnblogs.com/zhangzhengyan/p/5839897.html" target="_blank" rel="external">ceph 创建和删除osd</a><br><a href="http://blog.csdn.net/xiongwenwu/article/details/53120415" target="_blank" rel="external">三种增删osd的方法数据量迁移大小</a><br><a href="https://www.virtualtothecore.com/en/quickly-build-a-new-ceph-cluster-with-ceph-deploy-on-centos-7/" target="_blank" rel="external">Quickly build a new Ceph cluster with ceph-deploy on CentOS 7</a><br><a href="http://blog.csdn.net/chinagissoft/article/details/50491429" target="_blank" rel="external">Ceph 集群部署</a><br><a href="https://my.oschina.net/diluga/blog/528618" target="_blank" rel="external">PG设置与规划</a><br><a href="https://my.oschina.net/xiaozhublog/blog/664560" target="_blank" rel="external">  health HEALTH_WARN too few PGs per OSD</a></p>
+<p>pgs为64，因为是3副本的配置，所以当有9个osd的时候, 每个osd上均分了64/9<em>3=21个pgs,也就是出现了如上的错误 小于最小配置30个<br>根据<a href="http://docs.ceph.com/docs/master/rados/configuration/pool-pg-config-ref/" target="_blank" rel="external">官方推荐</a>,Total PGs = (#OSDs </em> 100) / pool size 公式来决定 pg_num（pgp_num 应该设成和 pg_num 一样）,我们可以算出 100*9/3=300,Ceph推荐取最接近2的指数倍，所以选择256<br>解决办法：修改默认pool rbd的pgs和pgp_num,默认两个pg_num和pgp_num一样大小均为64，此处也将两个的值都设为256<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">[neo@admin ~]$ sudo ceph osd pool set rbd pg_num 256</div><div class="line">set pool 0 pg_num to 256</div><div class="line"></div><div class="line">[neo@admin ~]$ sudo ceph osd pool set rbd pgp_num 256</div><div class="line">set pool 0 pgp_num to 128set pool 0 pgp_num to 256</div><div class="line"></div><div class="line">[neo@admin ~]$ sudo ceph health</div><div class="line">HEALTH_OK</div><div class="line"></div><div class="line">[neo@admin ~]$ sudo ceph -s</div><div class="line">    cluster d6d92de4-2a08-4bd6-a749-6c104c88fc40</div><div class="line">     health HEALTH_OK</div><div class="line">     monmap e1: 3 mons at &#123;node1=192.168.138.141:6789/0,node2=192.168.138.142:6789/0,node3=192.168.138.143:6789/0&#125;</div><div class="line">            election epoch 18, quorum 0,1,2 node1,node2,node3</div><div class="line">     osdmap e116: 9 osds: 9 up, 9 in</div><div class="line">            flags sortbitwise,require_jewel_osds</div><div class="line">      pgmap v412: 256 pgs, 1 pools, 4 bytes data, 1 objects</div><div class="line">            324 MB used, 18377 GB / 18378 GB avail</div><div class="line">                 256 active+clean</div></pre></td></tr></table></figure></p>
+<p>ref<br><a href="http://www.xuxiaopang.com/2016/10/10/ceph-full-install-el7-jewel/" target="_blank" rel="external">CEPH部署完整版(el7+jewel)</a><br><a href="http://ceph.com/install/" target="_blank" rel="external">INSTALL CEPH (QUICK)</a><br><a href="http://www.codexiu.cn/linux/blog/42056/" target="_blank" rel="external">centos7 ceph-deploy 安装jewel</a><br><a href="http://zedshadow.leanote.com/post/%E4%BD%BF%E7%94%A8ceph-deploy%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2Ceph" target="_blank" rel="external">centos7使用ceph-deploy快速部署Kraken版Ceph</a><br><a href="http://www.vpsee.com/2015/07/install-ceph-on-centos-7/" target="_blank" rel="external">在 CentOS 7.1 上安装分布式存储系统 Ceph</a><br><a href="http://www.cnblogs.com/zhangzhengyan/p/5839897.html" target="_blank" rel="external">ceph 创建和删除osd</a><br><a href="http://blog.csdn.net/xiongwenwu/article/details/53120415" target="_blank" rel="external">三种增删osd的方法数据量迁移大小</a><br><a href="https://www.virtualtothecore.com/en/quickly-build-a-new-ceph-cluster-with-ceph-deploy-on-centos-7/" target="_blank" rel="external">Quickly build a new Ceph cluster with ceph-deploy on CentOS 7</a><br><a href="http://blog.csdn.net/chinagissoft/article/details/50491429" target="_blank" rel="external">Ceph 集群部署</a><br><a href="https://my.oschina.net/diluga/blog/528618" target="_blank" rel="external">PG设置与规划</a><br><a href="https://my.oschina.net/xiaozhublog/blog/664560" target="_blank" rel="external">health HEALTH_WARN too few PGs per OSD</a></p>
 <hr>
 <p>您的鼓励是我写作最大的动力</p>
 <p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
@@ -348,108 +501,6 @@ then the default (AUTO) value will be considered.
     <summary type="html">
     
       &lt;h5 id=&quot;make-work-dir&quot;&gt;&lt;a href=&quot;#make-work-dir&quot; class=&quot;headerlink&quot; title=&quot;make work dir&quot;&gt;&lt;/a&gt;&lt;b&gt;make work dir&lt;/b&gt;&lt;/h5&gt;&lt;figure class=&quot;highlig
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>faster way to navigate your filesystem for CentOS</title>
-    <link href="https://t1ger.github.io/2017/04/07/faster-way-to-navigate-your-filesystem-for-CentOS/"/>
-    <id>https://t1ger.github.io/2017/04/07/faster-way-to-navigate-your-filesystem-for-CentOS/</id>
-    <published>2017-04-07T08:49:43.000Z</published>
-    <updated>2017-04-07T08:12:14.582Z</updated>
-    
-    <content type="html"><![CDATA[<h5 id="What-is-autojump"><a href="#What-is-autojump" class="headerlink" title="What is autojump"></a><b>What is autojump</b></h5><p>autojump is a faster way to navigate your filesystem. It works by maintaining a database of the directories you use the most from the command line.</p>
-<p>Directories must be visited first before they can be jumped to.</p>
-<h5 id="How-to-Install"><a href="#How-to-Install" class="headerlink" title="How to Install"></a><b>How to Install</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">yum install epel-release</div><div class="line">yum install autojump</div><div class="line"></div><div class="line">如果你是bash，则添加如下到 ~/.bashrc</div><div class="line">[[ -s /etc/profile.d/autojump.bash ]] &amp;&amp; . /etc/profile.d/autojump.bash</div></pre></td></tr></table></figure>
-<h5 id="How-to-usage"><a href="#How-to-usage" class="headerlink" title="How to usage"></a><b>How to usage</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">j 目录名字</div><div class="line"></div><div class="line">手动添加目录</div><div class="line">j -a [目录]</div><div class="line"></div><div class="line">手工增加权重</div><div class="line">j -i [权重]</div><div class="line"></div><div class="line">手动减少权重</div><div class="line">j -d [权重] </div><div class="line"></div><div class="line">显示数据库中的统计数据</div><div class="line">j -s</div><div class="line"></div><div class="line">将不存在的目录从数据库中移除</div><div class="line">j --purge</div></pre></td></tr></table></figure>
-<p>ref<br><a href="https://github.com/wting/autojump" target="_blank" rel="external">wting/autojump</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h5 id=&quot;What-is-autojump&quot;&gt;&lt;a href=&quot;#What-is-autojump&quot; class=&quot;headerlink&quot; title=&quot;What is autojump&quot;&gt;&lt;/a&gt;&lt;b&gt;What is autojump&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;autojum
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Deploy VM to vCenter with Ansible</title>
-    <link href="https://t1ger.github.io/2017/03/21/Deploy-VM-to-vCenter-with-Ansible/"/>
-    <id>https://t1ger.github.io/2017/03/21/Deploy-VM-to-vCenter-with-Ansible/</id>
-    <published>2017-03-21T07:19:51.000Z</published>
-    <updated>2017-03-21T07:22:21.172Z</updated>
-    
-    <content type="html"><![CDATA[<p>ready work </p>
-<ul>
-<li>install ansible<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># yum install epel-release -y</div><div class="line"># yum install python2-pip -y</div><div class="line"># pip install pysphere</div><div class="line"># yum install ansible -y</div><div class="line">[root@localhost ~]# ansible --version</div><div class="line">ansible 2.2.1.0</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>ansible config</p>
-<ul>
-<li><p>create our inventory list</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">[root@localhost vm-playbook]# cat create_hosts </div><div class="line">[dev-vms]</div><div class="line">ans-dev[127:128] disk=&apos;50&apos; datastore=&apos;datastore1&apos; network=&apos;VM Network&apos; memory=&apos;256&apos; cpucount=&apos;2&apos; osid=&apos;centos64Guest&apos;</div><div class="line"></div><div class="line">ans-dev[127:128]= -  actual VM names that we will be creating</div><div class="line">disk= — is the size in GB to create for each VM</div><div class="line">datastore= — name of the datastore to create the VMs on</div><div class="line">network= — name of network (portgroup) to place the VMs on</div><div class="line">memory= — the amount of memory in MB to allocate to the VMs</div><div class="line">cpucount= — the number of vCPU’s to allocate to the VMs</div><div class="line">osid= — the OS Identifier to specify for the OS type…. reference this guide for OSID’s</div></pre></td></tr></table></figure>
-</li>
-<li><p>create the actual ansible playbook to run to create the VMs</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div></pre></td><td class="code"><pre><div class="line">[root@localhost vm-playbook]# cat create_vms.yml </div><div class="line">---</div><div class="line">- hosts: all</div><div class="line">  gather_facts: false</div><div class="line">  connection: local</div><div class="line">  user: root</div><div class="line">  sudo: false</div><div class="line">  serial: 1</div><div class="line"></div><div class="line">  vars_prompt:</div><div class="line">    - name: &quot;vcenter_hostname&quot;</div><div class="line">      prompt: &quot;Enter vcenter hostname&quot;</div><div class="line">      private: no</div><div class="line">      default: &quot;vcsa&quot;</div><div class="line">    - name: &quot;vcenter_user&quot;</div><div class="line">      prompt: &quot;Enter vcenter username&quot;</div><div class="line">      private: no</div><div class="line">    - name: &quot;vcenter_pass&quot;</div><div class="line">      prompt: &quot;Enter vcenter password&quot;</div><div class="line">      private: yes</div><div class="line"></div><div class="line">  vars:</div><div class="line">    datacenter: &apos;whistle&apos;</div><div class="line">    esxi_host: &apos;192.168.100.120&apos;</div><div class="line">    notes: &apos;Created by Ansible&apos;</div><div class="line"></div><div class="line">  tasks:</div><div class="line">    - vsphere_guest:</div><div class="line">        vcenter_hostname: &quot;&#123;&#123; vcenter_hostname &#125;&#125;&quot;</div><div class="line">        username: &quot;&#123;&#123; vcenter_user &#125;&#125;&quot;</div><div class="line">        password: &quot;&#123;&#123; vcenter_pass &#125;&#125;&quot;</div><div class="line">        guest: &quot;&#123;&#123; inventory_hostname &#125;&#125;&quot;</div><div class="line">        state: present</div><div class="line">        vm_extra_config:</div><div class="line">          notes: &quot;&#123;&#123; notes &#125;&#125;&quot;</div><div class="line">          vcpu.hotadd: yes</div><div class="line">          mem.hotadd:  yes</div><div class="line">          #folder: ansible_test</div><div class="line">        vm_disk:</div><div class="line">          disk1:</div><div class="line">            size_gb: &quot;&#123;&#123; disk &#125;&#125;&quot;</div><div class="line">            type: thin</div><div class="line">            datastore: &quot;&#123;&#123; datastore &#125;&#125;&quot;</div><div class="line">            # VMs can be put into folders. The value given here is either the full path</div><div class="line">            # to the folder (e.g. production/customerA/lamp) or just the last component</div><div class="line">            # of the path (e.g. lamp):</div><div class="line">            #folder: production/customerA/lamp</div><div class="line">        vm_nic:</div><div class="line">          nic1:</div><div class="line">            type: e1000</div><div class="line">            network: &quot;&#123;&#123; network &#125;&#125;&quot;</div><div class="line">            network_type: standard</div><div class="line">        vm_hardware:</div><div class="line">          memory_mb: &quot;&#123;&#123; memory &#125;&#125;&quot;</div><div class="line">          num_cpus: &quot;&#123;&#123; cpucount &#125;&#125;&quot;</div><div class="line">          osid: &quot;&#123;&#123; osid &#125;&#125;&quot;</div><div class="line">          scsi: paravirtual</div><div class="line">          vm_cdrom:</div><div class="line">                type: &quot;iso&quot;</div><div class="line">                iso_path: &quot;datastore1/iso/CentOS-Basic7.3-01071715.iso&quot;</div><div class="line">        esxi:</div><div class="line">          datacenter: &quot;&#123;&#123; datacenter &#125;&#125;&quot;</div><div class="line">          hostname: &quot;&#123;&#123; esxi_host &#125;&#125;&quot;</div></pre></td></tr></table></figure>
-</li>
-<li><p>now ready to run your playbook</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">[root@localhost vm-playbook]# ansible-playbook -i create_hosts create_vms.yml </div><div class="line">SSH password: </div><div class="line">[DEPRECATION WARNING]: Instead of sudo/sudo_user, use become/become_user and make sure become_method is &apos;sudo&apos; (default).</div><div class="line">This feature will be removed in a future release. Deprecation </div><div class="line">warnings can be disabled by setting deprecation_warnings=False in ansible.cfg.</div><div class="line">Enter vcenter hostname [vcsa]: 192.168.100.120</div><div class="line">Enter vcenter username: administrator</div><div class="line">Enter vcenter password: </div><div class="line"></div><div class="line">PLAY [all] *********************************************************************</div><div class="line"></div><div class="line">TASK [vsphere_guest] ***********************************************************</div><div class="line">changed: [ans-dev127]</div><div class="line"></div><div class="line">PLAY [all] *********************************************************************</div><div class="line"></div><div class="line">TASK [vsphere_guest] ***********************************************************</div><div class="line">changed: [ans-dev128]</div><div class="line"></div><div class="line">PLAY RECAP *********************************************************************</div><div class="line">ans-dev127                 : ok=1    changed=1    unreachable=0    failed=0   </div><div class="line">ans-dev128                 : ok=1    changed=1    unreachable=0    failed=0</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>ref</p>
-<p><a href="http://docs.ansible.com/ansible/vsphere_guest_module.html" target="_blank" rel="external">vsphere_guest - Create/delete/manage a guest VM through VMware vSphere</a><br><a href="http://everythingshouldbevirtual.com/creating-vsphere-vms-using-ansible" target="_blank" rel="external">Creating vSphere VM’s using Ansible</a><br><a href="http://serverfault.com/questions/740193/create-multiple-vmware-guests-with-vsphere-guest-module" target="_blank" rel="external">Create multiple VMware guests with vsphere_guest module</a><br><a href="http://probably.co.uk/managing-vmware-vsphere-guests-with-ansible-tower.html" target="_blank" rel="external">Managing VMware vSphere guests with Ansible Tower</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;ready work &lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;install ansible&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div 
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Docker CE vs Docker EE</title>
-    <link href="https://t1ger.github.io/2017/03/14/Docker-CE-vs-Docker-EE/"/>
-    <id>https://t1ger.github.io/2017/03/14/Docker-CE-vs-Docker-EE/</id>
-    <published>2017-03-14T08:59:18.000Z</published>
-    <updated>2017-03-14T08:45:27.454Z</updated>
-    
-    <content type="html"><![CDATA[<p>Docker2016年就明确了将会在企业级方面重点跟进，惊喜就这样来了，在2017年的3月1号之后，Docker的版本命名开始发生变化，同时将CE版本和EE版本进行分开，而这些也是新安装docker时候发现的，一起简单来看一下具体情况吧</p>
-<h5 id="版本说明"><a href="#版本说明" class="headerlink" title="版本说明"></a><b>版本说明</b></h5><p>在此之前docker的最新版本更新到docker1.13，而在1.13的基础之上，在2017年的3月1号开始，版本的格式变为如下</p>
-<p>项目    说明<br>版本格式    YY.MM<br>stable版本    每个季度发行<br>edge版本    每个月发行<br>当前CE版本    17.03.0-ce</p>
-<p>同时将Docker分成CE和EE2个版本。CE版本即社区版(免费，支持周期三个月),EE企业版，强调安全，付费使用。<br>当前的CE版本为17.03.0-ce，基于V1.13.0.主要修复错误，没有重大功能增加，API亦保持不变。</p>
-<h5 id="安装CE版本的Docker"><a href="#安装CE版本的Docker" class="headerlink" title="安装CE版本的Docker"></a><b>安装CE版本的Docker</b></h5><p>安装参看官方提供Manual如下</p>
-<p>项目    详细<br>CENTOS安装CE版    <a href="https://store.docker.com/editions/community/docker-ce-server-centos?tab=description" target="_blank" rel="external">https://store.docker.com/editions/community/docker-ce-server-centos?tab=description</a><br>也可以使用Easypack下面提供的脚本，只是将上面的内容顺次写进去，加上enable和start以及firewall的关闭等操作而已。</p>
-<p>项目    详细<br>CENTOS安装CE（Easypack）版    <a href="https://github.com/liumiaocn/easypack/tree/master/docker" target="_blank" rel="external">https://github.com/liumiaocn/easypack/tree/master/docker</a></p>
-<h5 id="安装FAQ"><a href="#安装FAQ" class="headerlink" title="安装FAQ"></a><b>安装FAQ</b></h5><p>在yum 安装时候，报出Peer’s Certificate has expired的错误</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">failure: repodata/repomd.xml from docker-ce-stable: [Errno 256] No more mirrors to try.</div><div class="line">https://download.docker.com/linux/centos/7/x86_64/stable/repodata/repomd.xml: [Errno 14] curl#60 - &quot;Peer&apos;s Certificate has expired.&quot;</div></pre></td></tr></table></figure>
-<p>搜索很久，终于看到有位兄弟碰到过，原来是本地时间不正确造成的，详情见<a href="https://xuxinkun.github.io/2016/04/21/curl-ca-problem/" target="_blank" rel="external">这里</a></p>
-<p>进行一次ntp同步时间同步，问题解决<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ntpdate pool.ntp.org</div></pre></td></tr></table></figure></p>
-<p>ref<br><a href="https://docs.docker.com/engine/installation/linux/centos/" target="_blank" rel="external">Get Docker for CentOS</a><br><a href="https://xuxinkun.github.io/2016/04/21/curl-ca-problem/" target="_blank" rel="external">记一次解决curl https证书问题</a><br><a href="https://github.com/tiny1990/aboutTest" target="_blank" rel="external">docker的环境部署</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;Docker2016年就明确了将会在企业级方面重点跟进，惊喜就这样来了，在2017年的3月1号之后，Docker的版本命名开始发生变化，同时将CE版本和EE版本进行分开，而这些也是新安装docker时候发现的，一起简单来看一下具体情况吧&lt;/p&gt;
-&lt;h5 id=&quot;版本说明&quot;&gt;
     
     </summary>
     
