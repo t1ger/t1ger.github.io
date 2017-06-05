@@ -153,7 +153,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">|Criteria	|Minimum Recommended|</div><div class="line">|: --:		|:–		|</div><div class="line">|Processor	|Inter(R) Xeon(R)CPU E5-2650v3|</div><div class="line">|RAM 		|64GB |</div><div class="line">|Volume Storage	|1x1.6TB P3700+12x4TB HDDs(1:12 ratio) P3700 as Journal and caching|</div><div class="line">|Caching software	|Intel(R) CAS3.0,option: Intel(R) RSTe/MD4.3|</div><div class="line">|Network	|10Gbe|</div></pre></td></tr></table></figure>
 <p>  2.osd –Better</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">|Criteria	|Minimum Recommended|</div><div class="line">|: --:		|:–		|</div><div class="line">|Processor	|Inter(R) Xeon(R)CPU E5-2690|</div><div class="line">|RAM 		|128GB |</div><div class="line">|Volume Storage	|1xIntel(R) DC P3700(800G)+4xIntel(R) DC S3510 1.6TB|</div><div class="line">|Network	|Duel 10Gbe|</div></pre></td></tr></table></figure>
-<p>  2.osd –Best</p>
+<p>  3.osd –Best</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">|Criteria	|Minimum Recommended|</div><div class="line">|: --:		|:–		|</div><div class="line">|Processor	|Inter(R) Xeon(R)CPU E5-2699v3|</div><div class="line">|RAM 		|&gt;=128GB |</div><div class="line">|Volume Storage	|4 to 6xIntel(R)DC P3700 2TB|</div><div class="line">|Network	|2x 40GbE,4xdual 10GbE|</div></pre></td></tr></table></figure>
 </li>
 <li><p>vpsee生产实例</p>
@@ -165,11 +165,14 @@
 <li>OSD 服务器上用10块 4TB 硬盘做 Ceph 存储，每个 osd 对应1块硬盘，每个 osd 需要1个 Journal，所以10块硬盘需要10个 Journal，我们用2块大容量 SSD 硬盘做 journal，每个 SSD 等分成5个区，这样每个区分别对应一个 osd 硬盘的 journal，剩下的2块小容量 SSD 装操作系统，采用 RAID1.</li>
 </ul>
 <p>ref<br><a href="http://docs.ceph.org.cn/start/hardware-recommendations/#id9" target="_blank" rel="external">硬件推荐</a><br><a href="https://github.com/lemonhall/node_note/blob/master/ceph%E7%9A%84%E7%A1%AC%E4%BB%B6%E9%85%8D%E7%BD%AE.txt" target="_blank" rel="external">ceph的硬件配置.txt</a><br><a href="http://www.vpsee.com/2015/07/install-ceph-on-centos-7/" target="_blank" rel="external">在 CentOS 7.1 上安装分布式存储系统 Ceph</a><br><a href="http://www.xuxiaopang.com/2016/10/10/ceph-full-install-el7-jewel/" target="_blank" rel="external">CEPH部署完整版(el7+jewel)</a><br><a href="http://www.xuxiaopang.com/2016/11/11/doc-ceph-table/" target="_blank" rel="external">Ceph常用表格汇总</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
 
 							<!-- 支付宝打赏图案 -->
       						<div id="donate_guide" class="donate_bar center ">
-          					<a href="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
-          					<img src="http://t1.qpic.cn/mblogpic/79e13bdabc9da2a299ee/2000" title="支付宝打赏" height="164px" width="164px">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
           					</a> 
       						</div>
 					</div>
