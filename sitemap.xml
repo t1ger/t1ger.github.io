@@ -2,16 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://t1ger.github.io/2017/06/02/ceph-crush-maps/</loc>
+    <loc>https://t1ger.github.io/2017/06/06/ceph-crush%20algorithm(%E4%BA%8C)/</loc>
     
-    <lastmod>2017-06-05T09:27:27.782Z</lastmod>
+    <lastmod>2017-06-06T09:38:00.092Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://t1ger.github.io/2017/06/02/ceph-crush%20algorithm(%E4%B8%80)/</loc>
+    
+    <lastmod>2017-06-06T09:37:53.304Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://t1ger.github.io/2017/06/01/ceph%E7%BB%B4%E6%8A%A4%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/</loc>
     
-    <lastmod>2017-06-02T05:42:48.485Z</lastmod>
+    <lastmod>2017-06-06T09:37:46.837Z</lastmod>
     
   </url>
   
