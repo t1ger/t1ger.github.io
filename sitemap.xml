@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://t1ger.github.io/2017/06/13/ceph-Monitor-clock-skew-detected/</loc>
+    
+    <lastmod>2017-06-13T06:46:13.193Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://t1ger.github.io/2017/06/06/ceph-crush%20algorithm(%E4%BA%8C)/</loc>
     
     <lastmod>2017-06-06T09:38:00.092Z</lastmod>
