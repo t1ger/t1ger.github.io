@@ -1,0 +1,237 @@
+	<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
+  
+  <title>monitor的添加或删除 | t1ger的茶馆</title>
+  <meta name="author" content="t1ger">
+  
+  <meta name="description" content="https://t1ger.github.io/">
+  
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta property="og:title" content="monitor的添加或删除"/>
+  <meta property="og:site_name" content="t1ger的茶馆"/>
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+</head>
+
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">t1ger的茶馆</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="这是一个订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>monitor的添加或删除</h2>
+					
+					<div>
+						<span class="post-time">2017-06-15 20:09:13</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<p>一般来说，在实际运行中，ceph monitor的个数是2n+1(n&gt;=0)个，在线上至少3个，只要正常的节点数&gt;=n+1，ceph的paxos算法能保证系统的正常运行。所以,对于3个节点，同时只能挂掉一个。建议（但不是强制）部署奇数个 monitor ,不建议把监视器和 OSD 置于同一主机上,后续如果要增加，请一次增加 2 个</p>
+<p>一般来说，同时挂掉2个节点的概率比较小，但是万一挂掉2个呢？<br>如果ceph的monitor节点超过半数挂掉，paxos算法就无法正常进行仲裁(quorum)，此时，ceph集群会阻塞对集群的操作，直到超过半数的monitor节点恢复</p>
+<ul>
+<li>如果挂掉的2个节点至少有一个可以恢复，也就是monitor的元数据还是OK的，那么只需要重启ceph-mon进程即可。所以，对于monitor，最好运行在RAID的机器上。这样，即使机器出现故障，恢复也比较容易</li>
+<li>如果挂掉的2个节点的监控数据都损坏了呢？</li>
+</ul>
+<p>带着这些疑问,后边几篇文章我们来提供了一些常见场景的处理方法，包括增加monitor，移除某个monitor，机房搬迁需要修改IP，备份MON的数据库等</p>
+<p>本文讲一下如何对一个已经存在的ceph storage cluster添加或删除一个监控节点.<br>用 ceph-deploy 增加和删除监视器很简单，只要一个命令就可以增加或删除一或多个监视器<br>大致步骤:<br>1.环境准备<br>2.安装软件<br>3.添加节点</p>
+<h5 id="添加一个monitor-ceph-deploy"><a href="#添加一个monitor-ceph-deploy" class="headerlink" title="添加一个monitor(ceph-deploy )"></a><b>添加一个monitor(ceph-deploy )</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div></pre></td><td class="code"><pre><div class="line">[neo@admin cluster]$ sudo ceph -s</div><div class="line">    cluster d6d92de4-2a08-4bd6-a749-6c104c88fc40</div><div class="line">     health HEALTH_OK</div><div class="line">     monmap e2: 2 mons at &#123;node1=192.168.138.141:6789/0,node2=192.168.138.142:6789/0&#125;</div><div class="line">            election epoch 62, quorum 0,1 node1,node2</div><div class="line">     osdmap e246: 9 osds: 9 up, 9 in</div><div class="line">            flags sortbitwise,require_jewel_osds</div><div class="line">      pgmap v1167: 256 pgs, 1 pools, 4 bytes data, 1 objects</div><div class="line">            350 MB used, 18377 GB / 18378 GB avail</div><div class="line">                 256 active+clean</div><div class="line">[neo@admin cluster]$ cat ~/cluster/ceph.conf |grep mon     </div><div class="line">mon_initial_members = node1, node2</div><div class="line">mon_host = 192.168.138.141,192.168.138.142</div><div class="line"></div><div class="line">#修改配置文件,添加新的节点</div><div class="line">[neo@admin cluster]$ vi ceph.conf </div><div class="line">[neo@admin cluster]$ cat ~/cluster/ceph.conf |grep mon</div><div class="line">mon_initial_members = node1, node2, node3</div><div class="line">mon_host = 192.168.138.141,192.168.138.142,192.168.138.143</div><div class="line"></div><div class="line">[neo@admin cluster]$ ceph-deploy --overwrite-conf config push  node1 node2</div><div class="line"></div><div class="line">#添加MON，注意如果如果要添加多个MON，需要一个个add</div><div class="line">需要注意,往存在的cluster里添加monitor时，需要修改配置文件ceph.conf在global章节中</div><div class="line">指定public network或者mon.nodeX中指定public addr，配置文件中写成代</div><div class="line">下划线的public_network =也是可以的</div><div class="line"></div><div class="line">[neo@admin cluster]$ ceph-deploy --overwrite-conf mon add node3</div><div class="line">[ceph_deploy.conf][DEBUG ] found configuration file at: /home/neo/.cephdeploy.conf</div><div class="line">[ceph_deploy.cli][INFO  ] Invoked (1.5.37): /usr/bin/ceph-deploy --overwrite-conf mon add node3</div><div class="line">[ceph_deploy.cli][INFO  ] ceph-deploy options:</div><div class="line">[ceph_deploy.cli][INFO  ]  username                      : None</div><div class="line">[ceph_deploy.cli][INFO  ]  verbose                       : False</div><div class="line">[ceph_deploy.cli][INFO  ]  overwrite_conf                : True</div><div class="line">[ceph_deploy.cli][INFO  ]  subcommand                    : add</div><div class="line">[ceph_deploy.cli][INFO  ]  quiet                         : False</div><div class="line">[ceph_deploy.cli][INFO  ]  cd_conf                       : &lt;ceph_deploy.conf.cephdeploy.Conf instance at 0x164fc68&gt;</div><div class="line">[ceph_deploy.cli][INFO  ]  cluster                       : ceph</div><div class="line">[ceph_deploy.cli][INFO  ]  mon                           : [&apos;node3&apos;]</div><div class="line">[ceph_deploy.cli][INFO  ]  func                          : &lt;function mon at 0x1647320&gt;</div><div class="line">[ceph_deploy.cli][INFO  ]  address                       : None</div><div class="line">[ceph_deploy.cli][INFO  ]  ceph_conf                     : None</div><div class="line">[ceph_deploy.cli][INFO  ]  default_release               : False</div><div class="line">[ceph_deploy.mon][INFO  ] ensuring configuration of new mon host: node3</div><div class="line">[ceph_deploy.admin][DEBUG ] Pushing admin keys and conf to node3</div><div class="line">[node3][DEBUG ] connection detected need for sudo</div><div class="line">[node3][DEBUG ] connected to host: node3 </div><div class="line">[node3][DEBUG ] detect platform information from remote host</div><div class="line">[node3][DEBUG ] detect machine type</div><div class="line">[node3][DEBUG ] write cluster configuration to /etc/ceph/&#123;cluster&#125;.conf</div><div class="line">[ceph_deploy.mon][DEBUG ] Adding mon to cluster ceph, host node3</div><div class="line">[ceph_deploy.mon][DEBUG ] using mon address by resolving host: 192.168.138.143</div><div class="line">[ceph_deploy.mon][DEBUG ] detecting platform for host node3 ...</div><div class="line">[node3][DEBUG ] connection detected need for sudo</div><div class="line">[node3][DEBUG ] connected to host: node3 </div><div class="line">[node3][DEBUG ] detect platform information from remote host</div><div class="line">[node3][DEBUG ] detect machine type</div><div class="line">[node3][DEBUG ] find the location of an executable</div><div class="line">[ceph_deploy.mon][INFO  ] distro info: CentOS Linux 7.3.1611 Core</div><div class="line">[node3][DEBUG ] determining if provided host has same hostname in remote</div><div class="line">[node3][DEBUG ] get remote short hostname</div><div class="line">[node3][DEBUG ] adding mon to node3</div><div class="line">[node3][DEBUG ] get remote short hostname</div><div class="line">[node3][DEBUG ] write cluster configuration to /etc/ceph/&#123;cluster&#125;.conf</div><div class="line">[node3][DEBUG ] create the mon path if it does not exist</div><div class="line">[node3][DEBUG ] checking for done path: /var/lib/ceph/mon/ceph-node3/done</div><div class="line">[node3][DEBUG ] create a done file to avoid re-doing the mon deployment</div><div class="line">[node3][DEBUG ] create the init path if it does not exist</div><div class="line">[node3][INFO  ] Running command: sudo systemctl enable ceph.target</div><div class="line">[node3][INFO  ] Running command: sudo systemctl enable ceph-mon@node3</div><div class="line">[node3][INFO  ] Running command: sudo systemctl start ceph-mon@node3</div><div class="line">[node3][INFO  ] Running command: sudo ceph --cluster=ceph --admin-daemon /var/run/ceph/ceph-mon.node3.asok mon_status</div><div class="line">[node3][WARNIN] monitor node3 does not exist in monmap</div><div class="line">[node3][INFO  ] Running command: sudo ceph --cluster=ceph --admin-daemon /var/run/ceph/ceph-mon.node3.asok mon_status</div><div class="line">[node3][DEBUG ] ********************************************************************************</div><div class="line">[node3][DEBUG ] status for monitor: mon.node3</div><div class="line">[node3][DEBUG ] &#123;</div><div class="line">[node3][DEBUG ]   &quot;election_epoch&quot;: 0, </div><div class="line">[node3][DEBUG ]   &quot;extra_probe_peers&quot;: [], </div><div class="line">[node3][DEBUG ]   &quot;monmap&quot;: &#123;</div><div class="line">[node3][DEBUG ]     &quot;created&quot;: &quot;2017-05-27 11:43:56.428001&quot;, </div><div class="line">[node3][DEBUG ]     &quot;epoch&quot;: 2, </div><div class="line">[node3][DEBUG ]     &quot;fsid&quot;: &quot;d6d92de4-2a08-4bd6-a749-6c104c88fc40&quot;, </div><div class="line">[node3][DEBUG ]     &quot;modified&quot;: &quot;2017-06-20 11:52:25.801159&quot;, </div><div class="line">[node3][DEBUG ]     &quot;mons&quot;: [</div><div class="line">[node3][DEBUG ]       &#123;</div><div class="line">[node3][DEBUG ]         &quot;addr&quot;: &quot;192.168.138.141:6789/0&quot;, </div><div class="line">[node3][DEBUG ]         &quot;name&quot;: &quot;node1&quot;, </div><div class="line">[node3][DEBUG ]         &quot;rank&quot;: 0</div><div class="line">[node3][DEBUG ]       &#125;, </div><div class="line">[node3][DEBUG ]       &#123;</div><div class="line">[node3][DEBUG ]         &quot;addr&quot;: &quot;192.168.138.142:6789/0&quot;, </div><div class="line">[node3][DEBUG ]         &quot;name&quot;: &quot;node2&quot;, </div><div class="line">[node3][DEBUG ]         &quot;rank&quot;: 1</div><div class="line">[node3][DEBUG ]       &#125;</div><div class="line">[node3][DEBUG ]     ]</div><div class="line">[node3][DEBUG ]   &#125;, </div><div class="line">[node3][DEBUG ]   &quot;name&quot;: &quot;node3&quot;, </div><div class="line">[node3][DEBUG ]   &quot;outside_quorum&quot;: [], </div><div class="line">[node3][DEBUG ]   &quot;quorum&quot;: [], </div><div class="line">[node3][DEBUG ]   &quot;rank&quot;: -1, </div><div class="line">[node3][DEBUG ]   &quot;state&quot;: &quot;synchronizing&quot;, </div><div class="line">[node3][DEBUG ]   &quot;sync&quot;: &#123;</div><div class="line">[node3][DEBUG ]     &quot;sync_cookie&quot;: 1040187393, </div><div class="line">[node3][DEBUG ]     &quot;sync_provider&quot;: &quot;mon.0 192.168.138.141:6789/0&quot;, </div><div class="line">[node3][DEBUG ]     &quot;sync_start_version&quot;: 2944</div><div class="line">[node3][DEBUG ]   &#125;, </div><div class="line">[node3][DEBUG ]   &quot;sync_provider&quot;: []</div><div class="line">[node3][DEBUG ] &#125;</div><div class="line">[node3][DEBUG ] ********************************************************************************</div><div class="line">[node3][INFO  ] monitor: mon.node3 is currently at the state of synchronizing</div></pre></td></tr></table></figure>
+<p>错误1:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">[node3][ERROR ] admin_socket: exception getting command descriptions: [Errno 2] No such file or directory</div><div class="line">[node3][WARNIN] monitor: mon.node3, might not be running yet</div><div class="line">[node3][INFO  ] Running command: sudo ceph --cluster=ceph --admin-daemon /var/run/ceph/ceph-mon.node3.asok mon_status</div><div class="line">[node3][ERROR ] admin_socket: exception getting command descriptions: [Errno 2] No such file or directory</div><div class="line">[node3][WARNIN] monitor node3 does not exist in monmap</div><div class="line">[node3][WARNIN] neither `public_addr` nor `public_network` keys are defined for monitors</div><div class="line">[node3][WARNIN] monitors may not be able to form quorum</div></pre></td></tr></table></figure></p>
+<p>原因: 未配置public network</p>
+<h5 id="添加一个monitor-手动"><a href="#添加一个monitor-手动" class="headerlink" title="添加一个monitor(手动)"></a><b>添加一个monitor(手动)</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">添加之前查看当前节点 ceph mon stat</div><div class="line"></div><div class="line">1、在目标节点上，新建 mon 的默认目录。&#123;mon-id&#125; 一般取为节点的 hostname 。</div><div class="line">ssh &#123;new-mon-host&#125;</div><div class="line">sudo mkdir /var/lib/ceph/mon/ceph-&#123;mon-id&#125;</div><div class="line">2、创建一个临时目录（和第 1 步中的目录不同，添加 mon 完毕后需要删除该临时目录），来存放新增 mon 所需的各种文件，</div><div class="line">mkdir &#123;tmp&#125;</div><div class="line">3、获取 mon 的 keyring 文件，保存在临时目录下。</div><div class="line">ceph auth get mon. -o &#123;tmp&#125;/&#123;key-filename&#125;</div><div class="line">4、获取集群的 mon map 并保存到临时目录下。</div><div class="line">ceph mon getmap -o &#123;tmp&#125;/&#123;map-filename&#125;</div><div class="line">5.Optional. 更新所有mon节点的配置文件，添加新节点的IP地址到ceph.conf [global]字段的mon_host</div><div class="line">[mon.node3] </div><div class="line">        host                  = node3</div><div class="line">        mon addr              = 192.168.138.143:6789</div><div class="line">		</div><div class="line">6、格式化在第 1 步中建立的 mon 数据目录。需要指定 mon map 文件的路径（获取法定人数的信息和集群的 fsid ）和 keyring 文件的路径。</div><div class="line">sudo ceph-mon -i &#123;mon-id&#125; --mkfs --monmap &#123;tmp&#125;/&#123;map-filename&#125; --keyring &#123;tmp&#125;/&#123;key-filename&#125;</div><div class="line">7、启动节点上的 mon 进程，它会自动加入集群。守护进程需要知道绑定到哪个 IP 地址，可以通过 --public-addr &#123;ip:port&#125; 选择指定，或在 ceph.conf 文件中进行配置 mon addr。</div><div class="line">ceph-mon -i &#123;mon-id&#125; --public-addr &#123;ip:port&#125;</div><div class="line"></div><div class="line">[root@node3 ~]# mkdir /var/lib/ceph/mon/ceph-node3/ -p</div><div class="line">[root@node3 ~]# mkdir /var/lib/ceph/tmp -p</div><div class="line">[root@node3 ~]# cd /var/lib/ceph/mon/ceph-node3/</div><div class="line">[root@node3 ceph-node3]# ceph auth get mon. -o ../../tmp/key-node3</div><div class="line">exported keyring for mon.</div><div class="line">[root@node3 ceph-node3]# ceph mon getmap -o ../../tmp/map-node3</div><div class="line">2017-06-21 12:56:30.078870 7fd654086700  0 -- :/2208778235 &gt;&gt; 192.168.138.143:6789/0 pipe(0x7fd65805cc80 sd=3 :0 s=1 pgs=0 cs=0 l=1 c=0x7fd65805df40).fault</div><div class="line">got monmap epoch 4</div><div class="line">[root@node3 ceph-node3]# ceph-mon  -i node3 --mkfs --monmap ../../tmp/map-node3  --keyring ../../tmp/key-node3 </div><div class="line">ceph-mon: set fsid to d6d92de4-2a08-4bd6-a749-6c104c88fc40</div><div class="line">ceph-mon: created monfs at /var/lib/ceph/mon/ceph-node3 for mon.node3</div><div class="line"></div><div class="line">#启动节点上的 mon 进程，它会自动加入集群,此步骤可略</div><div class="line">[root@node3 ceph-node3]# ceph mon add node3 192.169.138.143:6789</div><div class="line">[root@node3 ceph-node3]# ceph-mon -i node3 --public-addr 192.169.138.143:6789</div></pre></td></tr></table></figure>
+<h5 id="删除一个monitor-ceph-deploy"><a href="#删除一个monitor-ceph-deploy" class="headerlink" title="删除一个monitor(ceph-deploy )"></a><b>删除一个monitor(ceph-deploy )</b></h5><p>这里我们删除node3节点的mon,修改部署目录的配置文件，去除node3及其IP,再推送到三个节点<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line">[neo@admin cluster]$ cat ~/cluster/ceph.conf |grep mon     </div><div class="line">mon_initial_members = node1, node2, node3</div><div class="line">mon_host = 192.168.138.141,192.168.138.142,192.168.138.143</div><div class="line"></div><div class="line">[neo@admin cluster]$ ceph-deploy --overwrite-conf config push node1 node2 node3</div><div class="line">[neo@admin cluster]$ ceph-deploy mon destroy node3</div><div class="line">[ceph_deploy.conf][DEBUG ] found configuration file at: /home/neo/.cephdeploy.conf</div><div class="line">[ceph_deploy.cli][INFO  ] Invoked (1.5.37): /usr/bin/ceph-deploy mon destroy node3</div><div class="line">[ceph_deploy.cli][INFO  ] ceph-deploy options:</div><div class="line">[ceph_deploy.cli][INFO  ]  username                      : None</div><div class="line">[ceph_deploy.cli][INFO  ]  verbose                       : False</div><div class="line">[ceph_deploy.cli][INFO  ]  overwrite_conf                : False</div><div class="line">[ceph_deploy.cli][INFO  ]  subcommand                    : destroy</div><div class="line">[ceph_deploy.cli][INFO  ]  quiet                         : False</div><div class="line">[ceph_deploy.cli][INFO  ]  cd_conf                       : &lt;ceph_deploy.conf.cephdeploy.Conf instance at 0x1481c68&gt;</div><div class="line">[ceph_deploy.cli][INFO  ]  cluster                       : ceph</div><div class="line">[ceph_deploy.cli][INFO  ]  mon                           : [&apos;node3&apos;]</div><div class="line">[ceph_deploy.cli][INFO  ]  func                          : &lt;function mon at 0x1479320&gt;</div><div class="line">[ceph_deploy.cli][INFO  ]  ceph_conf                     : None</div><div class="line">[ceph_deploy.cli][INFO  ]  default_release               : False</div><div class="line">[ceph_deploy.mon][DEBUG ] Removing mon from node3</div><div class="line">[node3][DEBUG ] connection detected need for sudo</div><div class="line">[node3][DEBUG ] connected to host: node3 </div><div class="line">[node3][DEBUG ] detect platform information from remote host</div><div class="line">[node3][DEBUG ] detect machine type</div><div class="line">[node3][DEBUG ] find the location of an executable</div><div class="line">[node3][DEBUG ] get remote short hostname</div><div class="line">[node3][INFO  ] Running command: sudo ceph --cluster=ceph -n mon. -k /var/lib/ceph/mon/ceph-node3/keyring mon remove node3</div><div class="line">[node3][WARNIN] removing mon.node3 at 192.168.138.143:6789/0, there will be 2 monitors</div><div class="line">[node3][INFO  ] polling the daemon to verify it stopped</div><div class="line">[node3][INFO  ] Running command: sudo systemctl stop ceph-mon@node3.service</div><div class="line">[node3][INFO  ] Running command: sudo mkdir -p /var/lib/ceph/mon-removed</div><div class="line">[node3][DEBUG ] move old monitor data</div><div class="line"></div><div class="line">[neo@admin cluster]$ sudo ceph -s</div><div class="line">    cluster d6d92de4-2a08-4bd6-a749-6c104c88fc40</div><div class="line">     health HEALTH_OK</div><div class="line">     monmap e2: 2 mons at &#123;node1=192.168.138.141:6789/0,node2=192.168.138.142:6789/0&#125;</div><div class="line">            election epoch 62, quorum 0,1 node1,node2</div><div class="line">     osdmap e246: 9 osds: 9 up, 9 in</div><div class="line">            flags sortbitwise,require_jewel_osds</div><div class="line">      pgmap v1167: 256 pgs, 1 pools, 4 bytes data, 1 objects</div><div class="line">            350 MB used, 18377 GB / 18378 GB avail</div><div class="line">                 256 active+clean</div><div class="line">				 </div><div class="line">备注:</div><div class="line">ceph-deploy删除MON的时候调用的指令是ceph mon remove node3,删除的MON的文件夹被移到了/var/lib/ceph/mon-removed</div></pre></td></tr></table></figure></p>
+<p>注意： 确保你删除某个 Mon 后，其余 Mon 仍能达成一致。如果不可能，删除它之前可能需要先增加一个</p>
+<h5 id="删除一个monitor-手动"><a href="#删除一个monitor-手动" class="headerlink" title="删除一个monitor(手动)"></a><b>删除一个monitor(手动)</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">1、停止 mon 进程。</div><div class="line">[neo@admin cluster]$ sudo systemctl stop ceph-mon@node3</div><div class="line">2、从集群中删除 monitor。</div><div class="line">[neo@admin cluster]$ sudo ceph mon remove node3</div><div class="line">removing mon.node3 at 192.168.138.143:6789/0, there will be 2 monitors</div><div class="line">[neo@admin cluster]$ sudo ceph -s</div><div class="line">    cluster d6d92de4-2a08-4bd6-a749-6c104c88fc40</div><div class="line">     health HEALTH_OK</div><div class="line">     monmap e4: 2 mons at &#123;node1=192.168.138.141:6789/0,node2=192.168.138.142:6789/0&#125;</div><div class="line">            election epoch 74, quorum 0,1 node1,node2</div><div class="line">     osdmap e264: 9 osds: 9 up, 9 in</div><div class="line">            flags sortbitwise,require_jewel_osds</div><div class="line">      pgmap v1218: 256 pgs, 1 pools, 4 bytes data, 1 objects</div><div class="line">            354 MB used, 18377 GB / 18378 GB avail</div><div class="line">                 256 active+clean</div><div class="line"></div><div class="line">3、从 ceph.conf 中移除 mon 的入口部分（如果有）。</div></pre></td></tr></table></figure>
+<h5 id="删除-Monitor（从不健康的集群中）"><a href="#删除-Monitor（从不健康的集群中）" class="headerlink" title="删除 Monitor（从不健康的集群中）"></a><b>删除 Monitor（从不健康的集群中）</b></h5><p>从一个不健康的集群（比如集群中的 monitor 无法达成法定人数）中删除 ceph-mon 守护进程。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">1、停止集群中所有的 ceph-mon 守护进程。</div><div class="line">ssh &#123;mon-host&#125;</div><div class="line">systemctl stop ceph-mon@mon-host</div><div class="line"># and repeat for all mons</div><div class="line">2、确认存活的 mon 并登录该节点。</div><div class="line">ssh &#123;mon-host&#125;</div><div class="line">3、提取 mon map。</div><div class="line">ceph-mon -i &#123;mon-id&#125; --extract-monmap &#123;map-path&#125;</div><div class="line"># in most cases, that&apos;s</div><div class="line">ceph-mon -i `hostname` --extract-monmap /tmp/monmap</div><div class="line">4、删除未存活或有问题的的 monitor。比如，有 3 个 monitors，mon.node1 、mon.node2 和 mon.node3，现在仅有 mon.node1 存活，执行下列步骤：</div><div class="line">monmaptool &#123;map-path&#125; --rm &#123;mon-id&#125;</div><div class="line"># for example,</div><div class="line">monmaptool /tmp/monmap --rm node2</div><div class="line">monmaptool /tmp/monmap --rm node3</div><div class="line">5、向存活的 monitor(s) 注入修改后的 mon map。比如，把 mon map 注入 mon.node1，执行下列步骤：</div><div class="line">ceph-mon -i &#123;mon-id&#125; --inject-monmap &#123;map-path&#125;</div><div class="line"># for example,</div><div class="line">ceph-mon -i a --inject-monmap /tmp/monmap</div><div class="line">6、启动存活的 monitor。</div><div class="line">7、确认 monitor 是否达到法定人数（ ceph -s ）。</div><div class="line">8、你可能需要把已删除的 monitor 的数据目录 /var/lib/ceph/mon 归档到一个安全的位置。或者，如果你确定剩下的 monitor 是健康的且数量足够，也可以直接删除数据目录。</div></pre></td></tr></table></figure>
+<h5 id="挂掉的2个节点的监控数据的恢复"><a href="#挂掉的2个节点的监控数据的恢复" class="headerlink" title="挂掉的2个节点的监控数据的恢复"></a><b>挂掉的2个节点的监控数据的恢复</b></h5><p>前边我们说如果挂掉的2个节点的监控数据都损坏了呢？恢复方法请参考<a href="http://www.cnblogs.com/hustcat/p/3925971.html" target="_blank" rel="external">这里</a></p>
+<p>ref<br><a href="http://www.xuxiaopang.com/2016/10/26/exp-monitor-operation/" target="_blank" rel="external">monitor的增删改备</a><br><a href="http://blog.csdn.net/scaleqiao/article/details/50513655" target="_blank" rel="external">Ceph Monitor挂了之后对集群的影响</a><br><a href="https://lihaijing.gitbooks.io/ceph-handbook/content/Operation/add_rm_mon.html" target="_blank" rel="external">增加/删除 Monitor</a><br><a href="https://github.com/thesues/cephdoc/blob/master/ceph-deploy-cn.markdown" target="_blank" rel="external">thesues/cephdoc</a><br><a href="http://blog.sina.com.cn/s/blog_8ea8e9d50102xhbq.html" target="_blank" rel="external">Ceph集群</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。    </p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+
+		<div class="comment-section">
+  
+  
+
+
+</div>
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+
+<p>
+  由 <a href="https://hexo.io">hexo</a> 强力驱动 |&nbsp;&nbsp;本站总点击 <span id="busuanzi_value_site_pv"></span> 次
+&nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
+</p>
+<p>
+  &copy; 2017 <a href="https://t1ger.github.io"> t1ger </a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
+
+</p>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-99921399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>
