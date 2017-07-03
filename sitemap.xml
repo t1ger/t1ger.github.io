@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://t1ger.github.io/2017/06/01/ceph%E7%BB%B4%E6%8A%A4%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/</loc>
+    
+    <lastmod>2017-07-03T08:23:31.324Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://t1ger.github.io/2017/06/23/%E5%A2%9E%E5%8A%A0-%E5%88%A0%E9%99%A4-OSD/</loc>
     
     <lastmod>2017-06-30T07:36:24.133Z</lastmod>
@@ -54,13 +61,6 @@
     <loc>https://t1ger.github.io/2017/06/02/ceph-crush%20algorithm(%E4%B8%80)/</loc>
     
     <lastmod>2017-06-06T09:37:53.304Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://t1ger.github.io/2017/06/01/ceph%E7%BB%B4%E6%8A%A4%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/</loc>
-    
-    <lastmod>2017-06-06T09:37:46.837Z</lastmod>
     
   </url>
   
