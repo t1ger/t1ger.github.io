@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-08-16T02:26:57.447Z</updated>
+  <updated>2017-08-21T07:50:26.362Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -16,11 +16,87 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>go基础01 Hello World</title>
+    <link href="https://t1ger.github.io/2017/08/21/go%E5%9F%BA%E7%A1%8001-Hello-World/"/>
+    <id>https://t1ger.github.io/2017/08/21/go基础01-Hello-World/</id>
+    <published>2017-08-21T08:23:03.000Z</published>
+    <updated>2017-08-21T07:50:26.362Z</updated>
+    
+    <content type="html"><![CDATA[<p>简单的‘Hello World!’</p>
+<ul>
+<li>go命令行<br>假设你已经安装好了go, 那么在Linux命令行输入:<br>[tiger@bogon go]$ go version<br>go version go1.8.3 linux/amd64</li>
+</ul>
+<ul>
+<li><p>写一段小程序<br>用文本编辑器写一个.go结尾的文件，比如说hello.go<br>在hello.go中写入如下，并保存:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">[tiger@bogon go]$ cat hello.go </div><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    fmt.Println(&quot;Hello, world. 你好, 世界! &quot;)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>  退出文本编辑器，然后在命令行输入:<br>$go run hello.go<br>来运行hello.go。可以看到go随后输出<br>Hello, world. 你好, 世界!</p>
+</li>
+<li><p>编译后执行<br>我们还可以将hello.go编译后在运行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">[tiger@bogon go]# go build hello.go </div><div class="line">[tiger@bogon go]# ls</div><div class="line">hello  hello.go</div><div class="line">[tiger@bogon go]# ./hello </div><div class="line">Hello, world. 你好, 世界!</div></pre></td></tr></table></figure>
+</li>
+<li><p>总结<br>fmt.Println()<br>直接运行: go run hello.go<br>编译后运行: go build hello.go 之后在运行</p>
+</li>
+</ul>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;简单的‘Hello World!’&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;go命令行&lt;br&gt;假设你已经安装好了go, 那么在Linux命令行输入:&lt;br&gt;[tiger@bogon go]$ go version&lt;br&gt;go version go1.8.3 linux/amd64&lt;/li
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>go快速教程(手册)</title>
+    <link href="https://t1ger.github.io/2017/08/21/go%E5%BF%AB%E9%80%9F%E6%95%99%E7%A8%8B-%E6%89%8B%E5%86%8C/"/>
+    <id>https://t1ger.github.io/2017/08/21/go快速教程-手册/</id>
+    <published>2017-08-21T08:17:41.000Z</published>
+    <updated>2017-08-21T07:50:32.515Z</updated>
+    
+    <content type="html"><![CDATA[<p>说明</p>
+<ol>
+<li>教程将专注于go基础，语法基于go1.8 , 测试环境为Linux</li>
+<li>我将专注于go的主干，以便读者能以最快时间对go形成概念</li>
+<li>Linux命令行将以 $ 开始，比如 $ls</li>
+<li>单行注释会以 // 开始,多行均已以 /* 开头，并以 */ 结尾</li>
+</ol>
+<p>建议</p>
+<ol>
+<li>将教程中的命令敲到go中看看效果</li>
+<li>你可以在了解之后立即去查看相关更完备的内容 (比如查阅官方文档)</li>
+</ol>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;说明&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;教程将专注于go基础，语法基于go1.8 , 测试环境为Linux&lt;/li&gt;
+&lt;li&gt;我将专注于go的主干，以便读者能以最快时间对go形成概念&lt;/li&gt;
+&lt;li&gt;Linux命令行将以 $ 开始，比如 $ls&lt;/li&gt;
+&lt;li&gt;单行注释会以 /
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
     <title>how to use docker in windows</title>
     <link href="https://t1ger.github.io/2017/08/16/how-to-use-docker-in-windows/"/>
     <id>https://t1ger.github.io/2017/08/16/how-to-use-docker-in-windows/</id>
     <published>2017-08-16T03:06:29.000Z</published>
-    <updated>2017-08-16T02:26:57.447Z</updated>
+    <updated>2017-08-16T05:20:04.127Z</updated>
     
     <content type="html"><![CDATA[<p>前言<br>本文运行环境针对Windows 10操作系统,主要解决的痛点是各种平台开发环境的不统一以及多版本共存的问题.主要讲解如何安装docker和使用内网registry</p>
 <p>在windows环境下,如何安装docker呢? Docker Toolbox 是一个不错的选择,你可以在Mac或者Windows上像安装其它应用一样来安装它.<br>下载点击<a href="https://www.docker.com/products/docker-toolbox" target="_blank" rel="external">这里</a></p>
@@ -53,6 +129,7 @@
 <li>问:运行Kitematic时,卡在waiting for an IP的命令下.<br>答: 检查运行操作系统,win7下运行可能出现此问题,由于没有发布正式版，不推荐win7下使用. win7 下 Docker Quickstart Terminal可以运行正常</li>
 <li>问:如何确认当前docker虚拟机状态<br>答: 在命令行里输入 docker-machine ls 查看,如果没有可以通过以下命令建立 docker-machine create –driver=virtualbox default</li>
 <li>问: 如何才能自动生成Dockerfile呢<br>答: 可以通过starter来自动生成,还是建议学习下Dockerfile的相关基础知识.自动生成步骤如下<br>wget <a href="https://raw.githubusercontent.com/cloud66/starter/master/install.sh" target="_blank" rel="external">https://raw.githubusercontent.com/cloud66/starter/master/install.sh</a><br>chmod +x install.sh &amp;&amp; ./install.sh<br>cd appdir &amp;&amp; starter -g dockerfile,service<br>进行简单选择后即可在当前目录生成dockerfile文件</li>
+<li>问: 如何查看registry 和images version<h1 id="curl-https-registry-whistle-com-cn-v2-catalog"><a href="#curl-https-registry-whistle-com-cn-v2-catalog" class="headerlink" title="curl https://registry.whistle.com.cn/v2/_catalog"></a>curl <a href="https://registry.whistle.com.cn/v2/_catalog" target="_blank" rel="external">https://registry.whistle.com.cn/v2/_catalog</a></h1>{“repositories”:[“hello-world”,”jenkins”,”node”,”svn”]} <h1 id="curl-https-registry-whistle-com-cn-v2-node-tag-list"><a href="#curl-https-registry-whistle-com-cn-v2-node-tag-list" class="headerlink" title="curl https://registry.whistle.com.cn/v2/node/tag/list"></a>curl <a href="https://registry.whistle.com.cn/v2/node/tag/list" target="_blank" rel="external">https://registry.whistle.com.cn/v2/node/tag/list</a></h1>{“name”:”node”,”tags”:[“8.3.0”]}</li>
 </ul>
 <p>ref<br><a href="http://www.cnblogs.com/studyzy/p/6113221.html" target="_blank" rel="external">在Windows中玩转Docker Toolbox</a><br><a href="https://stackoverflow.com/questions/30654306/allow-insecure-registry-in-host-provisioned-with-docker-machine" target="_blank" rel="external">allow insecure registry in host provisioned with docker-machine</a><br><a href="https://accenture.github.io/adop-docker-compose/docs/tools/docker-registry/" target="_blank" rel="external">Tools - Docker Registry</a><br><a href="http://blog.kazaff.me/2016/06/16/%E6%90%AD%E5%BB%BA%E6%9C%AC%E5%9C%B0%E7%A7%81%E6%9C%89docker%E4%BB%93%E5%BA%93/" target="_blank" rel="external">搭建本地私有Docker仓库</a><br><a href="http://www.cnblogs.com/wjoyxt/p/5855405.html" target="_blank" rel="external">Docker私有仓库 Registry中的镜像管理</a></p>
 <hr>
@@ -385,115 +462,6 @@
     <summary type="html">
     
       &lt;h5 id=&quot;源码文件&quot;&gt;&lt;a href=&quot;#源码文件&quot; class=&quot;headerlink&quot; title=&quot;源码文件&quot;&gt;&lt;/a&gt;&lt;b&gt;源码文件&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;crush目录下的源码文件如下:&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;ta
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>ceph-crush algorithm(一)</title>
-    <link href="https://t1ger.github.io/2017/06/02/ceph-crush%20algorithm(%E4%B8%80)/"/>
-    <id>https://t1ger.github.io/2017/06/02/ceph-crush algorithm(一)/</id>
-    <published>2017-06-02T10:28:17.000Z</published>
-    <updated>2017-06-06T09:37:53.304Z</updated>
-    
-    <content type="html"><![CDATA[<h5 id="CRUSH简介"><a href="#CRUSH简介" class="headerlink" title="CRUSH简介"></a><b>CRUSH简介</b></h5><p>CRUSH是ceph的一个模块，主要解决可控、可扩展、去中心化的数据副本分布问题.<br>CRUSH全称Controlled Replication Under Scalable Hashing，是一种数据分发算法，类似于哈希和一致性哈希。<br>哈希的问题在于数据增长时不能动态加Bucket，一致性哈希的问题在于加Bucket时数据迁移量比较大，<br>其他数据分发算法依赖中心的Metadata服务器来存储元数据效率较低，CRUSH则是通过计算、接受多维参数的来解决动态数据分发的场景</p>
-<p>CRUSH实现了一种伪随机数据分布算法，它能够在层级结构的存储集群中有效的分布对象的副本,它的参数是object id或object group id，并返回一组存储设备(用于保存object副本)<br>CRUSH需要cluster map(描述存储集群的层级结构)、和副本分布策略(rule)</p>
-<h5 id="算法基础"><a href="#算法基础" class="headerlink" title="算法基础"></a><b>算法基础</b></h5><p>在学习CRUSH之前，需要了解以下的内容。<br>CRUSH算法通过每个设备的权重来计算数据对象的分布。对象分布是由cluster map和data distribution policy决定的。<br>cluster map描述了可用存储资源和层级结构(比如有多少个机架，每个机架上有多少个服务器，每个服务器上有多少个磁盘)。<br>data distribution policy由placement rules组成。rule决定了每个数据对象有多少个副本，这些副本存储的限制条件(比如3个副本放在不同的机架中)。<br>每个rule就是一系列操作，take操作就是就是选一个bucket，select操作就是选择n个类型是t的项，emit操作就是提交最后的返回结果。<br>select要考虑的东西主要包括是否冲突、是否有失败和负载问题.</p>
-<p>CRUSH算法还通过输入一个整数x，输出则是一个包含n个目标的列表R，例如三备份的话输出可能是[1, 3, 5]。<br>(osd0, osd1, osd2 … osdn) = CRUSH(x)<br>CRUSH利用多参数HASH函数，HASH函数中的参数包括x，使得从x到OSD集合是确定性的和独立的。<br>CRUSH只使用了cluster map、placement rules、x。CRUSH是伪随机算法，相似输入的结果之间没有相关性。</p>
-<ul>
-<li><p>Cluster map<br>Cluster map由device和bucket组成，它们都有id和权重值。Bucket可以包含任意数量item。item可以都是的devices或者都是buckets。<br>管理员控制存储设备的权重。权重和存储设备的容量有关。Bucket的权重被定义为它所包含所有item的权重之和。<br>CRUSH基于4种不同的bucket type，每种有不同的选择算法。</p>
-</li>
-<li><p>副本分布<br>副本在存储设备上的分布影响数据的安全。cluster map反应了存储系统的物理结构。CRUSH placement policies决定把对象副本分布在不同的区域(某个区域发生故障时并不会影响其他区域)。每个rule包含一系列操作(用在层级结构上)<br>这些操作包括：<br>1.take(a) ：选择一个item，一般是bucket，并返回bucket所包含的所有item。这些item是后续操作的参数，这些item组成向量i。<br>2.select(n, t)：迭代操作每个item(向量i中的item)，对于每个item(向量i中的item)向下遍历(遍历这个item所包含的item)，都返回n个不同的item(type为t的item)，并把这些item都放到向量i中。select函数会调用c(r, x)函数，这个函数会在每个bucket中伪随机选择一个item。<br>3.emit：把向量i放到result中。</p>
-<p>存储设备有一个确定的类型。每个bucket都有type属性值，用于区分不同的bucket类型(比如”row”、”rack”、”host”等，type可以自定义)。rules可以包含多个take和emit语句块，这样就允许从不同的存储池中选择副本的storage target</p>
-</li>
-<li><p>冲突、故障、超载<br>select(n, t)操作会循环选择第 r=1,…,n 个副本，r作为选择参数。在这个过程中，假如选择到的item遇到三种情况(冲突，故障，超载)时，CRUSH会拒绝选择这个item，并使用r’(r’和r、出错次数、firstn参数有关)作为选择参数重新选择item。<br>1.冲突：这个item已经在向量i中，已被选择。<br>2.故障：设备发生故障，不能被选择。<br>3.超载：设备使用容量超过警戒线，没有剩余空间保存数据对象。<br>故障设备和超载设备会在cluster map上标记(还留在系统中)，这样避免了不必要的数据迁移。</p>
-</li>
-<li><p>MAP改变和数据迁移<br>当添加移除存储设备，或有存储设备发生故障时(cluster map发生改变时)，存储系统中的数据会发生迁移。好的数据分布算法可以最小化数据迁移大小。</p>
-</li>
-</ul>
-<h5 id="CRUSH总结"><a href="#CRUSH总结" class="headerlink" title="CRUSH总结"></a><b>CRUSH总结</b></h5><ul>
-<li><p>算法总结<br>CRUSH与一致性哈希最大的区别在于接受的参数多了cluster map和placement rules，这样就可以根据目前cluster的状态动态调整数据位置，同时通过算法得到一致的结果</p>
-</li>
-<li><p>算法补充<br>前面介绍了bucket根据不同场景有四种类型，分别是Uniform、List、Tree和Straw，他们对应运行数据和数据迁移量有不同的tradeoff，目前大家都在用Straw因此不太需要关注其他。<br>目前erasing code可以大大减小三备份的数据量，但除了会导致数据恢复慢，部分ceph支持的功能也是不能直接用的，而且功能仍在开发中不建议使用。</p>
-<p>  有兴趣的读者可以拜读下Sega本人的博士论文作品:<br>长论文包含了RADOS、CRUSH等所有内容的介绍，但篇幅相当长，如果感兴趣可以阅读，标题为《CEPH: RELIABLE, SCALABLE, AND HIGH-PERFORMANCE DISTRIBUTED STORAGE》，地址 <a href="http://ceph.com/papers/weil-thesis.pdf" target="_blank" rel="external">http://ceph.com/papers/weil-thesis.pdf</a> </p>
-<p>  CRUSH论文标题为《CRUSH: Controlled, Scalable, Decentralized Placement of Replicated Data》，地址 <a href="http://ceph.com/papers/weil-crush-sc06.pdf" target="_blank" rel="external">http://ceph.com/papers/weil-crush-sc06.pdf</a> ，介绍了CRUSH的设计与实现细节</p>
-<p>  RADOS沦为标题为《RADOS: A Scalable, Reliable Storage Service for Petabyte-scale Storage Clusters》，地址为 <a href="http://ceph.com/papers/weil-rados-pdsw07.pdf" target="_blank" rel="external">http://ceph.com/papers/weil-rados-pdsw07.pdf</a> ，介绍了RADOS的设计与实现细节</p>
-<p>  CephFS论文标题为《Ceph: A Scalable, High-Performance Distributed File System》，地址为 <a href="http://ceph.com/papers/weil-ceph-osdi06.pdf" target="_blank" rel="external">http://ceph.com/papers/weil-ceph-osdi06.pdf</a> ，介绍了Ceph的基本架构和Ceph的设计与实现细节</p>
-</li>
-</ul>
-<p>ref<br><a href="http://way4ever.com/?p=122" target="_blank" rel="external">ceph的CRUSH数据分布算法介绍</a><br><a href="https://tobegit3hub1.gitbooks.io/ceph_from_scratch/content/architecture/crush.html" target="_blank" rel="external">CRUSH详解</a><br><a href="http://www.xuxiaopang.com/2016/11/08/easy-ceph-CRUSH/" target="_blank" rel="external">大话Ceph–CRUSH那点事儿</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h5 id=&quot;CRUSH简介&quot;&gt;&lt;a href=&quot;#CRUSH简介&quot; class=&quot;headerlink&quot; title=&quot;CRUSH简介&quot;&gt;&lt;/a&gt;&lt;b&gt;CRUSH简介&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;CRUSH是ceph的一个模块，主要解决可控、可扩展、去中心化的数据副本分布问题.&lt;b
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>ceph硬件推荐</title>
-    <link href="https://t1ger.github.io/2017/06/01/ceph%E7%A1%AC%E4%BB%B6%E6%8E%A8%E8%8D%90/"/>
-    <id>https://t1ger.github.io/2017/06/01/ceph硬件推荐/</id>
-    <published>2017-06-01T11:41:45.000Z</published>
-    <updated>2017-06-02T05:42:40.066Z</updated>
-    
-    <content type="html"><![CDATA[<h4 id="cpu和内存"><a href="#cpu和内存" class="headerlink" title="cpu和内存"></a><b>cpu和内存</b></h4><ul>
-<li>CPU<br>metadata servers：属于CPU敏感型的角色服务器<br>OSDs：负责运行RADOS service，使用CRUSH算法计算数据分布，复制数据，并维护它们自己的拷贝，所以CPU也需要较好的<br>Monitors：监控服务器芝士简单的维护一份集群mapping的主拷贝，所以并非是CPU敏感的</li>
-<li>内存<br>metadata servers和monitors需要快速响应它们存储的数据，所以它们需要不少的内存<br>每个daemon实例最少1GB<br>OSDs不需要太多的内存做日常的操作，500MB即可，但是在recovery阶段<br>每1TB的存储，需要消耗约1GB的内存，所以说，内存是越多越好</li>
-</ul>
-<h4 id="硬盘"><a href="#硬盘" class="headerlink" title="硬盘"></a><b>硬盘</b></h4><p>这里说下固态盘</p>
-<ul>
-<li>固态硬盘: SSD 和硬盘相比每 GB 成本通常要高 10 倍以上，但访问时间至少比硬盘快 100 倍.SSD 没有可移动机械部件，所以不存在和硬盘一样的局限性。但 SSD 也有局限性，评估SSD 时，顺序读写性能很重要，在为多个 OSD 存储日志时，有着 400MB/s 顺序读写吞吐量的 SSD 其性能远高于 120MB/s 的.<br>备注:我们建议发掘 SSD 的用法来提升性能。然而在大量投入 SSD 前，我们强烈建议核实 SSD 的性能指标，并在测试环境下衡量性能<br>可接受的 IOPS 指标对选择用于 Ceph 的 SSD 还不够，用于日志和 SSD 时还有几个重要考量：<br>写密集语义： 记日志涉及写密集语义，所以你要确保选用的 SSD 写入性能和硬盘相当或好于硬盘。廉价 SSD 可能在加速访问的同时引入写延时，有时候高性能硬盘的写入速度可以和便宜 SSD 相媲美<br>顺序写入： 在一个 SSD 上为多个 OSD 存储多个日志时也必须考虑 SSD 的顺序写入极限，因为它们要同时处理多个 OSD 日志的写入请求。<br>分区对齐： 采用了 SSD 的一个常见问题是人们喜欢分区，却常常忽略了分区对齐，这会导致 SSD 的数据传输速率慢很多，所以请确保分区对齐了</li>
-<li>其他注意事项<br>你可以在同一主机上运行多个 OSD ，但要确保 OSD 硬盘总吞吐量不超过为客户端提供读写服务所需的网络带宽；还要考虑集群在每台主机上所存储的数据占总体的百分比，如果一台主机所占百分比太大而它挂了，就可能导致诸如超过 full ratio 的问题，此问题会使 Ceph 中止运作以防数据丢失。<br>如果每台主机运行多个 OSD ，也得保证内核是最新的。参阅<a href="http://docs.ceph.org.cn/start/os-recommendations/" target="_blank" rel="external">操作系统推荐</a>里关于 glibc 和 syncfs(2) 的部分，确保硬件性能可达期望值。<br>OSD 数量较多（如 20 个以上）的主机会派生出大量线程，尤其是在恢复和重均衡期间。很多 Linux 内核默认的最大线程数较小（如 32k 个），如果您遇到了这类问题，可以把 kernel.pid_max 值调高些。理论最大值是 4194303 。例如把下列这行加入 /etc/sysctl.conf 文件：<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">kernel.pid_max = 4194303</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p><b>结论: OSDs建议最小1TB,Ceph 最佳实践指示，应该分别在单独的硬盘运行操作系统、 OSD 数据和 OSD 日志</b></p>
-<h4 id="网络"><a href="#网络" class="headerlink" title="网络"></a><b>网络</b></h4><p>建议每台机器最少两个千兆网卡，现在大多数机械硬盘都能达到大概 100MB/s 的吞吐量，网卡应该能处理所有 OSD 硬盘总吞吐量，所以推荐最少两个千兆网卡，分别用于公网（前端）和集群网络（后端）。集群网络（最好别连接到国际互联网）用于处理由数据复制产生的额外负载，而且可防止拒绝服务攻击，拒绝服务攻击会干扰数据归置组，使之在 OSD 数据复制时不能回到 active + clean 状态。请考虑部署万兆网卡。通过 1Gbps 网络复制 1TB 数据耗时 3 小时，而 3TB （典型配置）需要 9 小时，相比之下，如果使用 10Gbps 复制时间可分别缩减到 20 分钟和 1 小时。在一个 PB 级集群中， OSD 磁盘失败是常态，而非异常；在性价比合理的的前提下，系统管理员想让 PG 尽快从 degraded （降级）状态恢复到 active + clean 状态。另外，一些部署工具（如 Dell 的 Crowbar ）部署了 5 个不同的网络，但使用了 VLAN 以提高网络和硬件可管理性。 VLAN 使用 802.1q 协议，还需要采用支持 VLAN 功能的网卡和交换机，增加的硬件成本可用节省的运营（网络安装、维护）成本抵消。使用 VLAN 来处理集群和计算栈（如 OpenStack 、 CloudStack 等等）之间的 VM 流量时，采用 10G 网卡仍然值得。每个网络的机架路由器到核心路由器应该有更大的带宽，如 40Gbps 到 100Gbps 。</p>
-<p>服务器应配置底板管理控制器（ Baseboard Management Controller, BMC ），管理和部署工具也应该大规模使用 BMC ，所以请考虑带外网络管理的成本/效益平衡，此程序管理着 SSH 访问、 VM 映像上传、操作系统安装、端口管理、等等，会徒增网络负载。运营 3 个网络有点过分，但是每条流量路径都指示了部署一个大型数据集群前要仔细考虑的潜能力、吞吐量、性能瓶颈</p>
-<p><b>结论:每台机器最少是两块前兆网卡（物理交换机也需要隔离）,最少是10Gbps在机架</b></p>
-<h4 id="故障域"><a href="#故障域" class="headerlink" title="故障域"></a><b>故障域</b></h4><p>故障域指任何导致不能访问一个或多个 OSD 的故障，可以是主机上停止的进程、硬盘故障、操作系统崩溃、有问题的网卡、损坏的电源、断网、断电等等。规划硬件需求时，要在多个需求间寻求平衡点，像付出很多努力减少故障域带来的成本削减、隔离每个潜在故障域增加的成本。</p>
-<h4 id="最低硬件推荐"><a href="#最低硬件推荐" class="headerlink" title="最低硬件推荐"></a><b>最低硬件推荐</b></h4><ul>
-<li><p>Dell 实例: Ceph 集群项目(2012年)使用了 2 个相当强悍的 OSD 硬件配置，和稍逊的监视器配置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">|Configuration	|Criteria      	|Minimum Recommended</div><div class="line">|---		|---		|---</div><div class="line">|Dell PE R510  	|Processor	|2x 64-bit quad-core Xeon CPUs</div><div class="line">|		|RAM		|16 GB</div><div class="line">|		|Volume Storage	|8x 2TB drives. 1 OS, 7 Storage</div><div class="line">|		|Client Network	|2x 1GB Ethernet NICs</div><div class="line">|		|OSD Network	|2x 1GB Ethernet NICs</div><div class="line">|		|Mgmt. Network	|2x 1GB Ethernet NICs</div><div class="line">|Dell PE R515   |Processor	|1x hex-core Opteron CPU</div><div class="line">|		|RAM		|16 GB</div><div class="line">|		|Volume Storage	|12x 3TB drives. Storage</div><div class="line">|		|OS Storage	|1x 500GB drive. Operating System.</div><div class="line">|		|Client Network	|2x 1GB Ethernet NICs</div><div class="line">|		|OSD Network	|2x 1GB Ethernet NICs</div><div class="line">|		|Mgmt. Network	|2x 1GB Ethernet NICs</div></pre></td></tr></table></figure>
-</li>
-<li><p>低配(RedHat提供)<br>1.osd</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">|Criteria	|Minimum Recommended|</div><div class="line">|: --:		|:–		|</div><div class="line">|Processor	|1x AMD64 and Intel 64|</div><div class="line">|RAM 		|2 GB of RAM per deamon|</div><div class="line">|Volume Storage	|1x storage drive per daemon|</div><div class="line">|Journal	|1x SSD partition per daemon (optional)|</div><div class="line">|Network	|2x 1GB Ethernet NICs|</div></pre></td></tr></table></figure>
-<p>  2.mon</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">| Criteria	| Minimum Recommended|</div><div class="line">| : --:		| :–		|</div><div class="line">|Processor	| 1x AMD64 and Intel 64|</div><div class="line">|RAM 		| 1 GB of RAM per deamon|</div><div class="line">|Disk Space	| 10 GB per daemon|</div><div class="line">| Network	| 2x 1GB Ethernet NICs|</div></pre></td></tr></table></figure>
-</li>
-<li><p>高配(Intel提供)<br>1.osd –Good</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">|Criteria	|Minimum Recommended|</div><div class="line">|: --:		|:–		|</div><div class="line">|Processor	|Inter(R) Xeon(R)CPU E5-2650v3|</div><div class="line">|RAM 		|64GB |</div><div class="line">|Volume Storage	|1x1.6TB P3700+12x4TB HDDs(1:12 ratio) P3700 as Journal and caching|</div><div class="line">|Caching software	|Intel(R) CAS3.0,option: Intel(R) RSTe/MD4.3|</div><div class="line">|Network	|10Gbe|</div></pre></td></tr></table></figure>
-<p>  2.osd –Better</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">|Criteria	|Minimum Recommended|</div><div class="line">|: --:		|:–		|</div><div class="line">|Processor	|Inter(R) Xeon(R)CPU E5-2690|</div><div class="line">|RAM 		|128GB |</div><div class="line">|Volume Storage	|1xIntel(R) DC P3700(800G)+4xIntel(R) DC S3510 1.6TB|</div><div class="line">|Network	|Duel 10Gbe|</div></pre></td></tr></table></figure>
-<p>  3.osd –Best</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">|Criteria	|Minimum Recommended|</div><div class="line">|: --:		|:–		|</div><div class="line">|Processor	|Inter(R) Xeon(R)CPU E5-2699v3|</div><div class="line">|RAM 		|&gt;=128GB |</div><div class="line">|Volume Storage	|4 to 6xIntel(R)DC P3700 2TB|</div><div class="line">|Network	|2x 40GbE,4xdual 10GbE|</div></pre></td></tr></table></figure>
-</li>
-<li><p>vpsee生产实例</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">| Hostname  | IP Address    | Role  |                                           Hardware Info |</div><div class="line">|-----------+---------------+-------|---------------------------------------------------------|</div><div class="line">| ceph-adm  | 192.168.2.100 | adm   |                             2 Cores, 4GB RAM, 20GB DISK |</div><div class="line">| ceph-mon1 | 192.168.2.101 | mon   |                         24 Cores，64GB RAM, 2x750GB SAS |</div><div class="line">| ceph-mon2 | 192.168.2.102 | mon   |                         24 Cores，64GB RAM, 2x750GB SAS |</div><div class="line">| ceph-mon3 | 192.168.2.103 | mon   |                         24 Cores，64GB RAM, 2x750GB SAS |</div><div class="line">| ceph-osd1 | 192.168.2.121 | osd   | 12 Cores，64GB RAM, 10x4TB SAS，2x400GB SSD，2x80GB SSD |</div><div class="line">| ceph-osd2 | 192.168.2.122 | osd   | 12 Cores，64GB RAM, 10x4TB SAS，2x400GB SSD，2x80GB SSD |</div></pre></td></tr></table></figure>
-</li>
-<li><p>ADM 服务器硬件配置比较随意，用1台低配置的虚拟机就可以了，只是用来操作和管理 Ceph；</p>
-</li>
-<li>MON 服务器2块硬盘做成 RAID1，用来安装操作系统；</li>
-<li>OSD 服务器上用10块 4TB 硬盘做 Ceph 存储，每个 osd 对应1块硬盘，每个 osd 需要1个 Journal，所以10块硬盘需要10个 Journal，我们用2块大容量 SSD 硬盘做 journal，每个 SSD 等分成5个区，这样每个区分别对应一个 osd 硬盘的 journal，剩下的2块小容量 SSD 装操作系统，采用 RAID1.</li>
-</ul>
-<p>ref<br><a href="http://docs.ceph.org.cn/start/hardware-recommendations/#id9" target="_blank" rel="external">硬件推荐</a><br><a href="https://github.com/lemonhall/node_note/blob/master/ceph%E7%9A%84%E7%A1%AC%E4%BB%B6%E9%85%8D%E7%BD%AE.txt" target="_blank" rel="external">ceph的硬件配置.txt</a><br><a href="http://www.vpsee.com/2015/07/install-ceph-on-centos-7/" target="_blank" rel="external">在 CentOS 7.1 上安装分布式存储系统 Ceph</a><br><a href="http://www.xuxiaopang.com/2016/10/10/ceph-full-install-el7-jewel/" target="_blank" rel="external">CEPH部署完整版(el7+jewel)</a><br><a href="http://www.xuxiaopang.com/2016/11/11/doc-ceph-table/" target="_blank" rel="external">Ceph常用表格汇总</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h4 id=&quot;cpu和内存&quot;&gt;&lt;a href=&quot;#cpu和内存&quot; class=&quot;headerlink&quot; title=&quot;cpu和内存&quot;&gt;&lt;/a&gt;&lt;b&gt;cpu和内存&lt;/b&gt;&lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;CPU&lt;br&gt;metadata servers：属于CPU敏感型的角色服务器&lt;br
     
     </summary>
     
