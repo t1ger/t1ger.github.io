@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-08-21T07:50:26.362Z</updated>
+  <updated>2017-08-21T09:41:07.810Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -16,11 +16,44 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>go基础01 Hello World</title>
-    <link href="https://t1ger.github.io/2017/08/21/go%E5%9F%BA%E7%A1%8001-Hello-World/"/>
-    <id>https://t1ger.github.io/2017/08/21/go基础01-Hello-World/</id>
+    <title>Go基础02基本数据类型</title>
+    <link href="https://t1ger.github.io/2017/08/21/Go%E5%9F%BA%E7%A1%8002%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/"/>
+    <id>https://t1ger.github.io/2017/08/21/Go基础02基本数据类型/</id>
+    <published>2017-08-21T08:58:39.000Z</published>
+    <updated>2017-08-21T09:41:07.810Z</updated>
+    
+    <content type="html"><![CDATA[<p>简单的数据类型以及赋值</p>
+<ul>
+<li><p>声明变量<br>var a int<br>var a string<br>var a [10]int    //array<br>var a []int      //slice<br>var a struct {<br>  f int<br>}<br>var a *int    //pointer<br>var a map[string]int //map,key is string type<br>var a func(b int) int<br>var (<br>  a int<br>  b string<br>)</p>
+</li>
+<li><p>基本数据类型<br>先看内置类型<br>int/uint   //int8、 byte、 int16、 int、 uint、 uintptr<br>float      //float32 、 float64<br>string<br>bool<br>rune       //int32别名,表示unicode的字符<br>error<br>复合类型<br>slice, map, chan<br>interface<br>func<br>array<br>以上是最常用的数据类型。此外还有以下类型，有兴趣的可以学习一下<br>complex   //复数类型<br>byte      //uint8别名<br>uintptr   //指针用的类型<br>下面是基本数据类型的赋值<br>var a int =10<br>var a float =1.3<br>var a bool =True<br>var a string =”Hello”<br>一般情况下,值类型默认为0, bool默认为false, string为空串<br>如何判断自己的类型呢? 可以尝试下每个类型</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import (</div><div class="line">        &quot;fmt&quot;</div><div class="line">        &quot;reflect&quot;</div><div class="line">)</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">        var a float32 = 1.3</div><div class="line">        fmt.Println(&quot;type:&quot;, reflect.TypeOf(a))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>总结<br>变量需要声明才能使用<br>内置类型和复合类型<br>整形, 浮点数, 布尔, 字符串</p>
+</li>
+</ul>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;简单的数据类型以及赋值&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;声明变量&lt;br&gt;var a int&lt;br&gt;var a string&lt;br&gt;var a [10]int    //array&lt;br&gt;var a []int      //slice&lt;br&gt;var a struct {&lt;b
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Go基础01 Hello World</title>
+    <link href="https://t1ger.github.io/2017/08/21/Go%E5%9F%BA%E7%A1%8001-Hello-World/"/>
+    <id>https://t1ger.github.io/2017/08/21/Go基础01-Hello-World/</id>
     <published>2017-08-21T08:23:03.000Z</published>
-    <updated>2017-08-21T07:50:26.362Z</updated>
+    <updated>2017-08-21T07:59:37.674Z</updated>
     
     <content type="html"><![CDATA[<p>简单的‘Hello World!’</p>
 <ul>
@@ -54,11 +87,11 @@
   </entry>
   
   <entry>
-    <title>go快速教程(手册)</title>
-    <link href="https://t1ger.github.io/2017/08/21/go%E5%BF%AB%E9%80%9F%E6%95%99%E7%A8%8B-%E6%89%8B%E5%86%8C/"/>
-    <id>https://t1ger.github.io/2017/08/21/go快速教程-手册/</id>
+    <title>Go快速教程(手册)</title>
+    <link href="https://t1ger.github.io/2017/08/21/Go%E5%BF%AB%E9%80%9F%E6%95%99%E7%A8%8B-%E6%89%8B%E5%86%8C/"/>
+    <id>https://t1ger.github.io/2017/08/21/Go快速教程-手册/</id>
     <published>2017-08-21T08:17:41.000Z</published>
-    <updated>2017-08-21T07:50:32.515Z</updated>
+    <updated>2017-08-21T07:59:15.074Z</updated>
     
     <content type="html"><![CDATA[<p>说明</p>
 <ol>
@@ -430,38 +463,6 @@
     <summary type="html">
     
       &lt;p&gt;ceph异常警告:&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div cl
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>ceph-crush algorithm(二)</title>
-    <link href="https://t1ger.github.io/2017/06/06/ceph-crush%20algorithm(%E4%BA%8C)/"/>
-    <id>https://t1ger.github.io/2017/06/06/ceph-crush algorithm(二)/</id>
-    <published>2017-06-06T08:23:40.000Z</published>
-    <updated>2017-06-13T09:07:09.977Z</updated>
-    
-    <content type="html"><![CDATA[<h5 id="源码文件"><a href="#源码文件" class="headerlink" title="源码文件"></a><b>源码文件</b></h5><p>crush目录下的源码文件如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">CrushCompiler.cc	</div><div class="line">CrushCompiler.h	</div><div class="line">CrushLocation.cc	</div><div class="line">CrushLocation.h	</div><div class="line">CrushTester.cc	</div><div class="line">CrushTester.h	</div><div class="line">CrushTreeDumper.h	</div><div class="line">CrushWrapper.cc	</div><div class="line">CrushWrapper.h	</div><div class="line">CrushWrapper.i	</div><div class="line">builder.c	</div><div class="line">builder.h	</div><div class="line">crush.c	</div><div class="line">crush.h	</div><div class="line">crush_compat.h	</div><div class="line">crush_ln_table.h	</div><div class="line">grammar.h	</div><div class="line">hash.c	</div><div class="line">hash.h	</div><div class="line">mapper.c	</div><div class="line">mapper.h	</div><div class="line">old_sample.txt	</div><div class="line">sample.txt	</div><div class="line">types.h</div></pre></td></tr></table></figure></p>
-<h5 id="CRUSH-maps"><a href="#CRUSH-maps" class="headerlink" title="CRUSH maps"></a><b>CRUSH maps</b></h5><p>crush maps组成: osd list,Bucket list ,rule list</p>
-<p>Device<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">device 0 osd.0</div><div class="line">device 1 osd.1</div><div class="line">device 2 osd.2</div><div class="line">device 3 osd.3</div><div class="line">device 4 osd.4</div><div class="line">device 5 osd.5</div><div class="line">device 6 osd.6</div><div class="line">device 7 osd.7</div></pre></td></tr></table></figure></p>
-<p>Bucket<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">host ceph-osd-ssd-server-1 &#123;</div><div class="line">           id -1</div><div class="line">           alg straw</div><div class="line">           hash 0</div><div class="line">           item osd.0 weight 1.00</div><div class="line">           item osd.1 weight 1.00</div><div class="line">   &#125;</div><div class="line">   host ceph-osd-ssd-server-2 &#123;</div><div class="line">           id -2</div><div class="line">           alg straw</div><div class="line">           hash 0</div><div class="line">           item osd.2 weight 1.00</div><div class="line">           item osd.3 weight 1.00</div><div class="line">   &#125;</div><div class="line">  host ceph-osd-platter-server-1 &#123;</div><div class="line">           id -3</div><div class="line">           alg straw</div><div class="line">           hash 0</div><div class="line">           item osd.4 weight 1.00</div><div class="line">           item osd.5 weight 1.00</div><div class="line">   &#125;</div><div class="line">   host ceph-osd-platter-server-2 &#123;</div><div class="line">           id -4</div><div class="line">           alg straw</div><div class="line">           hash 0</div><div class="line">           item osd.6 weight 1.00</div><div class="line">           item osd.7 weight 1.00</div><div class="line">   &#125;</div><div class="line">   root platter &#123;</div><div class="line">           id -5</div><div class="line">           alg straw</div><div class="line">           hash 0</div><div class="line">           item ceph-osd-platter-server-1 weight 2.00</div><div class="line">           item ceph-osd-platter-server-2 weight 2.00</div><div class="line">   &#125;</div><div class="line">   root ssd &#123;</div><div class="line">           id -6</div><div class="line">           alg straw</div><div class="line">           hash 0</div><div class="line">           item ceph-osd-ssd-server-1 weight 2.00</div><div class="line">           item ceph-osd-ssd-server-2 weight 2.00</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
-<p>Rule<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div></pre></td><td class="code"><pre><div class="line">rule data &#123;</div><div class="line">              ruleset 0</div><div class="line">              type replicated</div><div class="line">              min_size 2</div><div class="line">              max_size 2</div><div class="line">              step take platter</div><div class="line">              step chooseleaf firstn 0 type host</div><div class="line">              step emit</div><div class="line">      &#125;</div><div class="line">      rule metadata &#123;</div><div class="line">              ruleset 1</div><div class="line">              type replicated</div><div class="line">              min_size 0</div><div class="line">              max_size 10</div><div class="line">              step take platter</div><div class="line">              step chooseleaf firstn 0 type host</div><div class="line">              step emit</div><div class="line">      &#125;</div><div class="line">      rule rbd &#123;</div><div class="line">              ruleset 2</div><div class="line">              type replicated</div><div class="line">              min_size 0</div><div class="line">              max_size 10</div><div class="line">              step take platter</div><div class="line">              step chooseleaf firstn 0 type host</div><div class="line">              step emit</div><div class="line">      &#125;</div><div class="line">      rule platter &#123;</div><div class="line">              ruleset 3</div><div class="line">              type replicated</div><div class="line">              min_size 0</div><div class="line">              max_size 10</div><div class="line">              step take platter</div><div class="line">              step chooseleaf firstn 0 type host</div><div class="line">              step emit</div><div class="line">      &#125;</div><div class="line">      rule ssd &#123;</div><div class="line">              ruleset 4</div><div class="line">              type replicated</div><div class="line">              min_size 0</div><div class="line">              max_size 4</div><div class="line">              step take ssd</div><div class="line">              step chooseleaf firstn 0 type host</div><div class="line">              step emit</div><div class="line">      &#125;</div><div class="line">      rule ssd-primary &#123;</div><div class="line">              ruleset 5</div><div class="line">              type replicated</div><div class="line">              min_size 5</div><div class="line">              max_size 10</div><div class="line">              step take ssd</div><div class="line">              step chooseleaf firstn 1 type host</div><div class="line">              step emit</div><div class="line">              step take platter</div><div class="line">              step chooseleaf firstn -1 type host</div><div class="line">              step emit</div><div class="line">      &#125;</div></pre></td></tr></table></figure></p>
-<h5 id="Do-Rule"><a href="#Do-Rule" class="headerlink" title="Do Rule"></a><b>Do Rule</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">void do_rule(int rule, int x, vector&lt;int&gt;&amp; out, int maxout,</div><div class="line">	       const WeightVector&amp; weight,</div><div class="line">	       uint64_t choose_args_index) const &#123;</div><div class="line">    int rawout[maxout];</div><div class="line">    char work[crush_work_size(crush, maxout)];</div><div class="line">    crush_init_workspace(crush, work);</div><div class="line">    crush_choose_arg_map arg_map = choose_args_get(choose_args_index);</div><div class="line">    int numrep = crush_do_rule(crush, rule, x, rawout, maxout, &amp;weight[0],</div><div class="line">			       weight.size(), work, arg_map.args);</div></pre></td></tr></table></figure>
-<p>@rule: 使用的crush_rule在crush_map的rules列表中所在index<br>@x: 输入Hash ID，object_id或者pg_id)<br>@out: 输出Device ID列表<br>@maxout: 在输出Device ID的个数，副本的个数<br>@weight: 输出Device列表对应的权重</p>
-<p>具体工作调用crush_do_rule完成</p>
-<p>Mapper.c<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * crush_do_rule - calculate a mapping with the given input and rule</div><div class="line"> * @map: the crush_map</div><div class="line"> * @ruleno: the rule id</div><div class="line"> * @x: hash input</div><div class="line"> * @result: pointer to result vector</div><div class="line"> * @result_max: maximum result size</div><div class="line"> * @weight: weight vector (for map leaves)</div><div class="line"> * @weight_max: size of weight vector</div><div class="line"> * @cwin: Pointer to at least map-&gt;working_size bytes of memory or NULL.</div><div class="line"> */</div><div class="line">int crush_do_rule(const struct crush_map *map,</div><div class="line">		  int ruleno, int x, int *result, int result_max,</div><div class="line">		  const __u32 *weight, int weight_max,</div><div class="line">		  void *cwin, const struct crush_choose_arg *choose_args)</div></pre></td></tr></table></figure></p>
-<p>值得说的变量emit 通常用在规则的结束,同时可以被用在在形相同规则下选择不同的树.更多详细信息看<a href="http://docs.ceph.com/docs/master/rados/operations/crush-map/#crush-map-rules" target="_blank" rel="external">这里</a></p>
-<p>ref<br><a href="http://www.shalandis.com/original/2016/05/19/CEPH-CRUSH-algorithm-source-code-analysis/" target="_blank" rel="external">CEPH CRUSH algorithm source code analysis</a><br><a href="http://way4ever.com/?p=123" target="_blank" rel="external">ceph的CRUSH算法的源码分析</a><br><a href="http://www.xuxiaopang.com/2016/11/08/easy-ceph-CRUSH/" target="_blank" rel="external">大话Ceph–CRUSH那点事儿</a><br><a href="http://blog.csdn.net/scaleqiao/article/details/51165575" target="_blank" rel="external">Ceph源码目录架构</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h5 id=&quot;源码文件&quot;&gt;&lt;a href=&quot;#源码文件&quot; class=&quot;headerlink&quot; title=&quot;源码文件&quot;&gt;&lt;/a&gt;&lt;b&gt;源码文件&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;crush目录下的源码文件如下:&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;ta
     
     </summary>
     
