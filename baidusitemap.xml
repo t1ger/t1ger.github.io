@@ -4,6 +4,66 @@
 
     
   <url>
+    <loc>https://t1ger.github.io/2017/08/22/Go%E5%9F%BA%E7%A1%8006-%E5%BE%AA%E7%8E%AF/</loc>
+    <lastmod>2017-08-22T09:51:04.373Z</lastmod>
+    <data>
+        <display>
+        <title>Go基础06 循环</title>
+        <pubTime>2017-08-22T10:23:37.000Z</pubTime>
+        
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://t1ger.github.io/2017/08/22/Go%E5%9F%BA%E7%A1%8005-%E6%9D%A1%E4%BB%B6/</loc>
+    <lastmod>2017-08-22T09:22:24.089Z</lastmod>
+    <data>
+        <display>
+        <title>Go基础05 条件</title>
+        <pubTime>2017-08-22T08:38:14.000Z</pubTime>
+        
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://t1ger.github.io/2017/08/22/Go%E5%9F%BA%E7%A1%8004-%E8%BF%90%E7%AE%97/</loc>
+    <lastmod>2017-08-22T07:36:00.426Z</lastmod>
+    <data>
+        <display>
+        <title>Go基础04 运算</title>
+        <pubTime>2017-08-22T07:57:40.000Z</pubTime>
+        
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://t1ger.github.io/2017/08/21/Go%E5%9F%BA%E7%A1%8003%E6%95%B0%E7%BB%84%E5%92%8C%E5%88%87%E7%89%87/</loc>
+    <lastmod>2017-08-22T06:56:32.329Z</lastmod>
+    <data>
+        <display>
+        <title>Go基础03数组和切片</title>
+        <pubTime>2017-08-21T10:54:54.000Z</pubTime>
+        
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://t1ger.github.io/2017/08/21/Go%E5%9F%BA%E7%A1%8002%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</loc>
     <lastmod>2017-08-21T09:41:07.810Z</lastmod>
     <data>
