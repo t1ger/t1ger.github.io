@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-08-24T06:57:16.618Z</updated>
+  <updated>2017-08-24T09:41:50.895Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,48 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Go进阶04 函数闭包和不定参数</title>
+    <link href="https://t1ger.github.io/2017/08/24/Go%E8%BF%9B%E9%98%B604-%E5%87%BD%E6%95%B0%E9%97%AD%E5%8C%85%E5%92%8C%E4%B8%8D%E5%AE%9A%E5%8F%82%E6%95%B0/"/>
+    <id>https://t1ger.github.io/2017/08/24/Go进阶04-函数闭包和不定参数/</id>
+    <published>2017-08-24T08:06:54.000Z</published>
+    <updated>2017-08-24T09:41:50.895Z</updated>
+    
+    <content type="html"><![CDATA[<ul>
+<li><p>匿名函数<br>在了解闭包之前,我们先说下什么是匿名函数,匿名函数由一个不带函数名的函数声明和函数体组成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">func (a, b int, z float64) bool &#123;</div><div class="line">    return a*b &lt; int(z)</div><div class="line">&#125;</div><div class="line"></div><div class="line">//匿名函数可以赋值给一个变量</div><div class="line">f := func(x, y int) int &#123;</div><div class="line">    return x + y</div><div class="line">&#125;</div><div class="line"></div><div class="line">func(ch chan int) &#123;</div><div class="line">    ch &lt;-ACK</div><div class="line">&#125;(reply_chan) //直接跟参数表示函数调用</div></pre></td></tr></table></figure>
+</li>
+<li><p>闭包<br>Go的匿名函数就是一个闭包,闭包是可以包含自由变量的代码块,这些变量不在这个代码块内或者任何全局上下文中定义,而是在定义代码块的环境中定义.<br>要执行的代码块(由于自由变量包含在代码块中,这些自由变量以及他们引用的对象没有被释放)为自由变量提供绑定的计算环境(作用域)</p>
+<p>  Go语言中的闭包同样会引用到函数外的变量.闭包的实现确保只要闭包还被使用,那么被闭包引用的变量会一直存在</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    var j int = 5</div><div class="line">	</div><div class="line">	a := func()(func()) &#123;</div><div class="line">        var i int = 10</div><div class="line">        return func() &#123;</div><div class="line">            fmt.Printf(&quot;i, j: %d, %d\n&quot;, i, j)</div><div class="line">        &#125;</div><div class="line">    &#125;()</div><div class="line">    a()</div><div class="line">    j *= 2</div><div class="line">    a()</div><div class="line">&#125;</div><div class="line"></div><div class="line">[tiger@bogon tiger]$ go run closure.go </div><div class="line">i, j: 10, 5</div><div class="line">i, j: 10, 10</div></pre></td></tr></table></figure>
+<p>  变量a指向的闭包函数引用了局部变量i和j, i的值被隔离,在闭包外不能被修改,改变j的值以后,再次调用a, 发现结构是修改过的值<br>在变量a指向的闭包函数中,只有内部的匿名函数才能访问变量i,而无法通过其他途径访问到,因此保证了i的安全性 </p>
+</li>
+<li><p>不定参数<br>不定参数是指函数接受传入的参数为不定数量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">func myfunc(args ...int)&#123;</div><div class="line">    for _, arg := range args&#123;</div><div class="line">        fmt.Println(arg)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//原样传递</div><div class="line">myfunc(args...)</div><div class="line">//传递片段</div><div class="line">myfunc(args[1:]...)</div><div class="line"></div><div class="line">myfunc(2, 4, 6)</div><div class="line">myfunc(1, 3, 4, 6)</div></pre></td></tr></table></figure>
+<p>  如果传递的参数不是int,而是任意类型,可以指定类型为interface(),我们来看下Go语言标准库中fmt.Printf()的函数原型</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">func Printf(format string, args ...interface&#123;&#125;) &#123;</div><div class="line">// ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>  下面代码是展示如何处理传入interface{}类型的参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func MyPrintf(args ...interface&#123;&#125;) &#123;</div><div class="line">    for _, arg := range args &#123;</div><div class="line">	    switch arg.(type) &#123;</div><div class="line">            case int:</div><div class="line">                fmt.Println(arg, &quot;is an int value.&quot;)</div><div class="line">            case string:</div><div class="line">                fmt.Println(arg, &quot;is a string value.&quot;)</div><div class="line">            case int64:</div><div class="line">                fmt.Println(arg, &quot;is an int64 value.&quot;)</div><div class="line">            default:</div><div class="line">                fmt.Println(arg, &quot;is an unknow type.&quot;)</div><div class="line">       &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    var v1 int = 1</div><div class="line">    var v2 int64 = 234</div><div class="line">    var v3 string = &quot;hello&quot;</div><div class="line">    var v4 float32 = 1.456</div><div class="line">    MyPrintf(v1, v2, v3, v4)</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>总结<br>匿名函数<br>闭包,Go的匿名函数就是一个闭包<br>不定参数</p>
+</li>
+</ul>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;ul&gt;
+&lt;li&gt;&lt;p&gt;匿名函数&lt;br&gt;在了解闭包之前,我们先说下什么是匿名函数,匿名函数由一个不带函数名的函数声明和函数体组成&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Go进阶03 Range</title>
@@ -355,39 +397,6 @@
     
       &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;数组&lt;br&gt;数组是一系列同一类型数据的集合.数组中包含的每个元素被称为数组元素,一个数组包含的元素个数称为数组的长度.数组长度在定义后就不能更改.&lt;br&gt;go数组的定义:&lt;br&gt;[32]byte&lt;br&gt;[2&lt;em&gt;N] struct {x, y int 3
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Go基础02基本数据类型</title>
-    <link href="https://t1ger.github.io/2017/08/21/Go%E5%9F%BA%E7%A1%8002%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/"/>
-    <id>https://t1ger.github.io/2017/08/21/Go基础02基本数据类型/</id>
-    <published>2017-08-21T08:58:39.000Z</published>
-    <updated>2017-08-21T09:41:07.810Z</updated>
-    
-    <content type="html"><![CDATA[<p>简单的数据类型以及赋值</p>
-<ul>
-<li><p>声明变量<br>var a int<br>var a string<br>var a [10]int    //array<br>var a []int      //slice<br>var a struct {<br>  f int<br>}<br>var a *int    //pointer<br>var a map[string]int //map,key is string type<br>var a func(b int) int<br>var (<br>  a int<br>  b string<br>)</p>
-</li>
-<li><p>基本数据类型<br>先看内置类型<br>int/uint   //int8、 byte、 int16、 int、 uint、 uintptr<br>float      //float32 、 float64<br>string<br>bool<br>rune       //int32别名,表示unicode的字符<br>error<br>复合类型<br>slice, map, chan<br>interface<br>func<br>array<br>以上是最常用的数据类型。此外还有以下类型，有兴趣的可以学习一下<br>complex   //复数类型<br>byte      //uint8别名<br>uintptr   //指针用的类型<br>下面是基本数据类型的赋值<br>var a int =10<br>var a float =1.3<br>var a bool =True<br>var a string =”Hello”<br>一般情况下,值类型默认为0, bool默认为false, string为空串<br>如何判断自己的类型呢? 可以尝试下每个类型</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import (</div><div class="line">        &quot;fmt&quot;</div><div class="line">        &quot;reflect&quot;</div><div class="line">)</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">        var a float32 = 1.3</div><div class="line">        fmt.Println(&quot;type:&quot;, reflect.TypeOf(a))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>总结<br>变量需要声明才能使用<br>内置类型和复合类型<br>整形, 浮点数, 布尔, 字符串</p>
-</li>
-</ul>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;简单的数据类型以及赋值&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;声明变量&lt;br&gt;var a int&lt;br&gt;var a string&lt;br&gt;var a [10]int    //array&lt;br&gt;var a []int      //slice&lt;br&gt;var a struct {&lt;b
     
     </summary>
     
