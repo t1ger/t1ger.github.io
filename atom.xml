@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-08-24T09:41:50.895Z</updated>
+  <updated>2017-09-04T10:12:22.322Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,101 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Go进阶07 defer,panic,recover</title>
+    <link href="https://t1ger.github.io/2017/09/04/Go%E8%BF%9B%E9%98%B607-defer-panic-recover/"/>
+    <id>https://t1ger.github.io/2017/09/04/Go进阶07-defer-panic-recover/</id>
+    <published>2017-09-04T09:39:56.000Z</published>
+    <updated>2017-09-04T10:12:22.322Z</updated>
+    
+    <content type="html"><![CDATA[<h5 id="概念"><a href="#概念" class="headerlink" title="概念"></a><b>概念</b></h5><ul>
+<li>defer<br>在函数返回前执行一些操作,表达式通常用来处理一些清理和释放资源的操作</li>
+<li>panic<br>表示非常严重的不可恢复的错误,panic一般会导致程序挂掉(除非recover),重要的一点是,即使函数执行的时候panic了,函数不往下走了，运行时并不是立刻向上传递panic,而是到defer那,等defer的东西都跑完了,panic再向上传递</li>
+<li>recover<br>Go语言提供了recover内置函数,一旦panic,逻辑就会走到defer那,那我们就在defer那等着,调用recover函数将会捕获到当前的panic(如果有的话),被捕获到的panic就不会向上传递了<br>要注意的是，recover之后，逻辑并不会恢复到panic那个点去，函数还是会在defer之后返回</li>
+</ul>
+<h5 id="用法"><a href="#用法" class="headerlink" title="用法"></a><b>用法</b></h5><p>首先我们来看下defer,在官方的文档中看到defer的执行顺序是逆序的，也就是先进后出的顺序：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">for i :=0; i&lt; 5; i++ &#123;</div><div class="line">    defer fmt.Printf(&quot;%d &quot;, i)</div><div class="line">&#125;</div><div class="line"></div><div class="line">[tiger@bogon go]$ go run defer.go   </div><div class="line">4 3 2 1 0</div></pre></td></tr></table></figure></p>
+<p>如何从panic中恢复呢? recover()函数用于获取/拦截panic,仅当在一个defer函数中被完成时.下面来看三个例子<br>错误的:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line">import fmt</div><div class="line">func main() &#123; </div><div class="line">    recover()         //don&apos;t do anything</div><div class="line">    panic(&quot;not good&quot;)</div><div class="line">    recover()        //will not be executed</div><div class="line">    fmt.Println(&quot;ok&quot;)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>正确的:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line">import fmt</div><div class="line">func main() &#123;</div><div class="line">    defer func() &#123;</div><div class="line">	    fmt.Println(&quot;recovered:&quot;,recover())</div><div class="line">	&#125;()</div><div class="line">	</div><div class="line">    panic(&quot;not good&quot;)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>失败的:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line">import fmt</div><div class="line">func doRecover()&#123;</div><div class="line">    fmt.Println(&quot;recovered =&gt;&quot;, recover()) //prints: recovered =&gt; &lt;nil&gt;</div><div class="line">&#125;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    defer func() &#123;</div><div class="line">        doRecover() //panic is not recovered</div><div class="line">	&#125;()</div><div class="line">    panic(&quot;not good&quot;)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a><b>总结</b></h5><p>defer可以多次，这样形成一个defer栈，后defer的语句在函数返回时将先被调用<br>panic一般会导致程序挂掉<br>recover()的调用仅当它在defer函数中被直接调用时才有效<br>recover之后，逻辑并不会恢复到panic那个点去，函数还是会在defer之后返回</p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h5 id=&quot;概念&quot;&gt;&lt;a href=&quot;#概念&quot; class=&quot;headerlink&quot; title=&quot;概念&quot;&gt;&lt;/a&gt;&lt;b&gt;概念&lt;/b&gt;&lt;/h5&gt;&lt;ul&gt;
+&lt;li&gt;defer&lt;br&gt;在函数返回前执行一些操作,表达式通常用来处理一些清理和释放资源的操作&lt;/li&gt;
+&lt;li&gt;pani
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Go进阶06 iota</title>
+    <link href="https://t1ger.github.io/2017/09/04/Go%E8%BF%9B%E9%98%B606-iota/"/>
+    <id>https://t1ger.github.io/2017/09/04/Go进阶06-iota/</id>
+    <published>2017-09-04T04:45:34.000Z</published>
+    <updated>2017-09-04T08:22:30.391Z</updated>
+    
+    <content type="html"><![CDATA[<h5 id="iota简介"><a href="#iota简介" class="headerlink" title="iota简介"></a><b>iota简介</b></h5><p>iota 是golang的常量计数器,只能在常量的表达式中使用.<br>iota在const关键字出现时将被重置为0,const中每新增一行将使iota计数一次<br>iota可以简化定义,经常用在枚举的时候</p>
+<h5 id="常见用法"><a href="#常见用法" class="headerlink" title="常见用法"></a><b>常见用法</b></h5><ul>
+<li>iota只能在常量表达式中使用</li>
+<li><p>每次const出现时,iota会初始化为0</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">const a = iota  // a = 0</div><div class="line">const (</div><div class="line">    b = iota    // b = 0 </div><div class="line">    c 		// c = 1</div><div class="line">)</div></pre></td></tr></table></figure>
+</li>
+<li><p>自定义类型</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">const (</div><div class="line">    red = iota</div><div class="line">    blue</div><div class="line">    green</div><div class="line">)</div></pre></td></tr></table></figure>
+</li>
+<li><p>可跳过的值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">const (</div><div class="line">    red = iota  // 0</div><div class="line">    blue        // 1 </div><div class="line">    green       // 2</div><div class="line">    - </div><div class="line">    -</div><div class="line">    yellow      // 5</div><div class="line">    black       // 6</div><div class="line">)</div></pre></td></tr></table></figure>
+</li>
+<li><p>定义数量级</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">type ByteSize float64</div><div class="line">const(</div><div class="line">    _     = iota                 // ignore first value by assigning to blank identifier</div><div class="line">    KB ByteSize = 1 &lt;&lt; (10*iota) // 1&lt;&lt;(10*1)</div><div class="line">    MB                           // 1&lt;&lt;(10*2)</div><div class="line">    GB                           // 1&lt;&lt;(10*3)</div><div class="line">    TB                           // 1&lt;&lt;(10*4)</div><div class="line">    PB                           // 1&lt;&lt;(10*5)</div><div class="line">    EB                           // 1&lt;&lt;(10*6)</div><div class="line">    ZB                           // 1&lt;&lt;(10*7)</div><div class="line">    YB                           // 1&lt;&lt;(10*8)</div><div class="line">)</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h5 id=&quot;iota简介&quot;&gt;&lt;a href=&quot;#iota简介&quot; class=&quot;headerlink&quot; title=&quot;iota简介&quot;&gt;&lt;/a&gt;&lt;b&gt;iota简介&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;iota 是golang的常量计数器,只能在常量的表达式中使用.&lt;br&gt;iota在const关
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Go进阶05 fallthrough</title>
+    <link href="https://t1ger.github.io/2017/09/04/Go%E8%BF%9B%E9%98%B605-fallthrough/"/>
+    <id>https://t1ger.github.io/2017/09/04/Go进阶05-fallthrough/</id>
+    <published>2017-09-04T03:50:20.000Z</published>
+    <updated>2017-09-04T03:51:48.461Z</updated>
+    
+    <content type="html"><![CDATA[<h5 id="fallthrough用法"><a href="#fallthrough用法" class="headerlink" title="fallthrough用法"></a><b>fallthrough用法</b></h5><p>Go里边的switch默认每个case匹配成功后不会自动向下执行其他case,直接跳出switch,fallthrough强制执行后边的case代码,fallthrough不对下一条的case表达式进行判断<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    switch a:=10; &#123;</div><div class="line">    case a &gt;= 9:</div><div class="line">        fmt.Println(&quot;&gt;=9&quot;)</div><div class="line">        fallthrough</div><div class="line">    case a &gt;= 10: </div><div class="line">        fmt.Println(&quot;&gt;=10&quot;)</div><div class="line">        fallthrough</div><div class="line">    case a &gt;= 15:</div><div class="line">        fmt.Println(&quot;&gt;=15&quot;)</div><div class="line">        fallthrough</div><div class="line">    case a &gt;= 20:</div><div class="line">        fmt.Println(&quot;&gt;=20&quot;)</div><div class="line">        fallthrough</div><div class="line">    default:</div><div class="line">        fmt.Println(&quot;default&quot;)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">[tiger@bogon go]$ go run fallthrough.go </div><div class="line">&gt;=9</div><div class="line">&gt;=10</div><div class="line">&gt;=15</div><div class="line">&gt;=20</div><div class="line">default</div></pre></td></tr></table></figure></p>
+<pre><code>fallthrough可不可以放到最后一个呢,我们运行一下看看
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[tiger@bogon go]$ go run fallthrough.go </div><div class="line"># command-line-arguments</div><div class="line">./fallthrough.go:21: cannot fallthrough final case in switch</div></pre></td></tr></table></figure>
+<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a><b>总结</b></h5><p>fallthrough:Go里面switch默认相当于每个case最后带有break，匹配成功后不会自动向下执行其他case，而是跳出整个switch, 但是可以使用fallthrough强制执行后面的case代码<br>fallthrough不能用在switch最后一个分支</p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h5 id=&quot;fallthrough用法&quot;&gt;&lt;a href=&quot;#fallthrough用法&quot; class=&quot;headerlink&quot; title=&quot;fallthrough用法&quot;&gt;&lt;/a&gt;&lt;b&gt;fallthrough用法&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;Go里边的switch默认每个case
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Go进阶04 函数闭包和不定参数</title>
@@ -282,121 +377,6 @@
       &lt;p&gt;循环用于重复执行一些程序块。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;for循环&lt;br&gt;for循环需要预先设定好循环的次数(n)，然后执行隶属于for的语句n次。&lt;br&gt;基本构造是&lt;br&gt;for init; condition; post { }&lt;br&gt;for condition 
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Go基础05 条件</title>
-    <link href="https://t1ger.github.io/2017/08/22/Go%E5%9F%BA%E7%A1%8005-%E6%9D%A1%E4%BB%B6/"/>
-    <id>https://t1ger.github.io/2017/08/22/Go基础05-条件/</id>
-    <published>2017-08-22T08:38:14.000Z</published>
-    <updated>2017-08-22T09:22:24.089Z</updated>
-    
-    <content type="html"><![CDATA[<ul>
-<li><p>if语句<br>写一个完整的程序,命名为ifDemo.go.这个程序用于实现if结构</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    var  x, i int = 1, 1</div><div class="line">    if i &gt; 0 &#123;</div><div class="line">        fmt.Println(&quot;x=%d &quot;,x+1)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>  复杂一些的if</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">package main </div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    var i int = 1       </div><div class="line">        if i&gt;0 &#123;</div><div class="line">            fmt.Println(&quot;positive i&quot;)</div><div class="line">                i++</div><div class="line">        &#125;else if i == 0 &#123;</div><div class="line">            fmt.Println(&quot;i is 0&quot;)</div><div class="line">                i = i*10</div><div class="line">        &#125;else &#123;</div><div class="line">            fmt.Println(&quot;negative i&quot;)</div><div class="line">                i--</div><div class="line">        &#125;</div><div class="line">        fmt.Println(&quot;new i: &quot;, i)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>  这里有三个块,分别属于if, else if, else 程序根据条件，只执行三个分支中的一个</p>
-<p>  整个if可以放在另一个if语句中，也就是if结构的嵌套使用：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    var i int = 5</div><div class="line">	if i &gt; 1 &#123;</div><div class="line">	    fmt.Println(&quot;i bigger than 1&quot;)</div><div class="line">		fmt.Println(&quot;good&quot;)</div><div class="line">		if i &gt;2 &#123;</div><div class="line">		    fmt.Println(&quot;i bigger than 2&quot;)</div><div class="line">			fmt.Println(&quot;even better&quot;)</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>switch语句</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    var i int = 4</div><div class="line">    switch i &#123;</div><div class="line">        case 5: </div><div class="line">            fmt.Println(&quot;better&quot;)</div><div class="line">        case 3: </div><div class="line">            fmt.Println(&quot;good&quot;)</div><div class="line">        case 2:</div><div class="line">            fmt.Println(&quot;not bad&quot;)</div><div class="line">        default:</div><div class="line">            fmt.Println(&quot;bad&quot;)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>select语句<br>select 的代码形式和 switch 非常相似，不过 select 的 case 里的操作语句只能是[IO 操作]</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    var c1, c2, c3 chan int</div><div class="line">    var a, b int</div><div class="line">    select &#123;</div><div class="line">        case a = &lt;-c1: </div><div class="line">            fmt.Println(&quot;receive %v from c1&quot;, a)</div><div class="line">        case c2 &lt;- b: </div><div class="line">            fmt.Println(&quot;send %v to c2&quot;, b)</div><div class="line">        default:</div><div class="line">            fmt.Println(&quot;not ready&quot;)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>  代码执行到 select 时，case 语句会按照源代码的顺序被评估，且只评估一次，评估的结果会出现下面这几种情况<br>除 default 外，如果只有一个 case 语句评估通过，那么就执行这个case里的语句；<br>除 default 外，如果有多个 case 语句评估通过，那么通过伪随机的方式随机选一个；<br>如果 default 外的 case 语句都没有通过评估，那么执行 default 里的语句；<br>如果没有 default，那么 代码块会被阻塞，指导有一个 case 通过评估；否则一直阻塞<br>如果 case 语句中 的 receive 操作的对象是 nil channel，那么也会阻塞</p>
-</li>
-<li><p>总结<br>if 语句由一个布尔表达式后紧跟一个或多个语句组成,可以在 if 或 else if 语句中嵌入一个或多个 if 或 else if 语句<br>switch 语句用于基于不同条件执行不同动作。<br>select会随机执行一个可运行的case。如果没有case可运行，它将阻塞，直到有case可运行.如果 case 语句中 的 receive 操作的对象是 nil channel，那么也会阻塞</p>
-</li>
-</ul>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;ul&gt;
-&lt;li&gt;&lt;p&gt;if语句&lt;br&gt;写一个完整的程序,命名为ifDemo.go.这个程序用于实现if结构&lt;/p&gt;
-&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;li
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Go基础04 运算</title>
-    <link href="https://t1ger.github.io/2017/08/22/Go%E5%9F%BA%E7%A1%8004-%E8%BF%90%E7%AE%97/"/>
-    <id>https://t1ger.github.io/2017/08/22/Go基础04-运算/</id>
-    <published>2017-08-22T07:57:40.000Z</published>
-    <updated>2017-08-22T07:36:00.426Z</updated>
-    
-    <content type="html"><![CDATA[<p>Go的运算符和其他语言类似</p>
-<p>（我们暂时只了解这些运算符的基本用法，方便我们展开后面的内容，高级应用暂时不介绍）</p>
-<ul>
-<li><p>数学运算</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    var a int = 21</div><div class="line">	var b int = 10</div><div class="line">	var c int</div><div class="line">	</div><div class="line">	c= a + b</div><div class="line">	fmt.Println(&quot;a+b=%d &quot;,c)</div><div class="line">	c= a - b</div><div class="line">	fmt.Println(&quot;a-b=%d &quot;,c)</div><div class="line">	c= a * b</div><div class="line">	fmt.Println(&quot;a*b=%d &quot;,c)</div><div class="line">	c= a / b</div><div class="line">	fmt.Println(&quot;a/b=%d &quot;,c)</div><div class="line">        c = a % b</div><div class="line">	fmt.Println(&quot;a%b=%d &quot;,c)</div><div class="line">        a++</div><div class="line">	fmt.Println(&quot;a++=%d &quot;,a)</div><div class="line">	a--</div><div class="line">	fmt.Println(&quot;a++=%d &quot;,a)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>判断</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    var a int = 21</div><div class="line">    var b int = 10</div><div class="line">    fmt.Println(&quot;a==b is&quot;, a==b)</div><div class="line">    fmt.Println(&quot;a!=b is&quot;, a!=b)</div><div class="line">    fmt.Println(&quot;a&lt;b is&quot;, a&lt;b)</div><div class="line">    fmt.Println(&quot;a&lt;=b is&quot;, a&lt;=b)</div><div class="line">    fmt.Println(&quot;a&gt;b is&quot;, a&gt;b)</div><div class="line">    fmt.Println(&quot;a&gt;=b is&quot;, a&gt;=b)</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>逻辑运算</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    var a bool = true</div><div class="line">    var b bool = false     </div><div class="line">    fmt.Println(&quot;a&amp;&amp;b is&quot;, a&amp;&amp;b)</div><div class="line">    fmt.Println(&quot;a||b is&quot;, a||b)</div><div class="line">    fmt.Println(&quot;!(a&amp;&amp;b) is&quot;, !(a&amp;&amp;b))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>总结<br>数学 +, - , *, /, %, ++, –<br>判断 ==, !=, &gt;, &gt;=, &lt;, &lt;=<br>逻辑 &amp;&amp;, ||, !</p>
-</li>
-</ul>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;Go的运算符和其他语言类似&lt;/p&gt;
-&lt;p&gt;（我们暂时只了解这些运算符的基本用法，方便我们展开后面的内容，高级应用暂时不介绍）&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;数学运算&lt;/p&gt;
-&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td cl
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Go基础03数组和切片</title>
-    <link href="https://t1ger.github.io/2017/08/21/Go%E5%9F%BA%E7%A1%8003%E6%95%B0%E7%BB%84%E5%92%8C%E5%88%87%E7%89%87/"/>
-    <id>https://t1ger.github.io/2017/08/21/Go基础03数组和切片/</id>
-    <published>2017-08-21T10:54:54.000Z</published>
-    <updated>2017-08-22T06:56:32.329Z</updated>
-    
-    <content type="html"><![CDATA[<ul>
-<li><p>数组<br>数组是一系列同一类型数据的集合.数组中包含的每个元素被称为数组元素,一个数组包含的元素个数称为数组的长度.数组长度在定义后就不能更改.<br>go数组的定义:<br>[32]byte<br>[2<em>N] struct {x, y int 32}<br>[1000]</em>float64<br>[3][5]int<br>[2][2][2]float64<br>go数组初始化:<br>初始化数组中 {} 中的元素个数不能大于 [] 中的数字<br>var balance = [5]float32{999.9, 3.0, 5.8, 8.9, 3.9}<br>如果忽略 [] 中的数字不设置数组大小，Go 语言会根据元素的个数来设置数组的大小：<br>var balance = […]float32{999.9, 3.0, 5.8, 8.9, 3.9}<br>go数组的完整操作:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    var n [10]int  // n 是一个长度为10的数组</div><div class="line">	var i,j int</div><div class="line">	</div><div class="line">	// 初始化数组元素</div><div class="line">	for i=0;i&lt;10;i++&#123;</div><div class="line">	    n[i]=i+100</div><div class="line">	&#125;</div><div class="line">    </div><div class="line">	//输出每个数组元素的值</div><div class="line">	for j=0;j&lt;10;j++ &#123;</div><div class="line">	    fmt.Printf(&quot;Element[%d] = %d\n&quot;, j, n[j] )</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>切片<br>切片是对数组的抽象,是在数组之上进行的一层封装,切片的长度不固定,可以追加元素.切片的容量即隐藏数组的长度。长度可变指的是在数组长度的范围内可变<br>go切片的定义:<br>var slice1 []type<br>var slice1 []type = make([]type, len)<br>slice1 := make([]type, len)<br>slice1 := make([]type, len, cap)<br>go切片初始化:<br>s := []int{1, 2, 3} //直接初始化切片，[]表示是切片类型，{1,2,3}初始化值依次是1,2,3.其cap=len=3<br>s := arr[:]  //初始化切片s,是数组arr的引用<br>s := arr[startIndex:endIndex] //将arr中从下标startIndex到endIndex-1 下的元素创建为一个新的切片<br>s := arr[startIndex:] //缺省endIndex时将表示一直到arr的最后一个元素<br>s := arr[:endIndex]  //缺省startIndex时将表示从arr的第一个元素开始<br>s1 := s[startIndex:endIndex] //通过切片s初始化切片s1<br>s :=make([]int,len,cap)  //通过内置函数make()初始化切片s,[]int 标识为其元素类型为int的切片<br>创建数组切片:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">   </div><div class="line">	var myArray [10]int = [10]int&#123;1, 2, 3, 4, 5, 6, 7, 8, 9, 10&#125;  //定义一个数组</div><div class="line">	var mySlice []int = myArray[:5]</div><div class="line">	var mySlice1 []int  //一个切片在未初始化之前默认为 nil，长度为 0</div><div class="line">	</div><div class="line">	fmt.Println(&quot;Elements of myArray: &quot;)</div><div class="line">	for _,v := range myArray&#123;</div><div class="line">	    fmt.Print(v, &quot; &quot;)</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	fmt.Println(&quot;\nElements of mySlice: &quot;)</div><div class="line">	</div><div class="line">	//元素遍历</div><div class="line">	for _, v := range mySlice &#123;</div><div class="line">	    fmt.Print(v, &quot; &quot;)</div><div class="line">	&#125;</div><div class="line">	fmt.Println()</div><div class="line">	</div><div class="line">	//动态增加	</div><div class="line">	mySlice = append(mySlice, 1, 2, 3)</div><div class="line">	fmt.Println(mySlice)</div><div class="line">	</div><div class="line">	//内容复制</div><div class="line">	copy(mySlice, mySlice1)</div><div class="line">	fmt.Println(mySlice1)</div><div class="line">	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>  关于动态追加,需要注意,如果定义 mySlice2 = []int{8, 9, 10} ,需要 mySlice = append(mySlice, mySlice2…)<br>mySlice2后的三个点表示把mySlice2包含的元素打散后传入,等同于 mySlice = append(mySlice, 7, 8, 9)</p>
-</li>
-<li><p>总结<br>数组定长,定义后不可更改.切片的长度不固定<br>数组的定义 初始化 遍历<br>切片的定义 初始化 遍历 增加 复制,空切片初始化之前默认为nil,长度为0</p>
-</li>
-</ul>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;ul&gt;
-&lt;li&gt;&lt;p&gt;数组&lt;br&gt;数组是一系列同一类型数据的集合.数组中包含的每个元素被称为数组元素,一个数组包含的元素个数称为数组的长度.数组长度在定义后就不能更改.&lt;br&gt;go数组的定义:&lt;br&gt;[32]byte&lt;br&gt;[2&lt;em&gt;N] struct {x, y int 3
     
     </summary>
     
