@@ -4,6 +4,21 @@
 
     
   <url>
+    <loc>https://t1ger.github.io/2017/09/04/Go%E8%BF%9B%E9%98%B605-fallthrough/</loc>
+    <lastmod>2017-09-04T10:25:28.264Z</lastmod>
+    <data>
+        <display>
+        <title>Go进阶05 fallthrough</title>
+        <pubTime>2017-09-04T03:50:20.000Z</pubTime>
+        
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://t1ger.github.io/2017/09/04/Go%E8%BF%9B%E9%98%B607-defer-panic-recover/</loc>
     <lastmod>2017-09-04T10:12:22.322Z</lastmod>
     <data>
@@ -25,21 +40,6 @@
         <display>
         <title>Go进阶06 iota</title>
         <pubTime>2017-09-04T04:45:34.000Z</pubTime>
-        
-         
-           
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://t1ger.github.io/2017/09/04/Go%E8%BF%9B%E9%98%B605-fallthrough/</loc>
-    <lastmod>2017-09-04T03:51:48.461Z</lastmod>
-    <data>
-        <display>
-        <title>Go进阶05 fallthrough</title>
-        <pubTime>2017-09-04T03:50:20.000Z</pubTime>
         
          
            
