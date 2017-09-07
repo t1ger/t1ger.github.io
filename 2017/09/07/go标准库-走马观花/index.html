@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
   
-  <title>第 2 页 | Archives: 2017 | t1ger的茶馆</title>
+  <title>go标准库--走马观花 | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
   
   <meta name="description" content="https://t1ger.github.io/">
@@ -13,7 +13,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  
+  <meta property="og:title" content="go标准库--走马观花"/>
   <meta property="og:site_name" content="t1ger的茶馆"/>
 
   
@@ -116,70 +116,70 @@
 		<div class="content">
 			<!-- index -->
 		   
-			  	<h2>归档</h2>
-		  		
-	              <p class="archive-item">
-						<a href="/2017/08/22/Go基础06-循环/" class="archive-title">Go基础06 循环</a><span class="archive post-time">2017-08-22</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/08/22/Go基础05-条件/" class="archive-title">Go基础05 条件</a><span class="archive post-time">2017-08-22</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/08/22/Go基础04-运算/" class="archive-title">Go基础04 运算</a><span class="archive post-time">2017-08-22</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/08/21/Go基础03数组和切片/" class="archive-title">Go基础03数组和切片</a><span class="archive post-time">2017-08-21</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/08/21/Go基础02基本数据类型/" class="archive-title">Go基础02基本数据类型</a><span class="archive post-time">2017-08-21</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/08/21/Go基础01-Hello-World/" class="archive-title">Go基础01 Hello World</a><span class="archive post-time">2017-08-21</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/08/21/Go快速教程-手册/" class="archive-title">Go快速教程(手册)</a><span class="archive post-time">2017-08-21</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/08/16/how-to-use-docker-in-windows/" class="archive-title">how to use docker in windows</a><span class="archive post-time">2017-08-16</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/08/08/a-simplified-command-line-interface-to-VMware-vCenter/" class="archive-title">a simplified command-line interface to VMware vCenter</a><span class="archive post-time">2017-08-08</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/07/04/Prometheus-监控方案/" class="archive-title">Prometheus 监控方案</a><span class="archive post-time">2017-07-04</span>
-					</p>
-			  	
-			  <!-- post -->
+
+			  		<h2>go标准库--走马观花</h2>
+					
+					<div>
+						<span class="post-time">2017-09-07 13:20:13</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<p>Go有一套很有用的标准库(standard library)。它是Go的一个组成部分。这些标准库是Go为你准备好的利器，可以让编程事半功倍。</p>
+<p>我将根据我个人的使用经验中，挑选出标准库三个方面的包(package)介绍：</p>
+<ul>
+<li>go增强</li>
+<li>系统互动</li>
+<li>网络</li>
+</ul>
+<h5 id="go增强"><a href="#go增强" class="headerlink" title="go增强"></a><b>go增强</b></h5><p>go自身的已有的一些功能可以随着标准库的使用而得到增强</p>
+<ul>
+<li><p>文字处理<br>Go的strings包提供了对字符串进行处理的方法.更进一步，通过标准库中的regexp包,Go可以用正则表达式(regular expression)来处理字符串。<br>正则表达式是一个字符串模板。Go可以从字符中搜查符合该模板的部分，或者对这一部分替换成其它内容。比如你可以搜索一个文本中所有的数字。正则表达式的关键在于根据自己的需要构成模板。<br>此外，Go标准库还为字符串的输出提供更加丰富的格式，比如: strconv,bytes,unicode</p>
+</li>
+<li><p>数据结构与算法<br>数据结构是数据组织和存储的逻辑形式,为了有效的使用资源,在时间和空间上有效的算法可以帮助我们,Go标准库提供了sort,inedex/suffixary,container<br>sort 包包含基本的排序方法，支持切片数据排序以及用户自定义数据集合排序<br>index/suffixary 包实现了后缀数组相关算法以支持许多常见的字符串操作<br>container 包提供了对heap、list和ring这3种数据结构的底层支持。任何实现了相应接口的数据结构都可以调用该结构的方法</p>
+</li>
+<li><p>日期和时间<br>日期和时间的管理并不复杂，但容易犯错。经常会遇到日期和时间相关的操作,比如：格式化日期和时间，解析一个日期时间字符串等。Go语言通过标准库 time 包处理日期和时间相关的问题<br>time包提供了用于测量时间、解析和格式化日期，日期/时间以及时间值的函数。time.After()函数可用于在特定纳秒后，向通道 (channel)发送当前时间。time.Tick()和time.NewTicker()函数可用于提供一个通道，它会返回在特定时间间隔后将 ‘tick’发送到该通道上。time.Time结构具有一些方法，可提供当前时间，将data/time格式化为一个字符串以及解析data /time</p>
+</li>
+<li><p>数学运算<br>math/big包提供了无限大(实际受限于内存)整型数(big.Int)以及有理数(big.Rat)。math包提供了所有标准数学函数(基于float64)以及一些标准常量。math/cmplx包提供一些用于复数计算的标准函数(基于complex128)<br>此外,math/rand包提供许多有用的伪随机数生成函数，包括返回一个随机整型数的rand.Int()以及rand.Intn(n)，后者返回[0,n]范围内的一个随机整数。crypto/rand包中有一个函数，可用于产生加密的强伪随机数字</p>
+</li>
+<li><p>存储<br>在数据交换方面，有很多成熟的协议可以使用，常用的有：JSON、XML等,Go 语言提供了解析它们的标准库；同时，为了方便 Go 程序直接数据交换，Go 专门提供了 gob 这种交换协议<br>此外，标准库中还支持基本的数据库功能(database/sql包),csv格式的文件也有相应的处理包</p>
+</li>
+<li><p>数据压缩与归档<br>Go 标准库实现了一些最流行的压缩标准。zlib 和 gzip 提供了 GNU zip 库，bzip2 用于读写 bzip2 格式<br>标准库提供了 LZW 压缩算法（串表压缩算法）的实现，该算法常用的文件格式：GIF 和 PDF。<br>标准库还提供一些包管理归档(archive)格式,archive/tar 读写 UNIX 磁带归档格式,archive/zip 根据 zip 格式来处理归档</p>
+</li>
+</ul>
+<h5 id="系统互动"><a href="#系统互动" class="headerlink" title="系统互动"></a><b>系统互动</b></h5><ul>
+<li><p>操作系统<br>Go 的标准库提供了很多工具，可以处理文件系统中的文件、构造和解析文件名等,path包提供的函数用于操作Unix样式路径<br>runtime包包含了许多函数和类型用于访问Go的运行时系统</p>
+</li>
+<li><p>进程与线程<br>在Go中提供os 包及其子包 os/exec 提供了创建进程的方法,同时,我们知道在 Linux 中，通过系统调用 clone() 来实现线程的,在 Go 中，通过 clone() 系统调用来创建线程</p>
+</li>
+</ul>
+<h5 id="网络"><a href="#网络" class="headerlink" title="网络"></a><b>网络</b></h5><ul>
+<li>网络包<br>Go标准库中有许多包用于支持网络以及相关方面的编程。net包提供的函数和类型可用于使用Unix域以及网络socket通信、TCP/IP和UDP编程<br>net/http包充分利用了net包，并提供了解析HTTP请求和应答的功能，并提供了一个基本的HTTP客户端。net/http包也包含一个易于扩展的HTTP server。net/url包提供了URL解析和查询转义<br>标准库中还包含其他一些其他高层次的网络包。一个是net/rpc(远程过程调用)包，它允许一个服务端提供导出可被客户端调用的方法的对象。另外一个是net/smtp(简单邮件传输协议)包，可用于发送email</li>
+</ul>
+<p>以上的介绍比较粗糙，只希望能为大家提供一个了解标准库的入口。欢迎大家一起分享标准库的使用经验。</p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
 			  
 		</div>
 
 		<!-- pagination -->
 	  
 
-			<div class="btn-group btn-group-justified">
-				
-
-					<a class="btn btn-default " href="/archives/2017/" >上一页</a>
-
-					<a class="btn btn-default" href="/">首页</a>
-
-					<a class="btn btn-default " href="/archives/2017/page/3/" >下一页</a>
-
-	    	
-			</div>
-	  
-
 		<div class="comment-section">
   
+  
+
 
 </div>
 	</div>
