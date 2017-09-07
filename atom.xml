@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-09-07T05:45:48.602Z</updated>
+  <updated>2017-09-07T09:18:30.870Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,51 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>go标准库01 正则表达式(regexp包)</title>
+    <link href="https://t1ger.github.io/2017/09/07/go%E6%A0%87%E5%87%86%E5%BA%9301-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F-regexp%E5%8C%85/"/>
+    <id>https://t1ger.github.io/2017/09/07/go标准库01-正则表达式-regexp包/</id>
+    <published>2017-09-07T08:03:11.000Z</published>
+    <updated>2017-09-07T09:18:30.870Z</updated>
+    
+    <content type="html"><![CDATA[<p>我将从正则表达式开始讲Go的标准库。正则表达式是文字处理中常用的工具，而且不需要额外的系统知识或经验。我们会把系统相关的包放在后面讲解。<br>正则表达式(regular expression)主要功能是从字符串(string)中通过特定的模式(pattern)，搜索想要找到的内容。</p>
+<h5 id="语法"><a href="#语法" class="headerlink" title="语法"></a><b>语法</b></h5><p>regexp包实现了正则表达式搜索。<br>正则表达式采用RE2语法（除了\c、\C），和Perl、Python等语言的正则基本一致<br>在go中使用正则表达式需要标准库中的一个包regexp</p>
+<p>func Match(pattern string, b []byte) (matched bool, err error)<br>Match检查b中是否存在匹配pattern的子序列</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line">import (</div><div class="line">    &quot;regexp&quot;</div><div class="line">    &quot;fmt&quot;</div><div class="line">)</div><div class="line">func main() &#123;</div><div class="line">    fmt.Println(regexp.Match(&quot;[0-9] &quot;, []byte(&quot;abcd5ef&quot;)))</div><div class="line">&#125;</div><div class="line"></div><div class="line">[tiger@bogon go]$ go run reg.go </div><div class="line">false &lt;nil&gt;</div></pre></td></tr></table></figure>
+<p>如果你熟悉Linux或者Perl, 你应该已经熟悉正则表达式。当我们打开Linux shell的时候，可以用正则表达式去查找或着删除我们想要的文件，比如说：<br>$rm log[0-9][0-9].txt<br>这就是要删除类似于log02.txt的文件。log[0-9][0-9].txt所包含的信息是，以log开头，后面跟两个数字字符，之后跟有”.txt”的文件名。如果不符合条件的文件名，比如说:<br>log12.txt<br>log1.txt<br>log99.text<br>都不会被选中。<br>Perl中内建有正则表达式的功能，据说是所有正则表达式系统中最强的，这也是Perl成为系统管理员利器的一个原因。</p>
+<h5 id="正则表达式的函数"><a href="#正则表达式的函数" class="headerlink" title="正则表达式的函数"></a><b>正则表达式的函数</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">func (re *Regexp) FindString(s string) string   //搜索整个字符串，直到发现符合的子字符串</div><div class="line">func (re *Regexp) MatchString(s string) bool   //MatchString类似Match，但匹配对象是字符串。</div></pre></td></tr></table></figure>
+<p>可以从这两个函数中选择一个进行搜索。上面的例子中，我们如果使用regexp.MatchString()的话，则会得到False，因为字符串的起始为‘a’， 不符合’[0-9]’的要求。</p>
+<p>我们还可以在搜索之后将搜索到的子字符串进行替换：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">func (re *Regexp) FindAllStringSubmatch(s string, n int) [][]string</div></pre></td></tr></table></figure></p>
+<p>Find返回一个保管正则表达式re在b中的所有不重叠的匹配结果及其对应的（可能有的）分组匹配的结果的[][]string切片。如果没有匹配到，会返回nil。</p>
+<p>此外，常用的正则表达式函数还有</p>
+<p>func (re *Regexp) Split(s string, n int) []string<br>Split将re在s中匹配到的结果作为分隔符将s分割成多个字符串，并返回这些正则匹配结果之间的字符串的切片。</p>
+<p>func (re *Regexp) FindAllString(s string, n int) []string<br>Find返回保管正则表达式re在b中的所有不重叠的匹配结果的[]string切片。如果没有匹配到，会返回nil。</p>
+<h5 id="写一个正则表达式"><a href="#写一个正则表达式" class="headerlink" title="写一个正则表达式"></a><b>写一个正则表达式</b></h5><p>关键在于将信息写成一个正则表达式。我们先看正则表达式的常用语法</p>
+<ul>
+<li><p>单个字符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">.          任意的一个字符</div><div class="line">a|b        字符a或字符b</div><div class="line">[afg]      a或者f或者g的一个字符        </div><div class="line">[0-4]      0-4范围内的一个字符</div><div class="line">[a-f]      a-f范围内的一个字符</div><div class="line">[^m]       不是m的一个字符</div><div class="line">\s         一个空格</div><div class="line">\S         一个非空格</div><div class="line">\d         [0-9]</div><div class="line">\D         [^0-9]</div><div class="line">\w         [0-9a-zA-Z]</div><div class="line">\W         [^0-9a-zA-Z]</div></pre></td></tr></table></figure>
+</li>
+<li><p>重复<br>紧跟在单个字符之后，表示多个这样类似的字符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">*         重复 &gt;=0 次</div><div class="line">+         重复 &gt;=1 次</div><div class="line">?         重复 0或者1 次</div><div class="line">&#123;m&#125;       重复m次。比如说 a&#123;4&#125;相当于aaaa，再比如说[1-3]&#123;2&#125;相当于[1-3][1-3]</div><div class="line">&#123;m, n&#125;    重复m到n次。比如说a&#123;2, 5&#125;表示a重复2到5次。小于m次的重复，或者大于n次的重复都不符合条件。</div><div class="line"></div><div class="line">正则表达          相符的字符串举例</div><div class="line">[0-9]&#123;3,5&#125;       9678</div><div class="line">a?b              b</div><div class="line">a+b              aaaaab</div></pre></td></tr></table></figure>
+</li>
+<li><p>位置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">^         字符串的起始位置</div><div class="line">$         字符串的结尾位置</div><div class="line"></div><div class="line">正则表达          相符的字符串举例        不相符字符串</div><div class="line">^ab.*c$          abeec               cabeec</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;我将从正则表达式开始讲Go的标准库。正则表达式是文字处理中常用的工具，而且不需要额外的系统知识或经验。我们会把系统相关的包放在后面讲解。&lt;br&gt;正则表达式(regular expression)主要功能是从字符串(string)中通过特定的模式(pattern)，搜索想要找
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>go标准库--走马观花</title>
@@ -352,47 +397,6 @@
     
       &lt;p&gt;Go里没有class关键字,通过使用struct和interface实现面向对象的思想.&lt;br&gt;在传统的面向对象语言中,class是基本单位,是数据成员和当前定义的所有操作,并对外提供公共方法让使用者操作对象.而且必须一开始就定义好了那些操作,不能开放式扩展.&lt;/p&gt;
 &lt;u
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Go基础07 函数</title>
-    <link href="https://t1ger.github.io/2017/08/22/Go%E5%9F%BA%E7%A1%8007-%E5%87%BD%E6%95%B0/"/>
-    <id>https://t1ger.github.io/2017/08/22/Go基础07-函数/</id>
-    <published>2017-08-22T10:57:57.000Z</published>
-    <updated>2017-08-23T03:16:14.697Z</updated>
-    
-    <content type="html"><![CDATA[<p>函数最重要的目的是方便我们重复使用相同的一段程序。</p>
-<p>将一些操作隶属于一个函数，以后你想实现相同的操作的时候，只用调用函数名就可以，而不需要重复敲所有的语句。</p>
-<ul>
-<li><p>函数的定义<br>首先，我们要定义一个函数, 以说明这个函数的功能。<br>func function_name( [parameter_list] ) [return_types] {<br>  函数体<br>}<br>func：函数由 func 开始声明<br>function_name：函数名称，函数名和参数列表一起构成了函数签名<br>parameter list：参数列表，参数就像一个占位符，当函数被调用时，你可以将值传递给参数，这个值被称为实际参数。参数列表指定的是参数类型、顺序、及参数个数。参数是可选的，也就是说函数也可以不包含参数<br>return_types：返回类型，函数返回一列值。return_types 是该列值的数据类型。有些功能不需要返回值，这种情况下 return_types 不是必须的<br>函数体：函数定义的代码集合<br>下面来看个例子</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">func sum(a, b int) int &#123;</div><div class="line">    var c int</div><div class="line">    c = a + b</div><div class="line">    return c</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>  这个函数的功能是求两个数的和。</p>
-</li>
-<li><p>函数调用和参数传递<br>当创建函数时，你定义了函数需要做什么，通过调用改函数来执行指定任务。<br>调用函数，向函数传递参数，并返回值，例如</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    var a, b int = 3 ,5</div><div class="line">    var ret int</div><div class="line">    ret = sum(a, b)</div><div class="line">    fmt.Println(&quot;sum is %d&quot;, ret)</div><div class="line">&#125;</div><div class="line"></div><div class="line">func sum(a, b int) int &#123;</div><div class="line">    var c int</div><div class="line">    c = a + b</div><div class="line">    return c</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>函数参数<br>值传递:值传递是指在调用函数时将实际参数复制一份传递到函数中，这样在函数中如果对参数进行修改，将不会影响到实际参数。<br>引用传递:引用传递是指在调用函数时将实际参数的地址传递到函数中，那么在函数中对参数所进行的修改，将影响到实际参数。<br>默认情况下，Go 语言使用的是值传递，即在调用过程中不会影响到实际参数。<br>不管是指针,引用类型还是其他类型参数,都是值拷贝传递.区别是拷贝的是对象本身还是拷贝指针</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    a := 100</div><div class="line">    p := &amp;a</div><div class="line">	</div><div class="line">    fmt.Printf(&quot;variable a pointer: %p, value: %d&quot;, &amp;a, a)</div><div class="line">    fmt.Printf(&quot;actual parameter p pointer: %p, value: %p&quot;, &amp;p, p&quot;)</div><div class="line">    show(p)</div><div class="line">&#125;	</div><div class="line">func show(x *int) &#123;</div><div class="line">    fmt.Printf(&quot;formal parameter x pointer: %p, value:%p&quot;, &amp;x, x)</div><div class="line">&#125;</div><div class="line"></div><div class="line">[tiger@bogon tiger]$ go run fun_add.go </div><div class="line">variable a pointer:0xc42000e258,value:100</div><div class="line">actual parameter p pointer: 0xc42000c028, value: 0xc42000e258</div><div class="line">formal parameter x pointer: 0xc42000c038, value:0xc42000e258</div></pre></td></tr></table></figure>
-<p>  在调用函数时,新建立了x的内存,将参数p的值复制进去.这样x就保存了a的地址</p>
-</li>
-<li><p>总结<br>函数的目的： 提高程序的重复可用性。<br>练习:<br>写一个判断闰年的函数，参数为年、月、日。若是是闰年，返回True</p>
-</li>
-</ul>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;函数最重要的目的是方便我们重复使用相同的一段程序。&lt;/p&gt;
-&lt;p&gt;将一些操作隶属于一个函数，以后你想实现相同的操作的时候，只用调用函数名就可以，而不需要重复敲所有的语句。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;函数的定义&lt;br&gt;首先，我们要定义一个函数, 以说明这个函数的功能。&lt;
     
     </summary>
     
