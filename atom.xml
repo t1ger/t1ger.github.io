@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-09-07T09:18:30.870Z</updated>
+  <updated>2017-09-28T08:26:05.123Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -16,11 +16,135 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>go标准库04 网络(net包)</title>
+    <link href="https://t1ger.github.io/2017/09/28/go%E6%A0%87%E5%87%86%E5%BA%9304-%E7%BD%91%E7%BB%9C-net%E5%8C%85/"/>
+    <id>https://t1ger.github.io/2017/09/28/go标准库04-网络-net包/</id>
+    <published>2017-09-28T09:17:16.000Z</published>
+    <updated>2017-09-28T08:26:05.123Z</updated>
+    
+    <content type="html"><![CDATA[<p>net包提供了可移植的网络I/O接口，包括TCP/IP、UDP、域名解析和Unix域socket。</p>
+<p>我们大部分使用者只需要Dial、Listen和Accept函数提供的基本接口；以及相关的Conn和Listener接口。crypto/tls包提供了相同的接口和类似的Dial和Listen函数。</p>
+<p>Dial函数和服务端建立连接：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">conn, err := net.Dial(&quot;tcp&quot;, &quot;google.com:80&quot;)</div><div class="line">if err != nil &#123;</div><div class="line">	// handle error</div><div class="line">&#125;</div><div class="line">fmt.Fprintf(conn, &quot;GET / HTTP/1.0\r\n\r\n&quot;)</div><div class="line">status, err := bufio.NewReader(conn).ReadString(&apos;\n&apos;)</div><div class="line">// ...</div></pre></td></tr></table></figure></p>
+<p>Listen函数创建的服务端：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">ln, err := net.Listen(&quot;tcp&quot;, &quot;:8080&quot;)</div><div class="line">if err != nil &#123;</div><div class="line">	// handle error</div><div class="line">&#125;</div><div class="line">for &#123;</div><div class="line">	conn, err := ln.Accept()</div><div class="line">	if err != nil &#123;</div><div class="line">		// handle error</div><div class="line">		continue</div><div class="line">	&#125;</div><div class="line">	go handleConnection(conn)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>如果我们要实现一个http web服务,一般通过两种方法实现,一种是我们使用net包的net.Listen来对端口进行监听,另一个是使用net/http包,这里我们看下用net/http如何实现</p>
+<ul>
+<li><p>http客户端</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">import (</div><div class="line">    &quot;fmt&quot;</div><div class="line">    &quot;net/http&quot;</div><div class="line">    &quot;io/ioutil&quot;</div><div class="line">)</div><div class="line"> </div><div class="line">func main() &#123;</div><div class="line">    response,_ := http.Get(&quot;http://www.baidu.com&quot;)</div><div class="line">    defer response.Body.Close()</div><div class="line">    body,_ := ioutil.ReadAll(response.Body)</div><div class="line">    fmt.Println(string(body))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>http服务端</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"> </div><div class="line">import (</div><div class="line">    &quot;net/http&quot;</div><div class="line">)</div><div class="line"> </div><div class="line">func SayHello(w http.ResponseWriter, req *http.Request) &#123;</div><div class="line">    w.Write([]byte(&quot;Hello&quot;))</div><div class="line">&#125;</div><div class="line"> </div><div class="line">func main() &#123;</div><div class="line">    http.HandleFunc(&quot;/hello&quot;, SayHello)</div><div class="line">    http.ListenAndServe(&quot;:8001&quot;, nil)</div><div class="line"> </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>  进行端口的监听：http.ListenAndServe(“:8001”, nil)<br>注册路径处理函数：http.HandleFunc(“/hello”, SayHello)<br>处理函数：func SayHello(w http.ResponseWriter, req *http.Request)</p>
+</li>
+</ul>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;net包提供了可移植的网络I/O接口，包括TCP/IP、UDP、域名解析和Unix域socket。&lt;/p&gt;
+&lt;p&gt;我们大部分使用者只需要Dial、Listen和Accept函数提供的基本接口；以及相关的Conn和Listener接口。crypto/tls包提供了相同的接口和
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>go标准库03 路径与文件</title>
+    <link href="https://t1ger.github.io/2017/09/28/go%E6%A0%87%E5%87%86%E5%BA%9303-%E8%B7%AF%E5%BE%84%E4%B8%8E%E6%96%87%E4%BB%B6/"/>
+    <id>https://t1ger.github.io/2017/09/28/go标准库03-路径与文件/</id>
+    <published>2017-09-28T04:22:53.000Z</published>
+    <updated>2017-09-28T07:45:49.825Z</updated>
+    
+    <content type="html"><![CDATA[<ul>
+<li><p>os包<br>提供系统相关函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">import (</div><div class="line"> &quot;fmt&quot;</div><div class="line"> &quot;os&quot;</div><div class="line">)</div><div class="line">func main() &#123;</div><div class="line"> dir, _ := os.Getwd()</div><div class="line"> fmt.Println(&quot;current dir:&quot;, dir)</div><div class="line"> fmt.Println(os.Geteuid())</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>  此外,还有os.Getenv(),os.Chdir(),)os.Stat(),os.Chmod(),os.Chtime(),os.Environ(),os.Exit(),os.Expand(),os.ExpandEnv(),os.Hostname()等,详细介绍请查看<a href="https://golang.org/pkg/os/" target="_blank" rel="external">这里</a></p>
+</li>
+<li><p>io包<br>io包提供了大量的输入输出相关的函数,用来处理io.Reader和io.Writer.(*os.File类型的值能同时满足这两个接口的定义).另外,这个包还能用来创建内存中的同步管道.<br>io/ioutil包提供一些高级的辅助函数.<br>在io包中最重要的是两个接口：Reader和Writer接口</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">type Reader interface &#123;</div><div class="line">    Read(p []byte) (n int, err error)</div><div class="line">&#125;</div><div class="line"></div><div class="line">type Writer interface &#123;</div><div class="line">    Write(p []byte) (n int, err error)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>  Read 将 len(p) 个字节读取到 p 中，当遇到任何错误（包括EOF）会立即返回已读取的字节数，函数结束会返回成功读取的字节数和任何错误。<br>Write 将 len(p) 字节数据从 p 写入底层的数据流，然后返回成功写入的字节数和任何错误。<br>从接口名称很容易猜到，一般地，Go中接口的命名约定：接口名以er结尾。<br>注意，这里并非强行要求，你完全可以不以 er 结尾。标准库中有些接口也不是以 er 结尾的</p>
+</li>
+<li><p>path包<br>path包用来操作unix风格的路径<br>path/filepath包提供了和path相同的函数,其目标是提供平台无关的路径处理,提供了filepath.Walk()函数来遍历读出一个给定路径下的所有文件和目录信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import (</div><div class="line">        &quot;fmt&quot;</div><div class="line">        &quot;path/filepath&quot;</div><div class="line">)</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line"></div><div class="line">        absName, err := filepath.Abs(&quot;/a/b/c.txt&quot;)</div><div class="line">        if err != nil &#123;</div><div class="line">                fmt.Println(err)</div><div class="line">        &#125;</div><div class="line">        fmt.Println(absName)</div><div class="line"></div><div class="line">        baseName := filepath.Base(&quot;/a/b/c/e.txt&quot;)</div><div class="line">        fmt.Println(baseName)</div><div class="line"></div><div class="line">        p := &quot;../..//././//a/b/c.txt&quot;</div><div class="line">        pc := filepath.Clean(p)</div><div class="line">        fmt.Println(pc)</div><div class="line"></div><div class="line">        d := filepath.Dir(&quot;/a/b/c/d.txt&quot;)</div><div class="line">        fmt.Println(d)</div><div class="line"></div><div class="line">        e, _ := filepath.EvalSymlinks(&quot;/home/tiger/abc&quot;)</div><div class="line">        fmt.Println(e)</div><div class="line"></div><div class="line">        f := filepath.Ext(&quot;/tmp/1.txt&quot;)</div><div class="line">        fmt.Println(f)</div><div class="line"></div><div class="line">        m, _ := filepath.Glob(&quot;/usr/*&quot;)</div><div class="line">        fmt.Println(m)</div><div class="line"></div><div class="line">        fmt.Println(&quot;On Unix:&quot;)</div><div class="line">        fmt.Println(filepath.Join(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;))</div><div class="line">        fmt.Println(filepath.Join(&quot;a&quot;, &quot;b/c&quot;))</div><div class="line">        fmt.Println(filepath.Join(&quot;a/b&quot;, &quot;c&quot;))</div><div class="line">        fmt.Println(filepath.Join(&quot;a/b&quot;, &quot;/c&quot;))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>  此外,还有 Split(), Walk()等</p>
+</li>
+</ul>
+<ul>
+<li>runtime包<br>runtime包含一些函数和类型,用来访问go语言的运行时系统<br>这里介绍几个跟平台有关的方法：NumCPU ,GOROOT ,GOOS ,GOMAXPROCS ,Gosched<br>func NumCPU() int<br>func GOROOT() string<br>func GOMAXPROCS(n int) int<br>func Gosched()<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import (</div><div class="line">    &quot;fmt&quot;</div><div class="line">    &quot;runtime&quot;</div><div class="line">)</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    fmt.Println(&quot;cpus:&quot;, runtime.NumCPU())</div><div class="line">    fmt.Println(&quot;goroot:&quot;, runtime.GOROOT())</div><div class="line">    fmt.Println(&quot;os/platform:&quot;, runtime.GOOS)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;ul&gt;
+&lt;li&gt;&lt;p&gt;os包&lt;br&gt;提供系统相关函数&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>go标准库02 时间与日期</title>
+    <link href="https://t1ger.github.io/2017/09/28/go%E6%A0%87%E5%87%86%E5%BA%9302-%E6%97%B6%E9%97%B4%E4%B8%8E%E6%97%A5%E6%9C%9F/"/>
+    <id>https://t1ger.github.io/2017/09/28/go标准库02-时间与日期/</id>
+    <published>2017-09-28T02:56:14.000Z</published>
+    <updated>2017-09-28T03:19:12.363Z</updated>
+    
+    <content type="html"><![CDATA[<p>Go具有良好的时间和日期管理功能。实际上，计算机只会维护一个挂钟时间(wall clock time)，这个时间是从某个固定时间起点到现在的时间间隔。时间起点的选择与计算机相关，但一台计算机的话，这一时间起点是固定的。其它的日期信息都是从这一时间计算得到的。</p>
+<h5 id="time包"><a href="#time包" class="headerlink" title="time包"></a><b>time包</b></h5><ul>
+<li><p>时间</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import (</div><div class="line">    &quot;fmt&quot;</div><div class="line">    &quot;time&quot;</div><div class="line">)</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    //时间戳</div><div class="line">    t := time.Now().Unix()</div><div class="line">    fmt.Print(t)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>time.sleep()<br>可以将程序置于休眠状态，直到某时间间隔之后再唤醒程序，让程序继续运行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import (</div><div class="line">    &quot;fmt&quot;</div><div class="line">    &quot;time&quot;</div><div class="line">)</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">        fmt.Println(&quot;start&quot;)</div><div class="line">        time.Sleep(time.Second * 10)  // sleep for 10 seconds</div><div class="line">        fmt.Println(&quot;wake up&quot;)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>  当我们需要定时地查看程序运行状态时，就可以利用该方法。</p>
+</li>
+<li><p>time.After(time.Duration)<br>和Sleep差不多，在取出管道内容前不阻塞</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import (</div><div class="line">    &quot;fmt&quot;</div><div class="line">    &quot;time&quot;</div><div class="line">)</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    fmt.Println(&quot;this is one&quot;)</div><div class="line">    tc:=time.After(time.Second)</div><div class="line">    fmt.Println(&quot;this is two&quot;)</div><div class="line">    fmt.Println(&quot;this is three&quot;)</div><div class="line">    &lt;-tc //阻塞中，直到取出tc管道里的数据 </div><div class="line">    fmt.Println(&quot;this is four&quot;)</div><div class="line">&#125;</div><div class="line">//打印this is one后，获得了一个空管道，这个管道1秒后会有数据进来</div><div class="line">//打印this is two</div><div class="line">//打印this is three</div><div class="line">//等待，直到可以取出管道的数据（取出数据的时间与获得tc管道的时间正好差1秒钟）</div><div class="line">//打印this is four</div></pre></td></tr></table></figure>
+</li>
+<li><p>time.AfterFunc(time.Duration,func())<br>和After差不多，意思是多少时间之后在goroutine line执行函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import (</div><div class="line">    &quot;time&quot;</div><div class="line">    &quot;fmt&quot;</div><div class="line">)</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    f := func() &#123;</div><div class="line">        fmt.Println(&quot;Time out&quot;)</div><div class="line">    &#125;</div><div class="line">    time.AfterFunc(1*time.Second,f)</div><div class="line">    time.Sleep(2 * time.Second) //要保证主线比子线“死的晚”，否则主线死了，子线也等于死了</div><div class="line">&#125;</div><div class="line">//将一个间隔和一个函数给AfterFunc后</div><div class="line">//间隔时间过后，执行传入的函数</div></pre></td></tr></table></figure>
+</li>
+<li><p>Before &amp; After方法<br>判断一个时间点是否在另一个时间点的前面（后面），返回true或false</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import (</div><div class="line">    &quot;time&quot;</div><div class="line">    &quot;fmt&quot;</div><div class="line">)</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    t1 := time.Now()</div><div class="line">    time.Sleep(time.Second)</div><div class="line">    t2 := time.Now()</div><div class="line">    a := t2.After(t1)</div><div class="line">    fmt.Println(a) //true</div><div class="line">    b := t2.Before(t1)</div><div class="line">    fmt.Println(b) //false</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>sub方法<br>两个时间点相减，获得时间差(Duration)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import (</div><div class="line">    &quot;time&quot;</div><div class="line">    &quot;fmt&quot;</div><div class="line">)</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    t1 := time.Now()</div><div class="line">    time.Sleep(time.Second)</div><div class="line">    t2 :=time.Now()</div><div class="line">    d := t2.Sub(t1) //时间2减去时间1</div><div class="line">    fmt.Println(d)  //打印结果差不多为1.000123几秒，因为Sleep无法做到精确的睡1秒</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>Add方法<br>拿一个时间点，add一个时长，获得另一个时间点</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import (</div><div class="line">    &quot;time&quot;</div><div class="line">    &quot;fmt&quot;</div><div class="line">)</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    t1 := time.Now()</div><div class="line">    t2 := t1.Add(time.Hour)</div><div class="line">    fmt.Println(t2)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Go具有良好的时间和日期管理功能。实际上，计算机只会维护一个挂钟时间(wall clock time)，这个时间是从某个固定时间起点到现在的时间间隔。时间起点的选择与计算机相关，但一台计算机的话，这一时间起点是固定的。其它的日期信息都是从这一时间计算得到的。&lt;/p&gt;
+&lt;h5
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
     <title>go标准库01 正则表达式(regexp包)</title>
     <link href="https://t1ger.github.io/2017/09/07/go%E6%A0%87%E5%87%86%E5%BA%9301-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F-regexp%E5%8C%85/"/>
     <id>https://t1ger.github.io/2017/09/07/go标准库01-正则表达式-regexp包/</id>
     <published>2017-09-07T08:03:11.000Z</published>
-    <updated>2017-09-07T09:18:30.870Z</updated>
+    <updated>2017-09-07T10:07:22.386Z</updated>
     
     <content type="html"><![CDATA[<p>我将从正则表达式开始讲Go的标准库。正则表达式是文字处理中常用的工具，而且不需要额外的系统知识或经验。我们会把系统相关的包放在后面讲解。<br>正则表达式(regular expression)主要功能是从字符串(string)中通过特定的模式(pattern)，搜索想要找到的内容。</p>
 <h5 id="语法"><a href="#语法" class="headerlink" title="语法"></a><b>语法</b></h5><p>regexp包实现了正则表达式搜索。<br>正则表达式采用RE2语法（除了\c、\C），和Perl、Python等语言的正则基本一致<br>在go中使用正则表达式需要标准库中的一个包regexp</p>
@@ -273,130 +397,6 @@
     
       &lt;p&gt;range 关键字用于for循环中迭代数组(array)、切片(slice)、通道(channel)或集合(map)的元素。在数组和切片中它返回元素的索引值，在集合中返回 key-value 对的 key 值&lt;/p&gt;
 &lt;figure class=&quot;highlight pla
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Go进阶02 channel</title>
-    <link href="https://t1ger.github.io/2017/08/24/Go%E8%BF%9B%E9%98%B602-channel/"/>
-    <id>https://t1ger.github.io/2017/08/24/Go进阶02-channel/</id>
-    <published>2017-08-24T03:21:33.000Z</published>
-    <updated>2017-08-24T04:01:18.400Z</updated>
-    
-    <content type="html"><![CDATA[<p>在谈channel之前,我们先说下并发通信,在实践中,有两种最常见的并发通信模型:共享数据和消息,被共享的数据可能有多种形式,比如内存数据块、磁盘文件、网络数据等,一般内存共享最为常见.</p>
-<p>Go语言选择消息机制作为通信方式.消息机制认为每个并发单元是自包含的、独立的个体，并且都有自己的变量，但在不同并发单元间这些变量不共享。每个并发单元的输入和输出只有一种，那就是消息。</p>
-<p>Go语言提供的消息通信机制就被称为channel,channel是进程内的通信方式,golang channel 分为有缓冲与无缓冲两种类型,它们最大的区别是阻塞问题.不带缓冲的channel兼具通信和同步两种特性</p>
-<ul>
-<li><p>channel定义和操作</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">//一般channel声明</div><div class="line">var chanName chan ElementType</div><div class="line">var ch chan int</div><div class="line">var m map[string] chan bool</div><div class="line"></div><div class="line">//定义一个channel</div><div class="line">c := make(chan int)</div><div class="line"></div><div class="line">//定义一个带缓冲的channel</div><div class="line">c := make(chan int, 1024)</div><div class="line"></div><div class="line">//向一个channel发送一个值</div><div class="line">c &lt;- x</div><div class="line"></div><div class="line">//从channel中接收一个值</div><div class="line">&lt;- c</div><div class="line"></div><div class="line">//从channel c接收一个值并存储到x中</div><div class="line">x = &lt;-c </div><div class="line"></div><div class="line">//从channel接收一个值,如果channel关闭或者没数据,ok将为false</div><div class="line">x, ok = &lt;- c</div></pre></td></tr></table></figure>
-</li>
-<li><p>生产者消费者问题</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import (</div><div class="line">    &quot;fmt&quot;</div><div class="line">    &quot;time&quot;</div><div class="line">)</div><div class="line"></div><div class="line">func producer(c chan int, max int) &#123;</div><div class="line">    for i :=0; i&lt; max;i++ &#123;</div><div class="line">        c &lt;- i</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">func consumer(c chan int) &#123;</div><div class="line">    ok := true</div><div class="line">	for ok &#123;</div><div class="line">	    if value, ok := &lt;-c; ok &#123;</div><div class="line">                fmt.Println(value)</div><div class="line">            &#125;</div><div class="line">       &#125;</div><div class="line">&#125; </div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    c := make(chan int)</div><div class="line">    defer close(c)    </div><div class="line">    go producer(c, 10)</div><div class="line">    go consumer(c)</div><div class="line">    time.Sleep(time.Millisecond * 10)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>  执行结构将依次打印0-9</p>
-</li>
-<li><p>定时器</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import (</div><div class="line">    &quot;fmt&quot;</div><div class="line">    &quot;time&quot;</div><div class="line">)</div><div class="line"></div><div class="line">var mych = make(chan bool)</div><div class="line"></div><div class="line">func task() &#123;</div><div class="line">    fmt.Println(&quot;my timer task..&quot;)</div><div class="line">&#125;</div><div class="line"></div><div class="line">func timer() &#123;</div><div class="line">    timeout := time.NewTicker(time.Millisecond * 1000)</div><div class="line">	select &#123;</div><div class="line">	case &lt;- mych:</div><div class="line">	    go task()</div><div class="line">	case &lt;-timeout.C:</div><div class="line">	    fmt.Println(&quot;Time out&quot;)</div><div class="line">	&#125;</div><div class="line">	fmt.Println(&quot;Hello go&quot;)</div><div class="line">&#125;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    timer()</div><div class="line">    time.Sleep(time.Millisecond * 10)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>  这里没有向mychannel中写数据的，在等10秒之后会打印出hello go，程序并没有因此阻塞在这里</p>
-</li>
-<li><p>goroutine通信</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line">import (</div><div class="line">    &quot;fmt&quot;</div><div class="line">    &quot;time&quot;</div><div class="line">)</div><div class="line"></div><div class="line">var mych1 = make(chan int)</div><div class="line"></div><div class="line">func routine1() &#123;</div><div class="line">    for i:=0; i&lt; 10; i++ &#123;</div><div class="line">        mych1 &lt;- i</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">func routine2() &#123;</div><div class="line">    for &#123;</div><div class="line">        i := &lt;-mych1</div><div class="line">        fmt.Println(&quot;routine2: &quot;, i)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">func routine3() &#123;</div><div class="line">    for &#123;</div><div class="line">        i := &lt;-mych1</div><div class="line">        fmt.Println(&quot;routine3: &quot;, i)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    go routine1()</div><div class="line">    go routine2()</div><div class="line">    go routine3()</div><div class="line">    time.Sleep(time.Millisecond * 100)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>  这里实现了一个goroutine写，两个goroutine读的过程，可以看到按顺序写进去的数据，被哪个goroutine读到是完全随机的，在golang中我们要实现进程间通信，channel是唯一途径，也是推荐的途径，它的底层是通过共享内存实现的</p>
-</li>
-<li><p>总结<br>channel定义和操作<br>生产者和消费者<br>goroutine通信,在使用channel的时候,至少有一个goroutine来负责读,否则你的程序就会阻塞在你写channel的地方</p>
-</li>
-</ul>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;在谈channel之前,我们先说下并发通信,在实践中,有两种最常见的并发通信模型:共享数据和消息,被共享的数据可能有多种形式,比如内存数据块、磁盘文件、网络数据等,一般内存共享最为常见.&lt;/p&gt;
-&lt;p&gt;Go语言选择消息机制作为通信方式.消息机制认为每个并发单元是自包含的、独
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Go进阶01 map</title>
-    <link href="https://t1ger.github.io/2017/08/23/Go%E8%BF%9B%E9%98%B601-map/"/>
-    <id>https://t1ger.github.io/2017/08/23/Go进阶01-map/</id>
-    <published>2017-08-23T09:29:41.000Z</published>
-    <updated>2017-08-23T10:34:03.046Z</updated>
-    
-    <content type="html"><![CDATA[<p>Map 是一种无序的键值对的集合</p>
-<ul>
-<li><p>定义map<br>可以使用内建函数 make 也可以使用 map 关键字来定义 Map:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">// 声明变量，默认 map 是 nil </div><div class="line">var map_variable map[key_data_type]value_data_type</div><div class="line"></div><div class="line">// 使用 make 函数 </div><div class="line">map_variable := make(map[key_data_type]value_data_type)</div></pre></td></tr></table></figure>
-<p>  如果不初始化 map，那么就会创建一个 nil map。nil map 不能用来存放键值对</p>
-</li>
-<li><p>实例</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line"></div><div class="line">//new 进行创建</div><div class="line">    mapA := new(map[int]string)</div><div class="line">    *mapA = map[int]string&#123;&#125;</div><div class="line">    (*mapA)[112] = &quot;112&quot;</div><div class="line">    (*mapA)[110] = &quot;110&quot;</div><div class="line">	</div><div class="line">    for v := range *mapA &#123;</div><div class="line">        fmt.Println(v)</div><div class="line">	&#125;</div><div class="line">//直接创建</div><div class="line">    var map1 map[int]string = map[int]string&#123;&#125;</div><div class="line">    map2 := map[int]string&#123;</div><div class="line">        11:&quot;11&quot;</div><div class="line">        12:&quot;12&quot;</div><div class="line">	&#125;</div><div class="line">    fmt.Println(map2)</div><div class="line">    map1[1] = &quot;222&quot;</div><div class="line">    map1[2] = &quot;333&quot;</div><div class="line">    fmt.Println(map1)</div><div class="line">	</div><div class="line">//make 创建</div><div class="line">    map3 := make(map[int]string, 100)</div><div class="line">    map3[22] = &quot;22&quot;</div><div class="line">    fmt.Println(map3)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>map查找和删除<br>go提供内置函数delete(),参数为 map 和其对应的 key</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    var student map[string]string</div><div class="line">    student = make(map[string]string)</div><div class="line">    student[&quot;liming&quot;] = &quot;小明&quot;</div><div class="line">    student[&quot;hanmeimei&quot;] = &quot;小梅&quot;</div><div class="line">    </div><div class="line">    delete(student, &quot;liming&quot;)</div><div class="line">    liming, ok := student[&quot;liming&quot;]</div><div class="line">    if ok &#123;</div><div class="line">        fmt.Println(liming)</div><div class="line">    &#125; else &#123;</div><div class="line">        fmt.Println(&quot;no exist person&quot;)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>总结<br>map<br>delete()</p>
-</li>
-</ul>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;Map 是一种无序的键值对的集合&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;定义map&lt;br&gt;可以使用内建函数 make 也可以使用 map 关键字来定义 Map:&lt;/p&gt;
-&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;g
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Go基础08 面向对象的基本概念</title>
-    <link href="https://t1ger.github.io/2017/08/23/Go%E5%9F%BA%E7%A1%8008-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/"/>
-    <id>https://t1ger.github.io/2017/08/23/Go基础08-面向对象的基本概念/</id>
-    <published>2017-08-23T07:11:22.000Z</published>
-    <updated>2017-08-23T07:50:02.741Z</updated>
-    
-    <content type="html"><![CDATA[<p>Go里没有class关键字,通过使用struct和interface实现面向对象的思想.<br>在传统的面向对象语言中,class是基本单位,是数据成员和当前定义的所有操作,并对外提供公共方法让使用者操作对象.而且必须一开始就定义好了那些操作,不能开放式扩展.</p>
-<ul>
-<li><p>结构体<br>如果要某个符号对其它包访问,需要将该符合定义为以大写字母开头</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">type Human struct &#123;</div><div class="line">    name string</div><div class="line">    age  int</div><div class="line">    Height float64</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>  一个Golang对象</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">//定义一个Human类包含name和age</div><div class="line">type Human struct &#123;</div><div class="line">    name string</div><div class="line">    age  int</div><div class="line">&#125;</div><div class="line"></div><div class="line">//定义一个Men接口</div><div class="line">type Men interface &#123;</div><div class="line">    Say()</div><div class="line">&#125;</div><div class="line"></div><div class="line">//带接收参数的函数称为method</div><div class="line">func (h Human) Say() &#123;</div><div class="line">    fmt.Println(&quot;hello %s&quot;, h.name)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>组合<br>Golang里没有继承,是通过匿名组合来实现,没有传统的继承关系链,同时还能重用父类的方法和成员<br>来看下面的例子</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">type Base struct &#123;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">func (b Base)show() &#123;</div><div class="line">    println(&quot;hello ws&quot;)</div><div class="line">&#125;</div><div class="line"></div><div class="line">type Child struct &#123;</div><div class="line">    Base</div><div class="line">&#125;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    child := Child&#123;&#125;</div><div class="line">    child.Show()</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>接口<br>Go语言中的接口是一系列操作定义的集合,不允许进行实现，而且也不能定义变量或者常量,这种非侵入式的设计，是为了解耦。接口和类本是不同的东西：类是把数据和代码包装在一起，是为了对内实现,接口则像是一种契约，是为了对外展示,Go语言中如果某个对象实现了这个接口的所有方法,那么就可以说这个对象实现了这个接口</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">type Interface interface &#123;</div><div class="line">    Len() int</div><div class="line">    Less(i, j int) bool</div><div class="line">    Swap(i, j int)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>  空interface(interface{})不包含任何的method，正因为如此，所有的类型都实现了空interface。空interface对于描述起不到任何的作用(因为它不包含任何的method），但是空interface在我们需要存储任意类型的数值的时候相当有用，因为它可以存储任意类型的数值</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">var a interface&#123;&#125; //define a null interface</div><div class="line">var i int = 5</div><div class="line">s := &quot;Hello world&quot; </div><div class="line">a = int     // a 可以存储任意类型的数值</div><div class="line">a = s</div></pre></td></tr></table></figure>
-<p>  一个函数把interface{}作为参数，那么他可以接受任意类型的值作为参数，如果一个函数返回interface{},那么也就可以返回任意类型的值</p>
-</li>
-<li><p>总结<br>struct是变量的集合<br>interface是方法的集合<br>struct与interface都支持匿名字段, 换言之, 支持组合实现继承<br>golang的struct与C++的class一样, 只能声明变量, 不能初始化</p>
-</li>
-</ul>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;Go里没有class关键字,通过使用struct和interface实现面向对象的思想.&lt;br&gt;在传统的面向对象语言中,class是基本单位,是数据成员和当前定义的所有操作,并对外提供公共方法让使用者操作对象.而且必须一开始就定义好了那些操作,不能开放式扩展.&lt;/p&gt;
-&lt;u
     
     </summary>
     
