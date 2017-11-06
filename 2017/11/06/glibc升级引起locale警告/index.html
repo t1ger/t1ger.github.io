@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
   
-  <title>Archives: 2017 | t1ger的茶馆</title>
+  <title>glibc升级引起locale警告 | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
   
   <meta name="description" content="https://t1ger.github.io/">
@@ -13,7 +13,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  
+  <meta property="og:title" content="glibc升级引起locale警告"/>
   <meta property="og:site_name" content="t1ger的茶馆"/>
 
   
@@ -116,70 +116,44 @@
 		<div class="content">
 			<!-- index -->
 		   
-			  	<h2>归档</h2>
-		  		
-	              <p class="archive-item">
-						<a href="/2017/11/06/glibc升级引起locale警告/" class="archive-title">glibc升级引起locale警告</a><span class="archive post-time">2017-11-06</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/09/28/go标准库04-网络-net包/" class="archive-title">go标准库04 网络(net包)</a><span class="archive post-time">2017-09-28</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/09/28/go标准库03-路径与文件/" class="archive-title">go标准库03 路径与文件</a><span class="archive post-time">2017-09-28</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/09/28/go标准库02-时间与日期/" class="archive-title">go标准库02 时间与日期</a><span class="archive post-time">2017-09-28</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/09/07/go标准库01-正则表达式-regexp包/" class="archive-title">go标准库01 正则表达式(regexp包)</a><span class="archive post-time">2017-09-07</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/09/07/go标准库-走马观花/" class="archive-title">go标准库--走马观花</a><span class="archive post-time">2017-09-07</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/09/04/Go进阶07-defer-panic-recover/" class="archive-title">Go进阶07 defer,panic,recover</a><span class="archive post-time">2017-09-04</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/09/04/Go进阶06-iota/" class="archive-title">Go进阶06 iota</a><span class="archive post-time">2017-09-04</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/09/04/Go进阶05-fallthrough/" class="archive-title">Go进阶05 fallthrough</a><span class="archive post-time">2017-09-04</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/08/24/Go进阶04-函数闭包和不定参数/" class="archive-title">Go进阶04 函数闭包和不定参数</a><span class="archive post-time">2017-08-24</span>
-					</p>
-			  	
-			  <!-- post -->
+
+			  		<h2>glibc升级引起locale警告</h2>
+					
+					<div>
+						<span class="post-time">2017-11-06 12:04:24</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<p>在升级glibc后,发现每次登录都提示如下警告：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">-bash: warning: setlocale: LC_CTYPE: cannot change locale (en_US.UTF-8): No such file or directory</div><div class="line">-bash: warning: setlocale: LC_COLLATE: cannot change locale (en_US.UTF-8): No such file or directory</div><div class="line">-bash: warning: setlocale: LC_MESSAGES: cannot change locale (en_US.UTF-8): No such file or directory</div><div class="line">-bash: warning: setlocale: LC_NUMERIC: cannot change locale (en_US.UTF-8): No such file or directory</div><div class="line">-bash: warning: setlocale: LC_TIME: cannot change locale (en_US.UTF-8): No such file or directory</div></pre></td></tr></table></figure></p>
+<p>让我们先回顾下升级glibc步骤<br>1、使用 strings /lib64/libc.so.6 |grep GLIBC查看目前系统的glibc版本<br>2、wget <a href="http://ftp.gnu.org/gnu/glibc/glibc-2.14.tar.gz" target="_blank" rel="external">http://ftp.gnu.org/gnu/glibc/glibc-2.14.tar.gz</a><br>3、glibc安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">[root@localhost ~]# tar xvf glibc-2.14.tar.gz</div><div class="line">[root@localhost ~]# cd glibc-2.14</div><div class="line">[root@localhost glibc-2.14]# mkdir build</div><div class="line">[root@localhost glibc-2.14]# cd ./build</div><div class="line">[root@localhost build]# ../configure --prefix=/usr/local/glibc-2.14</div><div class="line">[root@localhost build]# make</div><div class="line">[root@localhost build]# make install</div></pre></td></tr></table></figure></p>
+<p>4、创建glibc2.14的软链<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ln -sf /usr/local/glibc-2.14/lib/libc-2.14.so /lib64/libc.so.6 ###特别说明，千万不要先删除之前的软链，直接加-f参数覆盖就行了，否则无法开机</div></pre></td></tr></table></figure></p>
+<p>5、设置语言相关的locale-archive文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">[root@localhost ~]# find / -name locale-archive   ###找出glibc2.12的语言相关的 locale-archive 文件</div><div class="line">/usr/lib/locale/locale-archive</div><div class="line">[root@localhost locale]# cp /usr/lib/locale/locale-archive /usr/local/glibc-2.14/lib/locale/   ###复制到编译好的glibc 2.14的lib/locale中，记得先创建locale目录</div><div class="line">[root@localhost locale]# /usr/local/glibc-2.14/bin/localedef -i en_US -f UTF-8 en_US.UTF-8  ##运行生成相应的locale配置文件</div></pre></td></tr></table></figure></p>
+<p>在升级之后出现报警的原因是漏掉了步骤5</p>
+<p>ref<br><a href="http://blog.csdn.net/qq_34605594/article/details/73610126" target="_blank" rel="external">升级glibc到glibc-2.14解决version `GLIBC_2.14’ not found 问题</a><br><a href="http://www.cnblogs.com/xiaohuo2011/p/7509034.html" target="_blank" rel="external">GLIBC2.12升级GLIBC2.14源码</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
 			  
 		</div>
 
 		<!-- pagination -->
 	  
 
-			<div class="btn-group btn-group-justified">
-				
-
-					<a class="btn btn-default disabled" href="/" >上一页</a>
-
-					<a class="btn btn-default" href="/">首页</a>
-
-					<a class="btn btn-default " href="/archives/2017/page/2/" >下一页</a>
-
-	    	
-			</div>
-	  
-
 		<div class="comment-section">
   
+  
+
 
 </div>
 	</div>
