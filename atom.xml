@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-11-06T04:59:27.611Z</updated>
+  <updated>2017-11-20T09:31:33.242Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,47 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Deploy Elasticsearch</title>
+    <link href="https://t1ger.github.io/2017/11/20/Deploy-Elasticsearch/"/>
+    <id>https://t1ger.github.io/2017/11/20/Deploy-Elasticsearch/</id>
+    <published>2017-11-20T08:31:50.000Z</published>
+    <updated>2017-11-20T09:31:33.242Z</updated>
+    
+    <content type="html"><![CDATA[<h5 id="ElasticSearch-deploy-doc"><a href="#ElasticSearch-deploy-doc" class="headerlink" title="ElasticSearch deploy doc"></a><b>ElasticSearch deploy doc</b></h5><ul>
+<li><p>env</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">[root@localhost ~]# cat /etc/issue</div><div class="line">CentOS release 6.8 (Final)</div><div class="line">Kernel \r on an \m</div><div class="line"></div><div class="line">[root@localhost ~]# java -version</div><div class="line">java version &quot;1.8.0_112&quot;</div><div class="line">Java(TM) SE Runtime Environment (build 1.8.0_112-b15)</div><div class="line">Java HotSpot(TM) 64-Bit Server VM (build 25.112-b15, mixed mode)</div></pre></td></tr></table></figure>
+</li>
+<li><p>download es, create es user </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">curl -L -O  https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.0.0.tar.gz</div><div class="line"></div><div class="line">tar -xzf elasticsearch-6.0.0.tar.gz</div><div class="line">sudo useradd es</div><div class="line">mv elasticsearch-6.0.0 /usr/local/elasticsearch</div><div class="line">chown es.es /usr/local/elasticsearch -R</div><div class="line"></div><div class="line">#add es.conf to  /etc/security/limits.d/es.conf</div><div class="line">[root@localhost ~]# cat  /etc/security/limits.d/es.conf</div><div class="line">es soft memlock unlimited</div><div class="line">es hard memlock unlimited</div><div class="line">es soft nofile 204800</div><div class="line">es hard nofile 204800</div><div class="line">es soft nproc  4096</div><div class="line"></div><div class="line">#add option to /etc/sysctl.conf</div><div class="line">vm.max_map_count=655360</div><div class="line">sysctl -p</div></pre></td></tr></table></figure>
+</li>
+<li><p>conf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line">[root@localhost ~]# cat /usr/local/elasticsearch/config/elasticsearch.yml |grep -v ^#</div><div class="line">cluster.name: es-ws-v6</div><div class="line">node.name: node-1</div><div class="line">node.master: true</div><div class="line">node.data: true</div><div class="line">path.data: /usr/local/elasticsearch/data</div><div class="line">path.logs: /usr/local/elasticsearch/logs</div><div class="line">bootstrap.memory_lock: true</div><div class="line">bootstrap.system_call_filter: false</div><div class="line">network.host: 172.16.56.193</div><div class="line">network.publish_host: 172.16.56.193</div><div class="line">discovery.zen.ping.unicast.hosts: [&quot;172.16.56.194&quot;,&quot;172.16.56.195&quot;]</div><div class="line">discovery.zen.minimum_master_nodes: 2</div><div class="line"></div><div class="line"></div><div class="line">[root@localhost ~]# cat /usr/local/elasticsearch/config/elasticsearch.yml |grep -v ^#</div><div class="line">cluster.name: es-ws-v6</div><div class="line">node.name: node-2</div><div class="line">node.master: true</div><div class="line">node.data: true</div><div class="line">path.data: /usr/local/elasticsearch/data</div><div class="line">path.logs: /usr/local/elasticsearch/logs</div><div class="line">bootstrap.memory_lock: true</div><div class="line">bootstrap.system_call_filter: false</div><div class="line">network.host: 172.16.56.194</div><div class="line">network.publish_host: 172.16.56.194</div><div class="line">discovery.zen.ping.unicast.hosts: [&quot;172.16.56.193&quot;,&quot;172.16.56.195&quot;]</div><div class="line">discovery.zen.minimum_master_nodes: 2</div><div class="line"></div><div class="line"></div><div class="line">[root@localhost ~]# cat /usr/local/elasticsearch/config/elasticsearch.yml |grep -v ^#</div><div class="line">cluster.name: es-ws-v6</div><div class="line">node.name: node-3</div><div class="line">node.master: true</div><div class="line">node.data: true</div><div class="line"></div><div class="line">path.data: /usr/local/elasticsearch/data</div><div class="line">path.logs: /usr/local/elasticsearch/logs</div><div class="line">bootstrap.memory_lock: true</div><div class="line">bootstrap.system_call_filter: false</div><div class="line">network.host: 172.16.56.195</div><div class="line">network.publish_host: 172.16.56.195</div><div class="line">discovery.zen.ping.unicast.hosts: [&quot;172.16.56.193&quot;, &quot;172.16.56.194&quot;]</div><div class="line">discovery.zen.minimum_master_nodes: 2</div></pre></td></tr></table></figure>
+<p>  if you need to extend,only to keep cluster.name  with es-ws-v6 ,now we add new node  with config/elasticsearch</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">[root@localhost ~]# cat /usr/local/elasticsearch/config/elasticsearch.yml |grep -v ^#</div><div class="line">cluster.name: es-ws-v6</div><div class="line">node.name: node-4</div><div class="line">node.master: true</div><div class="line">node.data: true</div><div class="line"></div><div class="line">path.data: /usr/local/elasticsearch/data</div><div class="line">path.logs: /usr/local/elasticsearch/logs</div><div class="line">bootstrap.memory_lock: true</div><div class="line">bootstrap.system_call_filter: false</div><div class="line">network.host: 172.16.56.196</div><div class="line">network.publish_host: 172.16.56.196</div><div class="line">discovery.zen.ping.unicast.hosts: [&quot;172.16.56.195&quot;]</div><div class="line">discovery.zen.minimum_master_nodes: 2</div></pre></td></tr></table></figure>
+</li>
+<li><p>start es  and check cluster health</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">#start es</div><div class="line">su es</div><div class="line">cd /usr/local/elasticsearch</div><div class="line">bin/elasticsearch -d -p es.pid</div><div class="line"></div><div class="line"># check health</div><div class="line">curl http://172.16.56.193:9200/_cluster/health</div></pre></td></tr></table></figure>
+</li>
+<li><p>restart es cluster service</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">#Disable shard allocation.</div><div class="line">curl -X PUT http://172.16.56.193:9200/_cluster/settings -d&apos;</div><div class="line">&#123;</div><div class="line">  &quot;persistent&quot;: &#123;</div><div class="line">    &quot;cluster.routing.allocation.enable&quot;: &quot;none&quot;</div><div class="line">  &#125;</div><div class="line">&#125;&apos;</div><div class="line"></div><div class="line">#Stop indexing and perform a synced flush.</div><div class="line">curl -X POST http://172.16.56.193:9200/_flush/synced</div><div class="line"></div><div class="line">#kill all node</div><div class="line">ps aux |grep elasticsearch |awk &apos;&#123;print $2&#125;&apos; |xargs kill</div><div class="line"></div><div class="line">#Start each upgraded node.</div><div class="line">#you can use _cat/health and _cat/nodes to monitor nodes joining the cluster:</div><div class="line">#If you have dedicated master nodes, start them first and wait for them to form a cluster </div><div class="line">#and elect a master before proceeding with your data nodes. You can check progress by looking at the logs.</div><div class="line"></div><div class="line">GET _cat/health</div><div class="line">GET _cat/nodes</div><div class="line"></div><div class="line">#Wait for all nodes to join the cluster and report a status of yellow.</div><div class="line"></div><div class="line">#Reenable allocation</div><div class="line">curl -X PUT http://172.16.56.193:9200/_cluster/settings -d&apos;</div><div class="line">&#123;</div><div class="line">  &quot;persistent&quot;: &#123;</div><div class="line">    &quot;cluster.routing.allocation.enable&quot;: &quot;all&quot;</div><div class="line">  &#125;</div><div class="line">&#125;&apos;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>ref<br><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/restart-upgrade.html" target="_blank" rel="external">Elasticsearch Reference</a><br><a href="http://wdxtub.com/2016/09/28/elasticsearch-cluster-guide/" target="_blank" rel="external">Elasticsearch 集群指南</a><br><a href="http://www.wklken.me/posts/2016/06/29/deploy-es.html" target="_blank" rel="external">ELASTICSEARCH集群部署文档</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h5 id=&quot;ElasticSearch-deploy-doc&quot;&gt;&lt;a href=&quot;#ElasticSearch-deploy-doc&quot; class=&quot;headerlink&quot; title=&quot;ElasticSearch deploy doc&quot;&gt;&lt;/a&gt;&lt;b&gt;ElasticSear
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>glibc升级引起locale警告</title>
@@ -356,48 +397,6 @@
     <summary type="html">
     
       &lt;h5 id=&quot;fallthrough用法&quot;&gt;&lt;a href=&quot;#fallthrough用法&quot; class=&quot;headerlink&quot; title=&quot;fallthrough用法&quot;&gt;&lt;/a&gt;&lt;b&gt;fallthrough用法&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;Go里边的switch默认每个case
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Go进阶04 函数闭包和不定参数</title>
-    <link href="https://t1ger.github.io/2017/08/24/Go%E8%BF%9B%E9%98%B604-%E5%87%BD%E6%95%B0%E9%97%AD%E5%8C%85%E5%92%8C%E4%B8%8D%E5%AE%9A%E5%8F%82%E6%95%B0/"/>
-    <id>https://t1ger.github.io/2017/08/24/Go进阶04-函数闭包和不定参数/</id>
-    <published>2017-08-24T08:06:54.000Z</published>
-    <updated>2017-08-24T09:41:50.895Z</updated>
-    
-    <content type="html"><![CDATA[<ul>
-<li><p>匿名函数<br>在了解闭包之前,我们先说下什么是匿名函数,匿名函数由一个不带函数名的函数声明和函数体组成</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">func (a, b int, z float64) bool &#123;</div><div class="line">    return a*b &lt; int(z)</div><div class="line">&#125;</div><div class="line"></div><div class="line">//匿名函数可以赋值给一个变量</div><div class="line">f := func(x, y int) int &#123;</div><div class="line">    return x + y</div><div class="line">&#125;</div><div class="line"></div><div class="line">func(ch chan int) &#123;</div><div class="line">    ch &lt;-ACK</div><div class="line">&#125;(reply_chan) //直接跟参数表示函数调用</div></pre></td></tr></table></figure>
-</li>
-<li><p>闭包<br>Go的匿名函数就是一个闭包,闭包是可以包含自由变量的代码块,这些变量不在这个代码块内或者任何全局上下文中定义,而是在定义代码块的环境中定义.<br>要执行的代码块(由于自由变量包含在代码块中,这些自由变量以及他们引用的对象没有被释放)为自由变量提供绑定的计算环境(作用域)</p>
-<p>  Go语言中的闭包同样会引用到函数外的变量.闭包的实现确保只要闭包还被使用,那么被闭包引用的变量会一直存在</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    var j int = 5</div><div class="line">	</div><div class="line">	a := func()(func()) &#123;</div><div class="line">        var i int = 10</div><div class="line">        return func() &#123;</div><div class="line">            fmt.Printf(&quot;i, j: %d, %d\n&quot;, i, j)</div><div class="line">        &#125;</div><div class="line">    &#125;()</div><div class="line">    a()</div><div class="line">    j *= 2</div><div class="line">    a()</div><div class="line">&#125;</div><div class="line"></div><div class="line">[tiger@bogon tiger]$ go run closure.go </div><div class="line">i, j: 10, 5</div><div class="line">i, j: 10, 10</div></pre></td></tr></table></figure>
-<p>  变量a指向的闭包函数引用了局部变量i和j, i的值被隔离,在闭包外不能被修改,改变j的值以后,再次调用a, 发现结构是修改过的值<br>在变量a指向的闭包函数中,只有内部的匿名函数才能访问变量i,而无法通过其他途径访问到,因此保证了i的安全性 </p>
-</li>
-<li><p>不定参数<br>不定参数是指函数接受传入的参数为不定数量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">func myfunc(args ...int)&#123;</div><div class="line">    for _, arg := range args&#123;</div><div class="line">        fmt.Println(arg)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//原样传递</div><div class="line">myfunc(args...)</div><div class="line">//传递片段</div><div class="line">myfunc(args[1:]...)</div><div class="line"></div><div class="line">myfunc(2, 4, 6)</div><div class="line">myfunc(1, 3, 4, 6)</div></pre></td></tr></table></figure>
-<p>  如果传递的参数不是int,而是任意类型,可以指定类型为interface(),我们来看下Go语言标准库中fmt.Printf()的函数原型</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">func Printf(format string, args ...interface&#123;&#125;) &#123;</div><div class="line">// ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>  下面代码是展示如何处理传入interface{}类型的参数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func MyPrintf(args ...interface&#123;&#125;) &#123;</div><div class="line">    for _, arg := range args &#123;</div><div class="line">	    switch arg.(type) &#123;</div><div class="line">            case int:</div><div class="line">                fmt.Println(arg, &quot;is an int value.&quot;)</div><div class="line">            case string:</div><div class="line">                fmt.Println(arg, &quot;is a string value.&quot;)</div><div class="line">            case int64:</div><div class="line">                fmt.Println(arg, &quot;is an int64 value.&quot;)</div><div class="line">            default:</div><div class="line">                fmt.Println(arg, &quot;is an unknow type.&quot;)</div><div class="line">       &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    var v1 int = 1</div><div class="line">    var v2 int64 = 234</div><div class="line">    var v3 string = &quot;hello&quot;</div><div class="line">    var v4 float32 = 1.456</div><div class="line">    MyPrintf(v1, v2, v3, v4)</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>总结<br>匿名函数<br>闭包,Go的匿名函数就是一个闭包<br>不定参数</p>
-</li>
-</ul>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;ul&gt;
-&lt;li&gt;&lt;p&gt;匿名函数&lt;br&gt;在了解闭包之前,我们先说下什么是匿名函数,匿名函数由一个不带函数名的函数声明和函数体组成&lt;/p&gt;
-&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div
     
     </summary>
     
