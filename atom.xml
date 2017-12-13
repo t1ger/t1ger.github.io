@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-11-21T09:33:58.393Z</updated>
+  <updated>2017-12-13T08:35:53.640Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,47 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>how to migrate Gitlab to a new server</title>
+    <link href="https://t1ger.github.io/2017/12/13/how-to-migrate-Gitlab-to-a-new-server/"/>
+    <id>https://t1ger.github.io/2017/12/13/how-to-migrate-Gitlab-to-a-new-server/</id>
+    <published>2017-12-13T07:05:49.000Z</published>
+    <updated>2017-12-13T08:35:53.640Z</updated>
+    
+    <content type="html"><![CDATA[<p>gitlab安装有三种方法: docker、yum 、源码,本文环境是yum安装方式<br>1.确认旧gitlab版本信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo gitlab-rake gitlab:env:info</div></pre></td></tr></table></figure></p>
+<p>注意: 新服务版本要求保持一致,否则无法导入,如果版本比较旧,需要升级旧版本服务器或新服务版本降级后在升级<br>旧服务器升级也比较简单<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">#stop some service</div><div class="line">sudo gitlab-ctl stop unicorn</div><div class="line">sudo gitlab-ctl stop sidekiq</div><div class="line">sudo gitlab-ctl stop nginx</div><div class="line">#update</div><div class="line">sudo yum update gitlab-ce</div><div class="line">sudo gitlab-ctl reconfigure</div><div class="line">sudo gitlab-ctl restart</div></pre></td></tr></table></figure></p>
+<p>2.备份配置文件和数据<br>将 /etc/gitlab/gitlab.rb 和 gitlab-secrets.json 拷贝到新服务对应目录<br>注意,我旧环境是用了自带的nginx,新环境用了机器上已经存在的nginx</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">#disable nginx service</div><div class="line">vi /etc/gitlab/gitlab.rb...#设置nginx为false,关闭自带Nginxnginx[‘enable‘] = false...</div><div class="line"></div><div class="line">#check nginx config,migrate to new nginx</div><div class="line">/var/opt/gitlab/nginx/conf/nginx.conf  </div><div class="line">/var/opt/gitlab/nginx/conf/gitlab-http.conf</div><div class="line">/var/opt/gitlab/nginx/conf/nginx-status.conf</div><div class="line"></div><div class="line">#restart service</div><div class="line">sudo gitlab-ctl reconfigure</div><div class="line">sudo service nginx restart</div></pre></td></tr></table></figure>
+<p>备份旧机器git数据,同时拷贝到新服务上<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#backup gitlab to  /var/opt/gitlab/backups</div><div class="line">gitlab-rake gitlab:backup:create</div></pre></td></tr></table></figure></p>
+<p>在新机器上恢复数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gitlab-rake gitlab:backup:restore RAILS_ENV=production   BACKUP=1513135372_2017_12_13</div></pre></td></tr></table></figure></p>
+<p>如果新机器数据不全,可以把／var/opt/gitlab/git-data拷贝过去</p>
+<p>3.迁移遇到的问题</p>
+<ul>
+<li><p>在新机器执行gitlab-ctl reconfigure,查看进程ps -ef|grep nginx</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">root 11485 0.0 0.0 1836 608 ? Ss Mar18 0:02 runsvdir -P /opt/gitlab/service log: </div><div class="line">…..runsv nginx: warning: unable to open supervise/stat.new: </div><div class="line">file does not exist runsv nginx: warning: unable to open supervise/stat.new:</div><div class="line">file does not exist runsv nginx: warning: unable to open supervise/pid.new: </div><div class="line">file does not exist runsv nginx: warning: unable to open log/supervise/pid.new:</div><div class="line">file does not exist runsv nginx: warning: unable to open log/supervise/pid.new:</div><div class="line">file does not exist</div></pre></td></tr></table></figure>
+<p>  解决方法: 重启系统解决</p>
+</li>
+<li><p>查看nginx日志报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">2017/12/13 13:19:00 [crit] 2436#0: *2 connect() to unix:/var/opt/gitlab/gitlab-workhorse/socket failed (13: Permission denied) while connecting to upstream, client: 119.6.3.75, server: gitlab.weishao.com.cn, request: &quot;GET /index.html HTTP/1.1&quot;, upstream: &quot;http://unix:/var/opt/gitlab/gitlab-workhorse/socket:/index.html&quot;, host: &quot;59.110.114.10&quot;</div></pre></td></tr></table></figure>
+<p>  解决方法: 由于旧服务nginx使用git启动nginx,新服务器用nobody用户运行nginx,我们通过修改 /etc/gitlab/gitlab.rb文件解决</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">##! When bundled nginx is disabled we need to add the external webserver user to</div><div class="line">##! the GitLab webserver group.</div><div class="line">web_server[&apos;external_users&apos;] = [&apos;nobody&apos;]</div><div class="line">web_server[&apos;username&apos;] = &apos;nobody&apos;</div><div class="line">web_server[&apos;group&apos;] = &apos;nobody&apos;</div><div class="line">web_server[&apos;uid&apos;] = 99</div><div class="line">web_server[&apos;gid&apos;] = 99</div><div class="line">web_server[&apos;shell&apos;] = &apos;/bin/false&apos;</div><div class="line">web_server[&apos;home&apos;] = &apos;/var/opt/gitlab/nginx&apos;</div><div class="line"></div><div class="line">sudo gitlab-ctl reconfigure</div></pre></td></tr></table></figure>
+<p>  也可以将nginx运行账号添加到gitlab-www组中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo usermod -a -G gitlab-www nobody</div><div class="line">sudo service nginx restart</div></pre></td></tr></table></figure>
+<p>  但是执行sudo gitlab-ctl reconfigure后需要重新执行</p>
+</li>
+</ul>
+<p>ref<br><a href="http://blog.pzxbc.com/2016/03/22/gitlab-install-configure/" target="_blank" rel="external">Gitlab安装配置及使用</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;gitlab安装有三种方法: docker、yum 、源码,本文环境是yum安装方式&lt;br&gt;1.确认旧gitlab版本信息&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div 
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Deploy Elasticsearch</title>
@@ -372,31 +413,6 @@
     <summary type="html">
     
       &lt;h5 id=&quot;iota简介&quot;&gt;&lt;a href=&quot;#iota简介&quot; class=&quot;headerlink&quot; title=&quot;iota简介&quot;&gt;&lt;/a&gt;&lt;b&gt;iota简介&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;iota 是golang的常量计数器,只能在常量的表达式中使用.&lt;br&gt;iota在const关
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Go进阶05 fallthrough</title>
-    <link href="https://t1ger.github.io/2017/09/04/Go%E8%BF%9B%E9%98%B605-fallthrough/"/>
-    <id>https://t1ger.github.io/2017/09/04/Go进阶05-fallthrough/</id>
-    <published>2017-09-04T03:50:20.000Z</published>
-    <updated>2017-09-04T10:25:28.264Z</updated>
-    
-    <content type="html"><![CDATA[<h5 id="fallthrough用法"><a href="#fallthrough用法" class="headerlink" title="fallthrough用法"></a><b>fallthrough用法</b></h5><p>Go里边的switch默认每个case匹配成功后不会自动向下执行其他case,直接跳出switch,fallthrough强制执行后边的case代码,fallthrough不对下一条的case表达式进行判断<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    switch a:=10; &#123;</div><div class="line">    case a &gt;= 9:</div><div class="line">        fmt.Println(&quot;&gt;=9&quot;)</div><div class="line">        fallthrough</div><div class="line">    case a &gt;= 10: </div><div class="line">        fmt.Println(&quot;&gt;=10&quot;)</div><div class="line">        fallthrough</div><div class="line">    case a &gt;= 15:</div><div class="line">        fmt.Println(&quot;&gt;=15&quot;)</div><div class="line">        fallthrough</div><div class="line">    case a &gt;= 20:</div><div class="line">        fmt.Println(&quot;&gt;=20&quot;)</div><div class="line">        fallthrough</div><div class="line">    default:</div><div class="line">        fmt.Println(&quot;default&quot;)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">[tiger@bogon go]$ go run fallthrough.go </div><div class="line">&gt;=9</div><div class="line">&gt;=10</div><div class="line">&gt;=15</div><div class="line">&gt;=20</div><div class="line">default</div></pre></td></tr></table></figure></p>
-<p>fallthrough可不可以放到最后一个呢,我们在default里添加之后,我们运行一下看看</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[tiger@bogon go]$ go run fallthrough.go </div><div class="line"># command-line-arguments</div><div class="line">./fallthrough.go:21: cannot fallthrough final case in switch</div></pre></td></tr></table></figure>
-<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a><b>总结</b></h5><p>fallthrough:Go里面switch默认相当于每个case最后带有break，匹配成功后不会自动向下执行其他case，而是跳出整个switch, 但是可以使用fallthrough强制执行后面的case代码<br>fallthrough不能用在switch最后一个分支</p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h5 id=&quot;fallthrough用法&quot;&gt;&lt;a href=&quot;#fallthrough用法&quot; class=&quot;headerlink&quot; title=&quot;fallthrough用法&quot;&gt;&lt;/a&gt;&lt;b&gt;fallthrough用法&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;Go里边的switch默认每个case
     
     </summary>
     
