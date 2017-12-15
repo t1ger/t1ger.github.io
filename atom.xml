@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-12-13T08:35:53.640Z</updated>
+  <updated>2017-12-15T06:37:32.642Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,49 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>HDFS Short-Circuit Local Reads</title>
+    <link href="https://t1ger.github.io/2017/12/15/HDFS-Short-Circuit-Local-Reads/"/>
+    <id>https://t1ger.github.io/2017/12/15/HDFS-Short-Circuit-Local-Reads/</id>
+    <published>2017-12-15T02:14:40.000Z</published>
+    <updated>2017-12-15T06:37:32.642Z</updated>
+    
+    <content type="html"><![CDATA[<h5 id="Background"><a href="#Background" class="headerlink" title="Background"></a><b>Background</b></h5><p>In HDFS, reads normally go through the DataNode. Thus, when the client asks the DataNode to read a file, the DataNode reads that file off of the disk and sends the data to the client over a TCP socket. So-called “short-circuit” reads bypass the DataNode, allowing the client to read the file directly. Obviously, this is only possible in cases where the client is co-located with the data. Short-circuit reads provide a substantial performance boost to many applications</p>
+<h5 id="Setup"><a href="#Setup" class="headerlink" title="Setup"></a><b>Setup</b></h5><p>To configure short-circuit local reads, you will need to enable libhadoop.so. See <a href="https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/NativeLibraries.html" target="_blank" rel="external">Native Libraries</a> for details on enabling this library. if you don’t compile yourself, may be use complile binary version ,see <a href="http://dl.bintray.com/sequenceiq/sequenceiq-bin/" target="_blank" rel="external">here</a><br>Short-circuit reads make use of a UNIX domain socket. This is a special path in the filesystem that allows the client and the DataNodes to communicate. You will need to set a path to this socket. The DataNode needs to be able to create this path. On the other hand, it should not be possible for any user except the HDFS user or root to create this path. For this reason, paths under /var/run or /var/lib are often used.</p>
+<p>The client and the DataNode exchange information via a shared memory segment on /dev/shm.</p>
+<p>Short-circuit local reads need to be configured on both the DataNode and the client.</p>
+<p>Java can not use Unix Domain Socket directly，so you need install Hadoop native package libhadoop.so。if you use Pivotal HD，CDH and so on, native package will be install at you install hadoop package. you can use command to check native package like this</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ hadoop checknative</div><div class="line">hadoop: true /usr/lib/hadoop/lib/native/libhadoop.so.1.0.0</div><div class="line">zlib:   true /lib64/libz.so.1</div><div class="line">snappy: true /usr/lib64/libsnappy.so.1</div><div class="line">lz4:    true revision:99</div><div class="line">bzip2:  true /lib64/libbz2.so.1</div></pre></td></tr></table></figure>
+<p>#打开short-circuit local reads 功能</p>
+<p>dfs.client.read.shortcircuit:  false </p>
+<p>#可选。该参数是一个指向UNIX域套接字的路径，用于DataNode和本地HDFS客户端通信。如果在该路径中出现了字符串”_PORT”，会被替换成DataNode的TCP端口。</p>
+<p>dfs.domain.socket.path: </p>
+<p>#设置了该参数，short-circuit local reads功能将跳过checksums校验。通常不推荐这么做，但是该参数对于特殊场合可能有用。如果你在HDFS之外自己做checksum校验，那么就该考虑设置该参数。</p>
+<p>dfs.client.read.shortcircuit.skip.checksum: false</p>
+<p>#DFSClient维护着一个用于保存最近已打开的文件描述符的缓存。该参数控制着此缓存的容量。增大该缓存的容量就可以使用更多文件描述符，但是，在涉及大量seek操作的负载上可能带来更好的性能</p>
+<p>dfs.client.read.shortcircuit.streams.cache.size: 256</p>
+<p>#该参数控制着文件描述符因为长期不活跃而被关闭之前需要在客户端缓存上下文中驻留的最小时间</p>
+<p>dfs.client.read.shortcircuit.streams.cache.expiry.ms: 300000</p>
+<h5 id="Example-Configuration"><a href="#Example-Configuration" class="headerlink" title="Example Configuration"></a><b>Example Configuration</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;configuration&gt;</div><div class="line">  &lt;property&gt;</div><div class="line">    &lt;name&gt;dfs.client.read.shortcircuit&lt;/name&gt;</div><div class="line">    &lt;value&gt;true&lt;/value&gt;</div><div class="line">  &lt;/property&gt;</div><div class="line">  &lt;property&gt;</div><div class="line">    &lt;name&gt;dfs.domain.socket.path&lt;/name&gt;</div><div class="line">    &lt;value&gt;/var/lib/hadoop-hdfs/dn_socket&lt;/value&gt;</div><div class="line">  &lt;/property&gt;</div><div class="line">&lt;/configuration&gt;</div></pre></td></tr></table></figure>
+<h5 id="Legacy-HDFS-Short-Circuit-Local-Reads"><a href="#Legacy-HDFS-Short-Circuit-Local-Reads" class="headerlink" title="Legacy HDFS Short-Circuit Local Reads"></a><b>Legacy HDFS Short-Circuit Local Reads</b></h5><p>Legacy implementation of short-circuit local reads on which the clients directly open the HDFS block files is still available for platforms other than the Linux. Setting the value of dfs.client.use.legacy.blockreader.local in addition to dfs.client.read.shortcircuit to true enables this feature.</p>
+<p>You also need to set the value of dfs.datanode.data.dir.perm to 750 instead of the default 700 and chmod/chown the directory tree under dfs.datanode.data.dir as readable to the client and the DataNode. You must take caution because this means that the client can read all of the block files bypassing HDFS permission.</p>
+<p>Because Legacy short-circuit local reads is insecure, access to this feature is limited to the users listed in the value of dfs.block.local-path-access.user.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">&lt;configuration&gt;</div><div class="line">  &lt;property&gt;</div><div class="line">    &lt;name&gt;dfs.client.read.shortcircuit&lt;/name&gt;</div><div class="line">    &lt;value&gt;true&lt;/value&gt;</div><div class="line">  &lt;/property&gt;</div><div class="line">  &lt;property&gt;</div><div class="line">    &lt;name&gt;dfs.client.use.legacy.blockreader.local&lt;/name&gt;</div><div class="line">    &lt;value&gt;true&lt;/value&gt;</div><div class="line">  &lt;/property&gt;</div><div class="line">  &lt;property&gt;</div><div class="line">    &lt;name&gt;dfs.datanode.data.dir.perm&lt;/name&gt;</div><div class="line">    &lt;value&gt;750&lt;/value&gt;</div><div class="line">  &lt;/property&gt;</div><div class="line">  &lt;property&gt;</div><div class="line">    &lt;name&gt;dfs.block.local-path-access.user&lt;/name&gt;</div><div class="line">    &lt;value&gt;foo,bar&lt;/value&gt;</div><div class="line">  &lt;/property&gt;</div><div class="line">&lt;/configuration&gt;</div></pre></td></tr></table></figure>
+<p>ref<br><a href="https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/ShortCircuitLocalReads.html" target="_blank" rel="external">Short-Circuit Local Reads</a><br><a href="https://www.zybuluo.com/jewes/note/37713" target="_blank" rel="external">详解HDFS Short Circuit Local Reads</a><br><a href="http://blog.csdn.net/jack85986370/article/details/51902871" target="_blank" rel="external">Unable to load native-hadoop library for your platform</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h5 id=&quot;Background&quot;&gt;&lt;a href=&quot;#Background&quot; class=&quot;headerlink&quot; title=&quot;Background&quot;&gt;&lt;/a&gt;&lt;b&gt;Background&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;In HDFS, reads normally go thro
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>how to migrate Gitlab to a new server</title>
@@ -376,43 +419,6 @@
       &lt;h5 id=&quot;概念&quot;&gt;&lt;a href=&quot;#概念&quot; class=&quot;headerlink&quot; title=&quot;概念&quot;&gt;&lt;/a&gt;&lt;b&gt;概念&lt;/b&gt;&lt;/h5&gt;&lt;ul&gt;
 &lt;li&gt;defer&lt;br&gt;在函数返回前执行一些操作,表达式通常用来处理一些清理和释放资源的操作&lt;/li&gt;
 &lt;li&gt;pani
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Go进阶06 iota</title>
-    <link href="https://t1ger.github.io/2017/09/04/Go%E8%BF%9B%E9%98%B606-iota/"/>
-    <id>https://t1ger.github.io/2017/09/04/Go进阶06-iota/</id>
-    <published>2017-09-04T04:45:34.000Z</published>
-    <updated>2017-09-04T08:22:30.391Z</updated>
-    
-    <content type="html"><![CDATA[<h5 id="iota简介"><a href="#iota简介" class="headerlink" title="iota简介"></a><b>iota简介</b></h5><p>iota 是golang的常量计数器,只能在常量的表达式中使用.<br>iota在const关键字出现时将被重置为0,const中每新增一行将使iota计数一次<br>iota可以简化定义,经常用在枚举的时候</p>
-<h5 id="常见用法"><a href="#常见用法" class="headerlink" title="常见用法"></a><b>常见用法</b></h5><ul>
-<li>iota只能在常量表达式中使用</li>
-<li><p>每次const出现时,iota会初始化为0</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">const a = iota  // a = 0</div><div class="line">const (</div><div class="line">    b = iota    // b = 0 </div><div class="line">    c 		// c = 1</div><div class="line">)</div></pre></td></tr></table></figure>
-</li>
-<li><p>自定义类型</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">const (</div><div class="line">    red = iota</div><div class="line">    blue</div><div class="line">    green</div><div class="line">)</div></pre></td></tr></table></figure>
-</li>
-<li><p>可跳过的值</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">const (</div><div class="line">    red = iota  // 0</div><div class="line">    blue        // 1 </div><div class="line">    green       // 2</div><div class="line">    - </div><div class="line">    -</div><div class="line">    yellow      // 5</div><div class="line">    black       // 6</div><div class="line">)</div></pre></td></tr></table></figure>
-</li>
-<li><p>定义数量级</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">type ByteSize float64</div><div class="line">const(</div><div class="line">    _     = iota                 // ignore first value by assigning to blank identifier</div><div class="line">    KB ByteSize = 1 &lt;&lt; (10*iota) // 1&lt;&lt;(10*1)</div><div class="line">    MB                           // 1&lt;&lt;(10*2)</div><div class="line">    GB                           // 1&lt;&lt;(10*3)</div><div class="line">    TB                           // 1&lt;&lt;(10*4)</div><div class="line">    PB                           // 1&lt;&lt;(10*5)</div><div class="line">    EB                           // 1&lt;&lt;(10*6)</div><div class="line">    ZB                           // 1&lt;&lt;(10*7)</div><div class="line">    YB                           // 1&lt;&lt;(10*8)</div><div class="line">)</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h5 id=&quot;iota简介&quot;&gt;&lt;a href=&quot;#iota简介&quot; class=&quot;headerlink&quot; title=&quot;iota简介&quot;&gt;&lt;/a&gt;&lt;b&gt;iota简介&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;iota 是golang的常量计数器,只能在常量的表达式中使用.&lt;br&gt;iota在const关
     
     </summary>
     
