@@ -2,16 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://t1ger.github.io/2017/12/20/Why-Datanode-is-Denied-Communication-With-Namenode/</loc>
+    <loc>https://t1ger.github.io/2017/12/15/HDFS-Short-Circuit-Local-Reads/</loc>
     
-    <lastmod>2017-12-20T07:05:35.756Z</lastmod>
+    <lastmod>2017-12-25T14:37:46.017Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://t1ger.github.io/2017/12/15/HDFS-Short-Circuit-Local-Reads/</loc>
+    <loc>https://t1ger.github.io/2017/12/20/Why-Datanode-is-Denied-Communication-With-Namenode/</loc>
     
-    <lastmod>2017-12-15T06:37:32.642Z</lastmod>
+    <lastmod>2017-12-20T07:54:06.282Z</lastmod>
     
   </url>
   
