@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2017-12-20T07:54:06.282Z</updated>
+  <updated>2018-01-19T09:20:11.288Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,67 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>浅谈Redis Cluster</title>
+    <link href="https://t1ger.github.io/2018/01/19/%E6%B5%85%E8%B0%88Redis-Cluster/"/>
+    <id>https://t1ger.github.io/2018/01/19/浅谈Redis-Cluster/</id>
+    <published>2018-01-19T07:10:04.000Z</published>
+    <updated>2018-01-19T09:20:11.288Z</updated>
+    
+    <content type="html"><![CDATA[<h5 id="redis-集群方案概述"><a href="#redis-集群方案概述" class="headerlink" title="redis 集群方案概述"></a><b>redis 集群方案概述</b></h5><p>自从redis3.0起，redis官方就推出了redis cluster,是一个可以在多个 Redis 节点之间进行数据共享的设施.Redis 集群不支持那些需要同时处理多个键的 Redis 命令， 因为执行这些命令需要在多个 Redis 节点之间移动数据， 并且在高负载的情况下， 这些命令将降低 Redis 集群的性能， 并导致不可预测的行为</p>
+<p>当然，也有一些开源的解决方案来提供redis的高可用性，主要有</p>
+<ul>
+<li><p>Twitter的Redis/Memcached代理服务Twemproxy<br>Twemproxy是一个轻量级的Redis代理服务器，它通过引入一个代理层，将应用程序后端的多台Redis实例进行统一管理，使应用程序只需要在Twemproxy上进行操作，而不用关心后面具体有多少个真实的Redis或Memcached实例，从而实现了基于Redis和Memcached的集群服务。当某个节点宕掉时，Twemproxy可以自动将它从集群中剔除，而当它恢复服务时，Twemproxy也会自动连接。由于是代理，所以Twemproxy会有微小的性能损失。根据 Redis作者的测试结果，在大多数情况下，Twemproxy的性能相当不错，同直接操作Redis相比，最多只有20%的性能损失</p>
+</li>
+<li><p>豌豆荚的 Redis 集群解决方案Codis<br>它由 codis-server、codis-proxy、codis Dashboard、codis Admin、Codis FE、Storage组成,<br>基于proxy的codis，客户端对路由表变化无感知。客户端需要从codis dashhoard调用list proxy命令获取所有proxy列表，并根据自身的轮询策略决定访问哪个proxy节点以实现负载均衡，codis release 版本为 codis-3.2，codis-server 基于 redis-3.2.8,同时实现 select 命令,支持多db, 详细介绍参考<a href="https://github.com/CodisLabs/codis/blob/release3.2/doc/tutorial_zh.md" target="_blank" rel="external">这里</a></p>
+</li>
+<li><p>redis_sentinel<br>Redis-Sentinel是Redis官方推荐的高可用性(HA)解决方案，当用Redis做Master-slave的高可用方案时，假如master宕机了，Redis本身(包括它的很多客户端)都没有实现自动进行主备切换，而Redis-sentinel本身也是一个独立运行的进程，它能监控多个master-slave集群，发现master宕机后能进行自动切换</p>
+</li>
+<li><p>redis+keepalive<br>通过keepalived实现redis的高可用。keepalived利用shell脚本，定期检测redis服务是否正常。当redis服务异常时，利用虚拟IP的漂移实现故障切换</p>
+</li>
+</ul>
+<p>如果你使用的是云平台，会提供类似的产品，有兴趣的请参考<a href="https://yq.aliyun.com/articles/68593" target="_blank" rel="external">这里</a></p>
+<h5 id="redis-集群方案对比"><a href="#redis-集群方案对比" class="headerlink" title="redis 集群方案对比"></a><b>redis 集群方案对比</b></h5><p>redis_sentinel 和 redis+keepalive  两个方案都是基于redis主从实现，都不是基于分布式的解决方案，前者可以一主多从，后者基本是一主一从。<br>如果redis写入压力比较大，在碰到网络问题导致闪断切换，redis_sentinel切换需要1-2s的时间，则客户端有可能因此约10w记录无法写入，需要客户端在编码中有异常处理机制，在返回失败是尝试延时重写. keepalive则切换较快，但由于只有一主一从，在读写压力比较大时依然无法满足性能要求，并且在master出现故障，需要人工干预才能重新形成新的主从关系。</p>
+<p>codis和twemproxy都是比较稳定的生产集群解决方案，随着官方redis4.x的推出，官方的redis cluster集群也是一个不错的选择方案</p>
+<h5 id="redis-集群方案安装"><a href="#redis-集群方案安装" class="headerlink" title="redis 集群方案安装"></a><b>redis 集群方案安装</b></h5><p>这样主要讲解redis cluster集群的部署，基于redis4.0.6版本。</p>
+<ul>
+<li><p>redis_sentinel<br>redis_sentinel 的部署配置参考<a href="https://github.com/alisaifee/limits/tree/master/tests/redis-configurations/sentinel" target="_blank" rel="external">这里</a></p>
+</li>
+<li><p>redis cluster<br>集群部署官方推荐3主3从,这里用两台机器模拟 172.168.10.44 建立3个master，172.168.10.45建立3个slave</p>
+</li>
+</ul>
+<ol>
+<li><p>install</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">cd /usr/local/src</div><div class="line">wget http://download.redis.io/releases/redis-4.0.6.tar.gz</div><div class="line">tar zxf redis-4.0.6.tar.gz</div><div class="line">cd redis-4.0.6</div><div class="line">make</div></pre></td></tr></table></figure>
+</li>
+<li><p>config<br>redis cluster 的部署配置参考<a href="https://github.com/alisaifee/limits/tree/master/tests/redis-configurations/cluster" target="_blank" rel="external">这里</a></p>
+</li>
+<li><p>create cluster</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"># yum install ruby ruby-devel rubygems  -y</div><div class="line"># gem install redis</div><div class="line">#注意master和slave的顺序是一一对应的</div><div class="line"># redis-trib.rb create  --replicas  1 192.168.10.44:7000 192.168.10.44:7001  192.168.10.44:7002   192.168.10.45:7003  192.168.10.45:7004  192.168.10.45:7005</div><div class="line">yes</div><div class="line"></div><div class="line"># redis-cli -h 192.168.10.45 -c -p 7005</div><div class="line"></div><div class="line"># 查看集群节点情况</div><div class="line">192.168.10.45:7005&gt; cluster info</div></pre></td></tr></table></figure>
+</li>
+<li><p>新添加redis 主节点</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"># 查看集群节点槽占用情况</div><div class="line">192.168.10.45:7005&gt;  cluster nodes</div><div class="line"></div><div class="line"># 添加7006节点作为新节点</div><div class="line"># ./redis-trib.rb add-node 192.168.10.44:7006 192.168.10.44:7000</div><div class="line">add-node是加入指令，192.168.10.44:7006 表示新加入的节点，</div><div class="line">192.168.10.45:7000 表示加入的集群的一个节点，用来辨识是哪个集群，理论上哪个都可以</div><div class="line"></div><div class="line"># 给刚添加的7006结点分配槽</div><div class="line">./redis-trib.rb reshard 192.168.10.44:7006</div><div class="line">## 第二步：输入要分配的槽数量（输入：500，表示要分配500个槽）</div><div class="line">How many slots do you want to move (from 1 to 16384)? 500</div><div class="line"></div><div class="line">## 第三步：输入接收槽的结点id 7006的ID是：065c9c2223949e77f407d20aefa6408aa1bcd181</div><div class="line">What is the receiving node ID? 065c9c2223949e77f407d20aefa6408aa1bcd181</div><div class="line">## 第四步：输入源结点id（槽点会从源节点中拿，输入all从所有源节点中获取槽，输入done取消分配）</div><div class="line">Please enter all the source node IDs.</div><div class="line">  Type &apos;all&apos; to use all the nodes as source nodes for the hash slots.</div><div class="line">  Type &apos;done&apos; once you entered all the source nodes IDs.</div><div class="line">Source node #1:all</div><div class="line">## 输入yes开始移动槽到目标结点id</div><div class="line">Do you want to proceed with the proposed reshard plan (yes/no)? yes</div><div class="line"># 查看集群中槽占用情况</div><div class="line">192.168.10.44:7006&gt; cluster nodes</div></pre></td></tr></table></figure>
+</li>
+<li><p>添加从节点</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">./redis-trib.rb add-node --slave 192.168.10.45:7007 192.168.10.45:7000</div><div class="line">add-node的时候加上--slave表示是加入到从节点中，但是这样加，是随机的。</div><div class="line">这里的命令行完全像我们在添加一个新主服务器时使用的一样，</div><div class="line">所以我们没有指定要给哪个主服 务器添加副本。</div><div class="line">这种情况下，redis-trib 会将7006作为一个具有较少副本的随机的主服务器的副本</div><div class="line"></div><div class="line">我如果想指定一个主节点行不行？当然可以。我们再建一个7008节点。</div><div class="line">./redis-trib.rb add-node –slave –master-id 主节点id 新节点的ip和端口 旧节点ip和端口</div><div class="line"></div><div class="line">./redis-trib.rb add-node --slave --master-id 065c9c2223949e77f407d20aefa6408aa1bcd181 192.168.10.45:7008 192.168.10.44:7000</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h5 id="后记"><a href="#后记" class="headerlink" title="后记"></a><b>后记</b></h5><p>这里推荐个redis集群的运维工具 CacheCloud，有兴趣的可以参考<a href="https://github.com/sohutv/cachecloud" target="_blank" rel="external">这里</a><br>一般影响cluster failover失败有：<br>(1)从节点超时过长,查看cluster-node-timeout和cluster-slave-validity-factor相关参数<br>(2)从节点的无法获取到集群中其他主节点的投票<br>(3)参与领导者选举的主节点不够一半以上<br>(3)从节点数达不到cluster-migration-barrier数量。<br>另外，需要注意的是没有负责任何槽的主节点没有投票权</p>
+<p>ref<br><a href="https://redis.io/topics/cluster-tutorial" target="_blank" rel="external">Redis cluster tutorial</a><br><a href="http://magic_duck.oschina.io/2017/09/07/redis4.4.0_primary_05/" target="_blank" rel="external">Redis集群</a><br><a href="https://www.zybuluo.com/phper/note/195558" target="_blank" rel="external">Redis集群研究和实践（基于redis 3.0.5）</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h5 id=&quot;redis-集群方案概述&quot;&gt;&lt;a href=&quot;#redis-集群方案概述&quot; class=&quot;headerlink&quot; title=&quot;redis 集群方案概述&quot;&gt;&lt;/a&gt;&lt;b&gt;redis 集群方案概述&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;自从redis3.0起，redis官方就推出了
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Why Datanode is Denied Communication With Namenode</title>
@@ -368,62 +429,6 @@
     <summary type="html">
     
       &lt;p&gt;我将从正则表达式开始讲Go的标准库。正则表达式是文字处理中常用的工具，而且不需要额外的系统知识或经验。我们会把系统相关的包放在后面讲解。&lt;br&gt;正则表达式(regular expression)主要功能是从字符串(string)中通过特定的模式(pattern)，搜索想要找
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>go标准库--走马观花</title>
-    <link href="https://t1ger.github.io/2017/09/07/go%E6%A0%87%E5%87%86%E5%BA%93-%E8%B5%B0%E9%A9%AC%E8%A7%82%E8%8A%B1/"/>
-    <id>https://t1ger.github.io/2017/09/07/go标准库-走马观花/</id>
-    <published>2017-09-07T04:20:13.000Z</published>
-    <updated>2017-09-07T05:45:48.602Z</updated>
-    
-    <content type="html"><![CDATA[<p>Go有一套很有用的标准库(standard library)。它是Go的一个组成部分。这些标准库是Go为你准备好的利器，可以让编程事半功倍。</p>
-<p>我将根据我个人的使用经验中，挑选出标准库三个方面的包(package)介绍：</p>
-<ul>
-<li>go增强</li>
-<li>系统互动</li>
-<li>网络</li>
-</ul>
-<h5 id="go增强"><a href="#go增强" class="headerlink" title="go增强"></a><b>go增强</b></h5><p>go自身的已有的一些功能可以随着标准库的使用而得到增强</p>
-<ul>
-<li><p>文字处理<br>Go的strings包提供了对字符串进行处理的方法.更进一步，通过标准库中的regexp包,Go可以用正则表达式(regular expression)来处理字符串。<br>正则表达式是一个字符串模板。Go可以从字符中搜查符合该模板的部分，或者对这一部分替换成其它内容。比如你可以搜索一个文本中所有的数字。正则表达式的关键在于根据自己的需要构成模板。<br>此外，Go标准库还为字符串的输出提供更加丰富的格式，比如: strconv,bytes,unicode</p>
-</li>
-<li><p>数据结构与算法<br>数据结构是数据组织和存储的逻辑形式,为了有效的使用资源,在时间和空间上有效的算法可以帮助我们,Go标准库提供了sort,inedex/suffixary,container<br>sort 包包含基本的排序方法，支持切片数据排序以及用户自定义数据集合排序<br>index/suffixary 包实现了后缀数组相关算法以支持许多常见的字符串操作<br>container 包提供了对heap、list和ring这3种数据结构的底层支持。任何实现了相应接口的数据结构都可以调用该结构的方法</p>
-</li>
-<li><p>日期和时间<br>日期和时间的管理并不复杂，但容易犯错。经常会遇到日期和时间相关的操作,比如：格式化日期和时间，解析一个日期时间字符串等。Go语言通过标准库 time 包处理日期和时间相关的问题<br>time包提供了用于测量时间、解析和格式化日期，日期/时间以及时间值的函数。time.After()函数可用于在特定纳秒后，向通道 (channel)发送当前时间。time.Tick()和time.NewTicker()函数可用于提供一个通道，它会返回在特定时间间隔后将 ‘tick’发送到该通道上。time.Time结构具有一些方法，可提供当前时间，将data/time格式化为一个字符串以及解析data /time</p>
-</li>
-<li><p>数学运算<br>math/big包提供了无限大(实际受限于内存)整型数(big.Int)以及有理数(big.Rat)。math包提供了所有标准数学函数(基于float64)以及一些标准常量。math/cmplx包提供一些用于复数计算的标准函数(基于complex128)<br>此外,math/rand包提供许多有用的伪随机数生成函数，包括返回一个随机整型数的rand.Int()以及rand.Intn(n)，后者返回[0,n]范围内的一个随机整数。crypto/rand包中有一个函数，可用于产生加密的强伪随机数字</p>
-</li>
-<li><p>存储<br>在数据交换方面，有很多成熟的协议可以使用，常用的有：JSON、XML等,Go 语言提供了解析它们的标准库；同时，为了方便 Go 程序直接数据交换，Go 专门提供了 gob 这种交换协议<br>此外，标准库中还支持基本的数据库功能(database/sql包),csv格式的文件也有相应的处理包</p>
-</li>
-<li><p>数据压缩与归档<br>Go 标准库实现了一些最流行的压缩标准。zlib 和 gzip 提供了 GNU zip 库，bzip2 用于读写 bzip2 格式<br>标准库提供了 LZW 压缩算法（串表压缩算法）的实现，该算法常用的文件格式：GIF 和 PDF。<br>标准库还提供一些包管理归档(archive)格式,archive/tar 读写 UNIX 磁带归档格式,archive/zip 根据 zip 格式来处理归档</p>
-</li>
-</ul>
-<h5 id="系统互动"><a href="#系统互动" class="headerlink" title="系统互动"></a><b>系统互动</b></h5><ul>
-<li><p>操作系统<br>Go 的标准库提供了很多工具，可以处理文件系统中的文件、构造和解析文件名等,path包提供的函数用于操作Unix样式路径<br>runtime包包含了许多函数和类型用于访问Go的运行时系统</p>
-</li>
-<li><p>进程与线程<br>在Go中提供os 包及其子包 os/exec 提供了创建进程的方法,同时,我们知道在 Linux 中，通过系统调用 clone() 来实现线程的,在 Go 中，通过 clone() 系统调用来创建线程</p>
-</li>
-</ul>
-<h5 id="网络"><a href="#网络" class="headerlink" title="网络"></a><b>网络</b></h5><ul>
-<li>网络包<br>Go标准库中有许多包用于支持网络以及相关方面的编程。net包提供的函数和类型可用于使用Unix域以及网络socket通信、TCP/IP和UDP编程<br>net/http包充分利用了net包，并提供了解析HTTP请求和应答的功能，并提供了一个基本的HTTP客户端。net/http包也包含一个易于扩展的HTTP server。net/url包提供了URL解析和查询转义<br>标准库中还包含其他一些其他高层次的网络包。一个是net/rpc(远程过程调用)包，它允许一个服务端提供导出可被客户端调用的方法的对象。另外一个是net/smtp(简单邮件传输协议)包，可用于发送email</li>
-</ul>
-<p>以上的介绍比较粗糙，只希望能为大家提供一个了解标准库的入口。欢迎大家一起分享标准库的使用经验。</p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;Go有一套很有用的标准库(standard library)。它是Go的一个组成部分。这些标准库是Go为你准备好的利器，可以让编程事半功倍。&lt;/p&gt;
-&lt;p&gt;我将根据我个人的使用经验中，挑选出标准库三个方面的包(package)介绍：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;go增强&lt;/l
     
     </summary>
     
