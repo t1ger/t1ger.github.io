@@ -4,6 +4,21 @@
 
     
   <url>
+    <loc>https://t1ger.github.io/2018/01/23/%E9%AB%98%E5%8F%AF%E7%94%A8%E7%9A%84MongoDB%E9%9B%86%E7%BE%A4/</loc>
+    <lastmod>2018-01-25T04:06:31.446Z</lastmod>
+    <data>
+        <display>
+        <title>高可用的MongoDB集群</title>
+        <pubTime>2018-01-23T01:53:10.000Z</pubTime>
+        
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://t1ger.github.io/2018/01/19/%E6%B5%85%E8%B0%88Redis-Cluster/</loc>
     <lastmod>2018-01-19T09:20:11.288Z</lastmod>
     <data>
@@ -837,9 +852,9 @@
         <title>ansible使用指北(一)</title>
         <pubTime>2016-12-13T09:01:14.000Z</pubTime>
         
-        <tag>ansible</tag>
-         
         <tag>linux</tag>
+         
+        <tag>ansible</tag>
          
          
            
