@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2018-02-05T06:47:03.527Z</updated>
+  <updated>2018-04-10T10:16:03.106Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,126 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>redis性能分析</title>
+    <link href="https://t1ger.github.io/2018/04/10/redis%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/"/>
+    <id>https://t1ger.github.io/2018/04/10/redis性能分析/</id>
+    <published>2018-04-10T10:11:17.000Z</published>
+    <updated>2018-04-10T10:16:03.106Z</updated>
+    
+    <content type="html"><![CDATA[<h5 id="前言"><a href="#前言" class="headerlink" title="前言"></a><b>前言</b></h5><p>redis性能分析常见的有以下几个方面：</p>
+<ul>
+<li>redis slowlog分析</li>
+<li>SCAN，SSCAN，HSCAN和ZSCAN命令的使用方法</li>
+<li>redis是否受到系统使用swap</li>
+<li>redis watchdog定位延时</li>
+<li>关于redis的延时监控框架,可参考<a href="https://redis.io/topics/latency-monitor" target="_blank" rel="external">官网资料</a><br>下面我们分别从这几个方面来介绍</li>
+</ul>
+<h5 id="redis-slowlog分析"><a href="#redis-slowlog分析" class="headerlink" title="redis slowlog分析"></a><b>redis slowlog分析</b></h5><ol>
+<li><p>慢查询设置<br>在Redis中有两种修改配置的方法,一种是修改配置文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">slowlog-log-slower-than 10000  #查询时间超过10ms的会被记录  </div><div class="line">slowlog-max-len 128            # 最多记录128个慢查询</div></pre></td></tr></table></figure>
+<p> 另一种是使用config set命令动态修改.例如下面使用config set命令将slowlog-log-slower-than设置为20000微妙.slowlog-max-len设置为1024</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">config set slowlog-log-slower-than 20000</div><div class="line">config set slowlog-max-len 1024</div><div class="line">config rewrite</div></pre></td></tr></table></figure>
+<p> 如果需要将Redis将配置持久化到本地配置文件,要执行config rewrite命令,如果slowlog-log-slower-than=0会记录所有命令,slowlog-log-slower-than&lt;0对于任何命令都不会进行记录</p>
+</li>
+<li><p>获取慢查询日志<br>slowlog get [n]</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">127.0.0.1:6379&gt; slowlog get 15</div><div class="line"> 1) 1) (integer) 79674  #slowlog的唯一编号 </div><div class="line">    2) (integer) 1523350838 #此次slowlog事件的发生时间  </div><div class="line">    3) (integer) 2987577    #耗时,以微秒为单位</div><div class="line">    4) 1) &quot;KEYS&quot;</div><div class="line">       2) &quot;mid_cache_app_list_*&quot;</div></pre></td></tr></table></figure>
+</li>
+<li><p>获取慢查询日志列表当前长度</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">127.0.0.1:6379&gt; slowlog len</div><div class="line">(integer) 128</div></pre></td></tr></table></figure>
+</li>
+<li><p>慢查询日志重置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">slowlog reset</div></pre></td></tr></table></figure>
+</li>
+<li><p>建议：<br>slowlog-max-len 建议线上设置为1000以上<br>slowlog-log-slower-than对高流量场景应该设置在1毫秒以上<br>慢查询只记录命令的执行时间,并不包括命令排队和网络传输时间.因此客户端执行命令的时间会大于命令的实际执行时间.因为命令执行排队机制,慢查询会导致其他命令级联阻塞,因此客户端出现请求超时时,需要检查该时间点是否有对应的慢查询,从而分析是否为慢查询导致的命令级联阻塞.</p>
+</li>
+</ol>
+<h5 id="SCAN，SSCAN，HSCAN和ZSCAN命令的使用方法"><a href="#SCAN，SSCAN，HSCAN和ZSCAN命令的使用方法" class="headerlink" title="SCAN，SSCAN，HSCAN和ZSCAN命令的使用方法"></a><b>SCAN，SSCAN，HSCAN和ZSCAN命令的使用方法</b></h5><ol>
+<li><p>SCAN是基于游标的迭代器。每次调用命令时，服务器返回一个更新的游标，用户需要在下一次调用中用作游标参数。当游标设置为0时，迭代开始，并且当服务器返回的游标为0时终止迭代<br>开始游标值为0的迭代，并调用SCAN，直到返回的游标再次为0，称为完全迭代</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">127.0.0.1:6379&gt; scan 0  </div><div class="line"></div><div class="line">127.0.0.1:6379&gt; scan 0 count 20 //指定输出的数量</div><div class="line">127.0.0.1:6379&gt; scan 0 match *mid_sent*   //类似于keys命令按模式匹配</div></pre></td></tr></table></figure>
+</li>
+<li><p>sscan查询sets集合的方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">redis 127.0.0.1:6379&gt; sadd setone 1 2 3 foo foobar feelsgood  </div><div class="line">(integer) 6  </div><div class="line">redis 127.0.0.1:6379&gt; sscan setone 0 match f*  </div><div class="line">1) &quot;0&quot;  </div><div class="line">2) 1) &quot;foo&quot;  </div><div class="line">   2) &quot;feelsgood&quot;  </div><div class="line">   3) &quot;foobar&quot;</div></pre></td></tr></table></figure>
+</li>
+<li><p>hscan查询hash集合的方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">redis 127.0.0.1:6379&gt; hmset hash name Tom age 35  </div><div class="line">OK  </div><div class="line">redis 127.0.0.1:6379&gt; hscan hash 0  </div><div class="line">1) &quot;0&quot;  </div><div class="line">2) 1) &quot;name&quot;  </div><div class="line">   2) &quot;Tom&quot;  </div><div class="line">   3) &quot;age&quot;  </div><div class="line">   4) &quot;35&quot;</div></pre></td></tr></table></figure>
+</li>
+<li><p>Linux内核启用了透明巨页功能时，Redis在使用fork调用之后会产生大的延迟代价，以便在磁盘进行数据持久化</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled</div></pre></td></tr></table></figure>
+<p> 需重启redis才能生效</p>
+</li>
+</ol>
+<h5 id="redis是否受到系统使用swap"><a href="#redis是否受到系统使用swap" class="headerlink" title="redis是否受到系统使用swap"></a><b>redis是否受到系统使用swap</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">查找redis进程id：  </div><div class="line">redis-cli -p 6319 info|grep process_id  </div><div class="line">process_id:9213  </div><div class="line">查看redis进程的内存使用信息：  </div><div class="line">cd /proc/9213 </div><div class="line">查看该进程使用swap分区的统计信息，以不使用或只有少量的4kB为佳：  </div><div class="line">cat smaps | grep &apos;Swap:&apos;  </div><div class="line">同时打印出内存映射和swap使用信息：查看那些较大的内存消耗是否引发了大的swap使用  </div><div class="line">cat smaps | egrep &apos;^(Swap:Size)&apos;</div></pre></td></tr></table></figure>
+<h5 id="redis-watchdog定位延时"><a href="#redis-watchdog定位延时" class="headerlink" title="redis watchdog定位延时"></a><b>redis watchdog定位延时</b></h5><p>注意： 实验功能，请确保redis数据已备份,会对redis服务性能产生影响<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Redis software watchdog  </div><div class="line">该功能只能动态启用，使用以下命令：  </div><div class="line">CONFIG SET watchdog-period 500  </div><div class="line">注：redis会开始频繁监控自身的延时问题，并把问题输出到日志文件中去。  </div><div class="line">  </div><div class="line">关闭watchdog：  </div><div class="line">CONFIG SET watchdog-period 0</div></pre></td></tr></table></figure></p>
+<h5 id="Redis-latency-monitoring-framework"><a href="#Redis-latency-monitoring-framework" class="headerlink" title="Redis latency monitoring framework"></a><b>Redis latency monitoring framework</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">CONFIG SET latency-monitor-threshold 100</div></pre></td></tr></table></figure>
+<p>默认情况下，阈值设置为0，即禁用redis监控。实际上启用该监控功能，对redis所增加的成本很少.</p>
+<p>LATENCY命令的使用方法</p>
+<ol>
+<li><p>查看最新的延时事件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">127.0.0.1:6379&gt; latency latest  </div><div class="line">1) 1) &quot;command&quot;     #event name  </div><div class="line">   2) (integer) 1480865648     #发生时间  </div><div class="line">   3) (integer) 207     #耗时，毫秒  </div><div class="line">   4) (integer) 239     #从redis启动或上次latency reset以来，这种事件的最大延时记录</div></pre></td></tr></table></figure>
+</li>
+<li><p>查看延时事件的历史信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">127.0.0.1:6379&gt; latency history command  </div><div class="line">  1) 1) (integer) 1480865710  </div><div class="line">     2) (integer) 207  </div><div class="line">  2) 1) (integer) 1480865711  </div><div class="line">     2) (integer) 217</div></pre></td></tr></table></figure>
+</li>
+<li><p>LATENCY DOCTOR<br>延时事件统计信息的智能分析与建议</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">127.0.0.1:6379&gt; latency doctor  </div><div class="line">Dave, I have observed latency spikes in this Redis instance.  </div><div class="line">You don&apos;t mind talking about it, do you Dave?  </div><div class="line">1. command: 5 latency spikes (average 300ms, mean deviation 120ms,  </div><div class="line">  period 73.40 sec). Worst all time event 500ms.  </div><div class="line">I have a few advices for you:  </div><div class="line">- Your current Slow Log configuration only logs events that are  </div><div class="line">  slower than your configured latency monitor threshold. Please  </div><div class="line">  use &apos;CONFIG SET slowlog-log-slower-than 1000&apos;.  </div><div class="line">- Check your Slow Log to understand what are the commands you are  </div><div class="line">  running which are too slow to execute. Please check  </div><div class="line">  http://redis.io/commands/slowlog for more information.</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h5 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;&lt;b&gt;前言&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;redis性能分析常见的有以下几个方面：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;redis slowlog分析&lt;/li&gt;
+&lt;li&gt;SCAN
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>spark develop env on eclipse</title>
+    <link href="https://t1ger.github.io/2018/03/27/spark-develop-env-on-eclipse/"/>
+    <id>https://t1ger.github.io/2018/03/27/spark-develop-env-on-eclipse/</id>
+    <published>2018-03-27T07:51:04.000Z</published>
+    <updated>2018-03-27T07:24:23.156Z</updated>
+    
+    <content type="html"><![CDATA[<h5 id="开发准备"><a href="#开发准备" class="headerlink" title="开发准备"></a><b>开发准备</b></h5><p>　　jdk1.8.45<br>　　spark-2.1.1-bin-hadoop2.7<br>　　CentOS系统<br>　　spark安装环境<br>　　hadoop-2.7.2<br>　　Hadoop安装环境</p>
+<h5 id="开发环境配置"><a href="#开发环境配置" class="headerlink" title="开发环境配置"></a><b>开发环境配置</b></h5><ol>
+<li>这里下载<a href="http://downloads.typesafe.com/scalaide-pack/4.7.0-vfinal-oxygen-212-20170929/scala-SDK-4.7.0-vfinal-2.12-win32.win32.x86_64.zip" target="_blank" rel="external">ScaleIDE for Win64</a>,其他可选对应版本</li>
+<li>解压后，直接运行里边的eclipse</li>
+<li>建立scala project,并创建scala类 WordCount</li>
+<li>右键工程属性，添加spark-2.1.1-bin-hadoop2.7下面所有的库，可自定义库放进来：<br>Java Build Path =&gt; Libraries =&gt; Add library</li>
+<li><p>编辑代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">package cn.spark.study.core</div><div class="line">import org.apache.spark.SparkConf</div><div class="line">import org.apache.spark.SparkContext </div><div class="line"></div><div class="line">object WordCount &#123;</div><div class="line">  </div><div class="line">    def main(args: Array[String]) &#123;</div><div class="line">      val conf= new SparkConf()</div><div class="line">            .setAppName(&quot;WordCount&quot;)</div><div class="line">            .setMaster(&quot;local&quot;)</div><div class="line">            </div><div class="line">      val sc = new SparkContext(conf)</div><div class="line">      val lines = sc.textFile(&quot;C:\\Users\\Administrator\\Desktop\\spark.txt&quot;)</div><div class="line">      </div><div class="line">      val words = lines.flatMap&#123;line =&gt; line.split(&quot; &quot;)&#125;</div><div class="line">      val pairs = words.map&#123;word =&gt; (word,1)&#125;</div><div class="line">      </div><div class="line">      val wordCounts = pairs.reduceByKey(_+_)</div><div class="line">      wordCounts.foreach(wordNumberPair =&gt; println(wordNumberPair._1 + &quot; : &quot; + wordNumberPair._2 + &quot;times .&quot;))</div><div class="line">      sc.stop()  </div><div class="line">            </div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>右键，导出jar文件</p>
+</li>
+<li><p>在spark部署路径执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">/usr/local/spark/bin/spark-submit \</div><div class="line">  --class cn.spark.study.core.WordCount \</div><div class="line">  --num-executors 1 \</div><div class="line">  --executor-memory 1g \</div><div class="line">  /spark/scala/spark.study.scala.jar \</div></pre></td></tr></table></figure>
+</li>
+<li><p>参数解析：<br>可以执行./spark-submit –help获得帮助</p>
+</li>
+</ol>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h5 id=&quot;开发准备&quot;&gt;&lt;a href=&quot;#开发准备&quot; class=&quot;headerlink&quot; title=&quot;开发准备&quot;&gt;&lt;/a&gt;&lt;b&gt;开发准备&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;　　jdk1.8.45&lt;br&gt;　　spark-2.1.1-bin-hadoop2.7&lt;br&gt;　　CentOS系
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>How to run Etherenum on CentOS7</title>
@@ -405,83 +525,6 @@
     <summary type="html">
     
       &lt;p&gt;在升级glibc后,发现每次登录都提示如下警告：&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>go标准库04 网络(net包)</title>
-    <link href="https://t1ger.github.io/2017/09/28/go%E6%A0%87%E5%87%86%E5%BA%9304-%E7%BD%91%E7%BB%9C-net%E5%8C%85/"/>
-    <id>https://t1ger.github.io/2017/09/28/go标准库04-网络-net包/</id>
-    <published>2017-09-28T09:17:16.000Z</published>
-    <updated>2017-09-28T08:26:05.123Z</updated>
-    
-    <content type="html"><![CDATA[<p>net包提供了可移植的网络I/O接口，包括TCP/IP、UDP、域名解析和Unix域socket。</p>
-<p>我们大部分使用者只需要Dial、Listen和Accept函数提供的基本接口；以及相关的Conn和Listener接口。crypto/tls包提供了相同的接口和类似的Dial和Listen函数。</p>
-<p>Dial函数和服务端建立连接：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">conn, err := net.Dial(&quot;tcp&quot;, &quot;google.com:80&quot;)</div><div class="line">if err != nil &#123;</div><div class="line">	// handle error</div><div class="line">&#125;</div><div class="line">fmt.Fprintf(conn, &quot;GET / HTTP/1.0\r\n\r\n&quot;)</div><div class="line">status, err := bufio.NewReader(conn).ReadString(&apos;\n&apos;)</div><div class="line">// ...</div></pre></td></tr></table></figure></p>
-<p>Listen函数创建的服务端：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">ln, err := net.Listen(&quot;tcp&quot;, &quot;:8080&quot;)</div><div class="line">if err != nil &#123;</div><div class="line">	// handle error</div><div class="line">&#125;</div><div class="line">for &#123;</div><div class="line">	conn, err := ln.Accept()</div><div class="line">	if err != nil &#123;</div><div class="line">		// handle error</div><div class="line">		continue</div><div class="line">	&#125;</div><div class="line">	go handleConnection(conn)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>如果我们要实现一个http web服务,一般通过两种方法实现,一种是我们使用net包的net.Listen来对端口进行监听,另一个是使用net/http包,这里我们看下用net/http如何实现</p>
-<ul>
-<li><p>http客户端</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">import (</div><div class="line">    &quot;fmt&quot;</div><div class="line">    &quot;net/http&quot;</div><div class="line">    &quot;io/ioutil&quot;</div><div class="line">)</div><div class="line"> </div><div class="line">func main() &#123;</div><div class="line">    response,_ := http.Get(&quot;http://www.baidu.com&quot;)</div><div class="line">    defer response.Body.Close()</div><div class="line">    body,_ := ioutil.ReadAll(response.Body)</div><div class="line">    fmt.Println(string(body))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>http服务端</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"> </div><div class="line">import (</div><div class="line">    &quot;net/http&quot;</div><div class="line">)</div><div class="line"> </div><div class="line">func SayHello(w http.ResponseWriter, req *http.Request) &#123;</div><div class="line">    w.Write([]byte(&quot;Hello&quot;))</div><div class="line">&#125;</div><div class="line"> </div><div class="line">func main() &#123;</div><div class="line">    http.HandleFunc(&quot;/hello&quot;, SayHello)</div><div class="line">    http.ListenAndServe(&quot;:8001&quot;, nil)</div><div class="line"> </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>  进行端口的监听：http.ListenAndServe(“:8001”, nil)<br>注册路径处理函数：http.HandleFunc(“/hello”, SayHello)<br>处理函数：func SayHello(w http.ResponseWriter, req *http.Request)</p>
-</li>
-</ul>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;net包提供了可移植的网络I/O接口，包括TCP/IP、UDP、域名解析和Unix域socket。&lt;/p&gt;
-&lt;p&gt;我们大部分使用者只需要Dial、Listen和Accept函数提供的基本接口；以及相关的Conn和Listener接口。crypto/tls包提供了相同的接口和
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>go标准库03 路径与文件</title>
-    <link href="https://t1ger.github.io/2017/09/28/go%E6%A0%87%E5%87%86%E5%BA%9303-%E8%B7%AF%E5%BE%84%E4%B8%8E%E6%96%87%E4%BB%B6/"/>
-    <id>https://t1ger.github.io/2017/09/28/go标准库03-路径与文件/</id>
-    <published>2017-09-28T04:22:53.000Z</published>
-    <updated>2017-09-28T07:45:49.825Z</updated>
-    
-    <content type="html"><![CDATA[<ul>
-<li><p>os包<br>提供系统相关函数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">import (</div><div class="line"> &quot;fmt&quot;</div><div class="line"> &quot;os&quot;</div><div class="line">)</div><div class="line">func main() &#123;</div><div class="line"> dir, _ := os.Getwd()</div><div class="line"> fmt.Println(&quot;current dir:&quot;, dir)</div><div class="line"> fmt.Println(os.Geteuid())</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>  此外,还有os.Getenv(),os.Chdir(),)os.Stat(),os.Chmod(),os.Chtime(),os.Environ(),os.Exit(),os.Expand(),os.ExpandEnv(),os.Hostname()等,详细介绍请查看<a href="https://golang.org/pkg/os/" target="_blank" rel="external">这里</a></p>
-</li>
-<li><p>io包<br>io包提供了大量的输入输出相关的函数,用来处理io.Reader和io.Writer.(*os.File类型的值能同时满足这两个接口的定义).另外,这个包还能用来创建内存中的同步管道.<br>io/ioutil包提供一些高级的辅助函数.<br>在io包中最重要的是两个接口：Reader和Writer接口</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">type Reader interface &#123;</div><div class="line">    Read(p []byte) (n int, err error)</div><div class="line">&#125;</div><div class="line"></div><div class="line">type Writer interface &#123;</div><div class="line">    Write(p []byte) (n int, err error)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>  Read 将 len(p) 个字节读取到 p 中，当遇到任何错误（包括EOF）会立即返回已读取的字节数，函数结束会返回成功读取的字节数和任何错误。<br>Write 将 len(p) 字节数据从 p 写入底层的数据流，然后返回成功写入的字节数和任何错误。<br>从接口名称很容易猜到，一般地，Go中接口的命名约定：接口名以er结尾。<br>注意，这里并非强行要求，你完全可以不以 er 结尾。标准库中有些接口也不是以 er 结尾的</p>
-</li>
-<li><p>path包<br>path包用来操作unix风格的路径<br>path/filepath包提供了和path相同的函数,其目标是提供平台无关的路径处理,提供了filepath.Walk()函数来遍历读出一个给定路径下的所有文件和目录信息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import (</div><div class="line">        &quot;fmt&quot;</div><div class="line">        &quot;path/filepath&quot;</div><div class="line">)</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line"></div><div class="line">        absName, err := filepath.Abs(&quot;/a/b/c.txt&quot;)</div><div class="line">        if err != nil &#123;</div><div class="line">                fmt.Println(err)</div><div class="line">        &#125;</div><div class="line">        fmt.Println(absName)</div><div class="line"></div><div class="line">        baseName := filepath.Base(&quot;/a/b/c/e.txt&quot;)</div><div class="line">        fmt.Println(baseName)</div><div class="line"></div><div class="line">        p := &quot;../..//././//a/b/c.txt&quot;</div><div class="line">        pc := filepath.Clean(p)</div><div class="line">        fmt.Println(pc)</div><div class="line"></div><div class="line">        d := filepath.Dir(&quot;/a/b/c/d.txt&quot;)</div><div class="line">        fmt.Println(d)</div><div class="line"></div><div class="line">        e, _ := filepath.EvalSymlinks(&quot;/home/tiger/abc&quot;)</div><div class="line">        fmt.Println(e)</div><div class="line"></div><div class="line">        f := filepath.Ext(&quot;/tmp/1.txt&quot;)</div><div class="line">        fmt.Println(f)</div><div class="line"></div><div class="line">        m, _ := filepath.Glob(&quot;/usr/*&quot;)</div><div class="line">        fmt.Println(m)</div><div class="line"></div><div class="line">        fmt.Println(&quot;On Unix:&quot;)</div><div class="line">        fmt.Println(filepath.Join(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;))</div><div class="line">        fmt.Println(filepath.Join(&quot;a&quot;, &quot;b/c&quot;))</div><div class="line">        fmt.Println(filepath.Join(&quot;a/b&quot;, &quot;c&quot;))</div><div class="line">        fmt.Println(filepath.Join(&quot;a/b&quot;, &quot;/c&quot;))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>  此外,还有 Split(), Walk()等</p>
-</li>
-</ul>
-<ul>
-<li>runtime包<br>runtime包含一些函数和类型,用来访问go语言的运行时系统<br>这里介绍几个跟平台有关的方法：NumCPU ,GOROOT ,GOOS ,GOMAXPROCS ,Gosched<br>func NumCPU() int<br>func GOROOT() string<br>func GOMAXPROCS(n int) int<br>func Gosched()<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import (</div><div class="line">    &quot;fmt&quot;</div><div class="line">    &quot;runtime&quot;</div><div class="line">)</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    fmt.Println(&quot;cpus:&quot;, runtime.NumCPU())</div><div class="line">    fmt.Println(&quot;goroot:&quot;, runtime.GOROOT())</div><div class="line">    fmt.Println(&quot;os/platform:&quot;, runtime.GOOS)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;ul&gt;
-&lt;li&gt;&lt;p&gt;os包&lt;br&gt;提供系统相关函数&lt;/p&gt;
-&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line
     
     </summary>
     

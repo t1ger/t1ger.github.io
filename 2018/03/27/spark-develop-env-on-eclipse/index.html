@@ -1,0 +1,235 @@
+	<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
+  
+  <title>spark develop env on eclipse | t1ger的茶馆</title>
+  <meta name="author" content="t1ger">
+  
+  <meta name="description" content="https://t1ger.github.io/">
+  
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta property="og:title" content="spark develop env on eclipse"/>
+  <meta property="og:site_name" content="t1ger的茶馆"/>
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+</head>
+
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">t1ger的茶馆</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="这是一个订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>spark develop env on eclipse</h2>
+					
+					<div>
+						<span class="post-time">2018-03-27 16:51:04</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<h5 id="开发准备"><a href="#开发准备" class="headerlink" title="开发准备"></a><b>开发准备</b></h5><p>　　jdk1.8.45<br>　　spark-2.1.1-bin-hadoop2.7<br>　　CentOS系统<br>　　spark安装环境<br>　　hadoop-2.7.2<br>　　Hadoop安装环境</p>
+<h5 id="开发环境配置"><a href="#开发环境配置" class="headerlink" title="开发环境配置"></a><b>开发环境配置</b></h5><ol>
+<li>这里下载<a href="http://downloads.typesafe.com/scalaide-pack/4.7.0-vfinal-oxygen-212-20170929/scala-SDK-4.7.0-vfinal-2.12-win32.win32.x86_64.zip" target="_blank" rel="external">ScaleIDE for Win64</a>,其他可选对应版本</li>
+<li>解压后，直接运行里边的eclipse</li>
+<li>建立scala project,并创建scala类 WordCount</li>
+<li>右键工程属性，添加spark-2.1.1-bin-hadoop2.7下面所有的库，可自定义库放进来：<br>Java Build Path =&gt; Libraries =&gt; Add library</li>
+<li><p>编辑代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">package cn.spark.study.core</div><div class="line">import org.apache.spark.SparkConf</div><div class="line">import org.apache.spark.SparkContext </div><div class="line"></div><div class="line">object WordCount &#123;</div><div class="line">  </div><div class="line">    def main(args: Array[String]) &#123;</div><div class="line">      val conf= new SparkConf()</div><div class="line">            .setAppName(&quot;WordCount&quot;)</div><div class="line">            .setMaster(&quot;local&quot;)</div><div class="line">            </div><div class="line">      val sc = new SparkContext(conf)</div><div class="line">      val lines = sc.textFile(&quot;C:\\Users\\Administrator\\Desktop\\spark.txt&quot;)</div><div class="line">      </div><div class="line">      val words = lines.flatMap&#123;line =&gt; line.split(&quot; &quot;)&#125;</div><div class="line">      val pairs = words.map&#123;word =&gt; (word,1)&#125;</div><div class="line">      </div><div class="line">      val wordCounts = pairs.reduceByKey(_+_)</div><div class="line">      wordCounts.foreach(wordNumberPair =&gt; println(wordNumberPair._1 + &quot; : &quot; + wordNumberPair._2 + &quot;times .&quot;))</div><div class="line">      sc.stop()  </div><div class="line">            </div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>右键，导出jar文件</p>
+</li>
+<li><p>在spark部署路径执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">/usr/local/spark/bin/spark-submit \</div><div class="line">  --class cn.spark.study.core.WordCount \</div><div class="line">  --num-executors 1 \</div><div class="line">  --executor-memory 1g \</div><div class="line">  /spark/scala/spark.study.scala.jar \</div></pre></td></tr></table></figure>
+</li>
+<li><p>参数解析：<br>可以执行./spark-submit –help获得帮助</p>
+</li>
+</ol>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+
+		<div class="comment-section">
+  
+  
+
+
+</div>
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+
+<p>
+  由 <a href="https://hexo.io">hexo</a> 强力驱动 |&nbsp;&nbsp;本站总点击 <span id="busuanzi_value_site_pv"></span> 次
+&nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
+</p>
+<p>
+  &copy; 2018 <a href="https://t1ger.github.io"> t1ger </a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
+
+</p>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-99921399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>
