@@ -4,6 +4,36 @@
 
     
   <url>
+    <loc>https://t1ger.github.io/2018/05/08/Spark-Streaming-with-Kafka-Programming/</loc>
+    <lastmod>2018-05-10T10:31:07.231Z</lastmod>
+    <data>
+        <display>
+        <title>Spark-Streaming with Kafka Programming</title>
+        <pubTime>2018-05-08T07:55:06.000Z</pubTime>
+        
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://t1ger.github.io/2018/03/27/spark-develop-env-on-eclipse/</loc>
+    <lastmod>2018-05-10T07:31:57.728Z</lastmod>
+    <data>
+        <display>
+        <title>spark develop env on eclipse</title>
+        <pubTime>2018-03-27T07:51:04.000Z</pubTime>
+        
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://t1ger.github.io/2018/04/11/how-to-config-Filebeat6-quickly/</loc>
     <lastmod>2018-04-19T08:04:50.199Z</lastmod>
     <data>
@@ -25,21 +55,6 @@
         <display>
         <title>redis性能分析</title>
         <pubTime>2018-04-10T10:11:17.000Z</pubTime>
-        
-         
-           
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://t1ger.github.io/2018/03/27/spark-develop-env-on-eclipse/</loc>
-    <lastmod>2018-03-27T07:24:23.156Z</lastmod>
-    <data>
-        <display>
-        <title>spark develop env on eclipse</title>
-        <pubTime>2018-03-27T07:51:04.000Z</pubTime>
         
          
            
