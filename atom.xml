@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2018-05-10T10:31:07.231Z</updated>
+  <updated>2018-05-22T06:51:56.400Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,34 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Rsyslog 连接 Kafka 指北</title>
+    <link href="https://t1ger.github.io/2018/05/22/Rsyslog-%E8%BF%9E%E6%8E%A5-Kafka-%E6%8C%87%E5%8C%97/"/>
+    <id>https://t1ger.github.io/2018/05/22/Rsyslog-连接-Kafka-指北/</id>
+    <published>2018-05-22T07:20:48.000Z</published>
+    <updated>2018-05-22T06:51:56.400Z</updated>
+    
+    <content type="html"><![CDATA[<h5 id="运行环境"><a href="#运行环境" class="headerlink" title="运行环境"></a><b>运行环境</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">[root@bogon ~]# cat /etc/redhat-release </div><div class="line">CentOS Linux release 7.4.1708 (Core) </div><div class="line"></div><div class="line">[root@bogon ~]# rpm -qa|grep rsyslog</div><div class="line">rsyslog-kafka-8.28.0-1.el7.x86_64</div><div class="line">rsyslog-8.28.0-1.el7.x86_64</div></pre></td></tr></table></figure>
+<h5 id="安装"><a href="#安装" class="headerlink" title="安装"></a><b>安装</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">wget -O /etc/yum.repos.d/rsyslog.repo http://rpms.adiscon.com/v8-stable/rsyslog.repo</div><div class="line">yum install rsyslog rsyslog-kafka.x86_64</div></pre></td></tr></table></figure>
+<p>国内的同学可能无法安装，同学们也可以通过<a href="http://rpms.adiscon.com/v8-stable/epel-7/x86_64/RPMS/" target="_blank" rel="external">这里</a>下载安装</p>
+<h5 id="配置"><a href="#配置" class="headerlink" title="配置"></a><b>配置</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">[root@bogon ~]# cat /etc/rsyslog.d/kafka.conf</div><div class="line">module(load=&quot;omkafka&quot;)</div><div class="line">action (</div><div class="line">        type=&quot;omkafka&quot;</div><div class="line">        topic=&quot;topicA&quot;</div><div class="line">        broker=&quot;cdh1:9092,cdh2:9092,cdh3:9092&quot;</div><div class="line">    )</div><div class="line"></div><div class="line"></div><div class="line">#如果保存到本地</div><div class="line">[root@bogon ~]# cat /etc/rsyslog.d/router.conf</div><div class="line">template (name=&quot;DynFile&quot; type=&quot;string&quot; string=&quot;/data/%fromhost-ip%.log&quot;)</div><div class="line">if $fromhost-ip startswith &apos;192.168.100.2&apos; and $programname != &apos;Type=SESSION;&apos; and $programname != &apos;Type=Login;&apos; and $programname != &apos;Type=AuthLog;&apos; and $programname != &apos;Type=Ftp&apos; then &#123;</div><div class="line">    action(type=&quot;omfile&quot; dynaFile=&quot;DynFile&quot;)</div><div class="line">    stop</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>低版本的rsyslog保存到本地配置如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">[root@localhost ~]# rpm -qa|grep rsyslog</div><div class="line">rsyslog-5.8.10-6.el6.x86_64</div><div class="line"></div><div class="line">添加到 /etc/rsyslog.conf </div><div class="line">#### GLOBAL DIRECTIVES ####</div><div class="line">$template RemoteLogs,&quot;/data/var/log/%HOSTNAME%/%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot; *</div><div class="line">*.* ?RemoteLogs</div><div class="line">&amp;~</div></pre></td></tr></table></figure></p>
+<p>通过kafka查看消息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cd /usr/local/kafka&amp;&amp; bin/kafka-console-consumer.sh  --bootstrap-server cdh1:9092,cdh2:9092,cdh3:9092   --topic topicA</div></pre></td></tr></table></figure></p>
+<p>ref<br><a href="https://doc.yonyoucloud.com/doc/logstash-best-practice-cn/ecosystem/rsyslog.html" target="_blank" rel="external">Rsyslog</a><br><a href="http://wdxtub.com/2016/08/17/rsyslog-kafka-guide/" target="_blank" rel="external">Rsyslog 连接 Kafka 指南</a><br><a href="https://serverfault.com/questions/807108/how-to-call-template-so-rsyslog-8-creates-one-log-file-per-client" target="_blank" rel="external">How to call template so rsyslog 8 creates one log file per client</a><br><a href="http://wiki.rsyslog.com/index.php/DailyLogRotation" target="_blank" rel="external">DailyLogRotation</a><br><a href="http://blog.kompaz.win/2018/01/11/20180111%20CentOS7%20rsyslog%20+loganalyzer%E9%85%8D%E7%BD%AE/" target="_blank" rel="external">CentOS7 rsyslog +loganalyzer配置</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h5 id=&quot;运行环境&quot;&gt;&lt;a href=&quot;#运行环境&quot; class=&quot;headerlink&quot; title=&quot;运行环境&quot;&gt;&lt;/a&gt;&lt;b&gt;运行环境&lt;/b&gt;&lt;/h5&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutt
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Spark-Streaming with Kafka Programming</title>
@@ -479,47 +507,6 @@
     <summary type="html">
     
       &lt;h5 id=&quot;Background&quot;&gt;&lt;a href=&quot;#Background&quot; class=&quot;headerlink&quot; title=&quot;Background&quot;&gt;&lt;/a&gt;&lt;b&gt;Background&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;In HDFS, reads normally go thro
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>how to migrate Gitlab to a new server</title>
-    <link href="https://t1ger.github.io/2017/12/13/how-to-migrate-Gitlab-to-a-new-server/"/>
-    <id>https://t1ger.github.io/2017/12/13/how-to-migrate-Gitlab-to-a-new-server/</id>
-    <published>2017-12-13T07:05:49.000Z</published>
-    <updated>2017-12-13T08:35:53.640Z</updated>
-    
-    <content type="html"><![CDATA[<p>gitlab安装有三种方法: docker、yum 、源码,本文环境是yum安装方式<br>1.确认旧gitlab版本信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo gitlab-rake gitlab:env:info</div></pre></td></tr></table></figure></p>
-<p>注意: 新服务版本要求保持一致,否则无法导入,如果版本比较旧,需要升级旧版本服务器或新服务版本降级后在升级<br>旧服务器升级也比较简单<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">#stop some service</div><div class="line">sudo gitlab-ctl stop unicorn</div><div class="line">sudo gitlab-ctl stop sidekiq</div><div class="line">sudo gitlab-ctl stop nginx</div><div class="line">#update</div><div class="line">sudo yum update gitlab-ce</div><div class="line">sudo gitlab-ctl reconfigure</div><div class="line">sudo gitlab-ctl restart</div></pre></td></tr></table></figure></p>
-<p>2.备份配置文件和数据<br>将 /etc/gitlab/gitlab.rb 和 gitlab-secrets.json 拷贝到新服务对应目录<br>注意,我旧环境是用了自带的nginx,新环境用了机器上已经存在的nginx</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">#disable nginx service</div><div class="line">vi /etc/gitlab/gitlab.rb...#设置nginx为false,关闭自带Nginxnginx[‘enable‘] = false...</div><div class="line"></div><div class="line">#check nginx config,migrate to new nginx</div><div class="line">/var/opt/gitlab/nginx/conf/nginx.conf  </div><div class="line">/var/opt/gitlab/nginx/conf/gitlab-http.conf</div><div class="line">/var/opt/gitlab/nginx/conf/nginx-status.conf</div><div class="line"></div><div class="line">#restart service</div><div class="line">sudo gitlab-ctl reconfigure</div><div class="line">sudo service nginx restart</div></pre></td></tr></table></figure>
-<p>备份旧机器git数据,同时拷贝到新服务上<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#backup gitlab to  /var/opt/gitlab/backups</div><div class="line">gitlab-rake gitlab:backup:create</div></pre></td></tr></table></figure></p>
-<p>在新机器上恢复数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gitlab-rake gitlab:backup:restore RAILS_ENV=production   BACKUP=1513135372_2017_12_13</div></pre></td></tr></table></figure></p>
-<p>如果新机器数据不全,可以把／var/opt/gitlab/git-data拷贝过去</p>
-<p>3.迁移遇到的问题</p>
-<ul>
-<li><p>在新机器执行gitlab-ctl reconfigure,查看进程ps -ef|grep nginx</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">root 11485 0.0 0.0 1836 608 ? Ss Mar18 0:02 runsvdir -P /opt/gitlab/service log: </div><div class="line">…..runsv nginx: warning: unable to open supervise/stat.new: </div><div class="line">file does not exist runsv nginx: warning: unable to open supervise/stat.new:</div><div class="line">file does not exist runsv nginx: warning: unable to open supervise/pid.new: </div><div class="line">file does not exist runsv nginx: warning: unable to open log/supervise/pid.new:</div><div class="line">file does not exist runsv nginx: warning: unable to open log/supervise/pid.new:</div><div class="line">file does not exist</div></pre></td></tr></table></figure>
-<p>  解决方法: 重启系统解决</p>
-</li>
-<li><p>查看nginx日志报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">2017/12/13 13:19:00 [crit] 2436#0: *2 connect() to unix:/var/opt/gitlab/gitlab-workhorse/socket failed (13: Permission denied) while connecting to upstream, client: 119.6.3.75, server: gitlab.weishao.com.cn, request: &quot;GET /index.html HTTP/1.1&quot;, upstream: &quot;http://unix:/var/opt/gitlab/gitlab-workhorse/socket:/index.html&quot;, host: &quot;59.110.114.10&quot;</div></pre></td></tr></table></figure>
-<p>  解决方法: 由于旧服务nginx使用git启动nginx,新服务器用nobody用户运行nginx,我们通过修改 /etc/gitlab/gitlab.rb文件解决</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">##! When bundled nginx is disabled we need to add the external webserver user to</div><div class="line">##! the GitLab webserver group.</div><div class="line">web_server[&apos;external_users&apos;] = [&apos;nobody&apos;]</div><div class="line">web_server[&apos;username&apos;] = &apos;nobody&apos;</div><div class="line">web_server[&apos;group&apos;] = &apos;nobody&apos;</div><div class="line">web_server[&apos;uid&apos;] = 99</div><div class="line">web_server[&apos;gid&apos;] = 99</div><div class="line">web_server[&apos;shell&apos;] = &apos;/bin/false&apos;</div><div class="line">web_server[&apos;home&apos;] = &apos;/var/opt/gitlab/nginx&apos;</div><div class="line"></div><div class="line">sudo gitlab-ctl reconfigure</div></pre></td></tr></table></figure>
-<p>  也可以将nginx运行账号添加到gitlab-www组中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo usermod -a -G gitlab-www nobody</div><div class="line">sudo service nginx restart</div></pre></td></tr></table></figure>
-<p>  但是执行sudo gitlab-ctl reconfigure后需要重新执行</p>
-</li>
-</ul>
-<p>ref<br><a href="http://blog.pzxbc.com/2016/03/22/gitlab-install-configure/" target="_blank" rel="external">Gitlab安装配置及使用</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;gitlab安装有三种方法: docker、yum 、源码,本文环境是yum安装方式&lt;br&gt;1.确认旧gitlab版本信息&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div 
     
     </summary>
     

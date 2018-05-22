@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://t1ger.github.io/2018/05/22/Rsyslog-%E8%BF%9E%E6%8E%A5-Kafka-%E6%8C%87%E5%8C%97/</loc>
+    
+    <lastmod>2018-05-22T06:51:56.400Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://t1ger.github.io/2017/07/04/Prometheus-%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88/</loc>
     
     <lastmod>2018-05-18T02:03:08.607Z</lastmod>
