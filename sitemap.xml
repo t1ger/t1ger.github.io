@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://t1ger.github.io/2018/06/11/how-to-use-sqoop-in-hadoop/</loc>
+    
+    <lastmod>2018-06-12T10:12:39.676Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://t1ger.github.io/2018/05/22/Rsyslog-%E8%BF%9E%E6%8E%A5-Kafka-%E6%8C%87%E5%8C%97/</loc>
     
     <lastmod>2018-05-22T06:51:56.400Z</lastmod>
