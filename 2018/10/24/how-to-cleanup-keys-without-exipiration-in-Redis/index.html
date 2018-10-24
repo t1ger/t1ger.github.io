@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
   
-  <title>第 2 页 | Archives | t1ger的茶馆</title>
+  <title>how to cleanup keys without exipiration in Redis | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
   
   <meta name="description" content="https://t1ger.github.io/">
@@ -13,7 +13,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  
+  <meta property="og:title" content="how to cleanup keys without exipiration in Redis"/>
   <meta property="og:site_name" content="t1ger的茶馆"/>
 
   
@@ -116,66 +116,41 @@
 		<div class="content">
 			<!-- index -->
 		   
-			  	<h2>归档</h2>
-		  		
-	              <p class="archive-item">
-						<a href="/2018/01/23/高可用的MongoDB集群/" class="archive-title">高可用的MongoDB集群</a><span class="archive post-time">2018-01-23</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2018/01/19/浅谈Redis-Cluster/" class="archive-title">浅谈Redis Cluster</a><span class="archive post-time">2018-01-19</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/12/20/Why-Datanode-is-Denied-Communication-With-Namenode/" class="archive-title">Why Datanode is Denied Communication With Namenode</a><span class="archive post-time">2017-12-20</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/12/15/HDFS-Short-Circuit-Local-Reads/" class="archive-title">HDFS Short-Circuit Local Reads</a><span class="archive post-time">2017-12-15</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/12/13/how-to-migrate-Gitlab-to-a-new-server/" class="archive-title">how to migrate Gitlab to a new server</a><span class="archive post-time">2017-12-13</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/11/20/Deploy-Elasticsearch/" class="archive-title">Deploy Elasticsearch</a><span class="archive post-time">2017-11-20</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/11/06/glibc升级引起locale警告/" class="archive-title">glibc升级引起locale警告</a><span class="archive post-time">2017-11-06</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/09/28/go标准库04-网络-net包/" class="archive-title">go标准库04 网络(net包)</a><span class="archive post-time">2017-09-28</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/09/28/go标准库03-路径与文件/" class="archive-title">go标准库03 路径与文件</a><span class="archive post-time">2017-09-28</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/09/28/go标准库02-时间与日期/" class="archive-title">go标准库02 时间与日期</a><span class="archive post-time">2017-09-28</span>
-					</p>
-			  	
-			  <!-- post -->
+
+			  		<h2>how to cleanup keys without exipiration in Redis</h2>
+					
+					<div>
+						<span class="post-time">2018-10-24 13:02:18</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<p>在排查redis内存一直增长问题的时候，我们首先想到的是如何找出有多少key没有设置失效时间</p>
+<p>我们可以通过 info keyspace 命令查看：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">127.0.0.1:6379&gt; info keyspace</div><div class="line"># Keyspace</div><div class="line">db0:keys=473688,expires=1645,avg_ttl=1625894</div></pre></td></tr></table></figure></p>
+<p>keys是总共的key, expires是要失效的key,ave_ttl是这些key的平均失效时间，单位是ms</p>
+<p>注意，我们不能再生产环境使用keys命令，如果没有开启RDB,需要通过执行bgsave 来获得rdb文件，之后拷贝到测试环境</p>
+<p>我们可以使用docker来加载<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">docker run --name redis_dump -d -v `pwd`:/data -p 6379 redis:3.2</div><div class="line"></div><div class="line">docker exec -ti redis_dump bash</div></pre></td></tr></table></figure></p>
+<p>现在我们来统计未设置失效时间的key吧<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">redis-cli keys &quot;*&quot; &gt; keys</div><div class="line">cat keys | xargs -n 1 -L 1 redis-cli ttl &gt; ttl</div><div class="line">paste -d &quot; &quot; keys ttl | grep .*-1$ | cut -d &quot; &quot; -f 1 &gt; without_ttl</div><div class="line"></div><div class="line"># We can create a script for deleting the keys </div><div class="line">cat without_ttl | awk &apos;&#123;print &quot;redis-cli del &quot;$1&#125;&apos; &gt; redis.sh</div></pre></td></tr></table></figure></p>
+<p>再来一个大红包吧，怎么找出最大的key呢<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">[root@localhost ~]# redis-cli --bigkeys</div><div class="line"></div><div class="line"># Scanning the entire keyspace to find biggest keys as well as</div><div class="line"># average sizes per key type.  You can use -i 0.1 to sleep 0.1 sec</div><div class="line"># per 100 SCAN commands (not usually needed).</div><div class="line"></div><div class="line">[00.00%] Biggest string found so far &apos;courseinfo_201703827_2018-10-29&apos; with 14189 bytes</div><div class="line">[00.00%] Biggest string found so far &apos;courseinfo_3160205116_2017-09-04&apos; with 16717 bytes</div><div class="line">[00.01%] Biggest string found so far &apos;courseinfo_201707708_2018-12-03&apos; with 20835 bytes</div><div class="line">[00.02%] Biggest string found so far &apos;courseinfo_3170204119_2017-10-02&apos; with 23037 bytes</div><div class="line">[00.07%] Biggest string found so far &apos;courseinfo_3160204209_2017-09-18&apos; with 29201 bytes</div><div class="line">[00.38%] Biggest string found so far &apos;courseinfo_201504330342_2018-05-21&apos; with 138565 bytes</div><div class="line">[00.77%] Biggest string found so far &apos;courseinfo_201606060919_2018-03-26&apos; with 201381 bytes</div><div class="line">[00.98%] Biggest string found so far &apos;courseinfo_201501310518_2018-05-14&apos; with 215428 bytes</div><div class="line">[01.07%] Biggest string found so far &apos;courseinfo_201706061709_2018-06-11&apos; with 223421 bytes</div><div class="line">[04.43%] Biggest string found so far &apos;courseinfo_201706061633_2018-03-05&apos; with 249319 bytes</div><div class="line">[05.33%] Biggest string found so far &apos;courseinfo_201706062917_2018-03-05&apos; with 278392 bytes</div><div class="line">[06.03%] Biggest string found so far &apos;courseinfo_201707030224_2018-03-19&apos; with 281098 bytes</div><div class="line">[19.89%] Biggest string found so far &apos;courseinfo_201706062917_2018-03-19&apos; with 296014 bytes</div><div class="line"></div><div class="line">-------- summary -------</div><div class="line"></div><div class="line">Sampled 472908 keys in the keyspace!</div><div class="line">Total key length in bytes is 17874174 (avg len 37.80)</div><div class="line"></div><div class="line">Biggest string found &apos;courseinfo_201706062917_2018-03-19&apos; has 296014 bytes</div><div class="line"></div><div class="line">472908 strings with 2259279653 bytes (100.00% of keys, avg size 4777.42)</div><div class="line">0 lists with 0 items (00.00% of keys, avg size 0.00)</div><div class="line">0 sets with 0 members (00.00% of keys, avg size 0.00)</div><div class="line">0 hashs with 0 fields (00.00% of keys, avg size 0.00)</div><div class="line">0 zsets with 0 members (00.00% of keys, avg size 0.00)</div></pre></td></tr></table></figure></p>
+<p>很快我们就会发现我们的问题了，courseinfo_201706062917_2018-03-19 就是我们要找的</p>
+<p>ref<br><a href="https://jmaitrehenry.ca/2017/11/22/found-keys-without-expiration-in-redis/" target="_blank" rel="external">Found and cleanup keys without expiration in Redis</a></p>
+<hr>
+<p>您的鼓励是我写作最大的动力</p>
+<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
 			  
 		</div>
 
 		<!-- pagination -->
-	  
-
-			<div class="btn-group btn-group-justified">
-				
-
-					<a class="btn btn-default " href="/archives/" >上一页</a>
-
-					<a class="btn btn-default" href="/">首页</a>
-
-					<a class="btn btn-default " href="/archives/page/3/" >下一页</a>
-
-	    	
-			</div>
 	  
 	  
 	    
@@ -200,6 +175,8 @@
 		
 <!--		<div class="comment-section">
   
+  
+
 
 </div> -->
 	</div>
