@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2018-10-30T10:02:56.494Z</updated>
+  <updated>2018-11-05T09:59:45.781Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,35 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>mysql audit plugin</title>
+    <link href="https://t1ger.github.io/2018/11/05/mysql-audit-plugin/"/>
+    <id>https://t1ger.github.io/2018/11/05/mysql-audit-plugin/</id>
+    <published>2018-11-05T09:40:06.000Z</published>
+    <updated>2018-11-05T09:59:45.781Z</updated>
+    
+    <content type="html"><![CDATA[<p>此文转载于<a href="https://blog.csdn.net/heizistudio/article/details/50954294" target="_blank" rel="external">ora600</a>,略作调整.</p>
+<p>下载地址如下<br><a href="http://pan.baidu.com/s/1dFGFCrv" target="_blank" rel="external">http://pan.baidu.com/s/1dFGFCrv</a></p>
+<p>mysql5.6.X.tar.gz到mysql-5.7.8-rc.tar.gz是一个版本—-audit5_6_21.so<br>mysql5.7.1.tar.gz—mysql5.7.9.tar.gz是一个版本—-audit5_7_9.so<br>mysql5.7.10–mysql5.7.22是一个版本</p>
+<p>一、查找插件所在位置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">mysql&gt; show variables like &apos;%plugin_dir%&apos;;</div><div class="line">+---------------+------------------------------+</div><div class="line">| Variable_name | Value                        |</div><div class="line">+---------------+------------------------------+</div><div class="line">| plugin_dir    | /usr/local/mysql/lib/plugin/ |</div><div class="line">+---------------+------------------------------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line">---------------------</div></pre></td></tr></table></figure></p>
+<p>二、将audit_版本号.so插件下载后放到plugin_dir位置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mv audit_版本号.so  audit.so</div></pre></td></tr></table></figure></p>
+<p>三、加载插件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysql&gt; install plugin audit  SONAME &apos;audit.so&apos;;</div></pre></td></tr></table></figure></p>
+<p>四、卸载插件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysql&gt; uninstall plugin audit;</div></pre></td></tr></table></figure></p>
+<p>使用插件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">mysql&gt; show variables like &apos;%audit%&apos;;</div><div class="line">+----------------+----------------------+</div><div class="line">| Variable_name  | Value                |</div><div class="line">+----------------+----------------------+</div><div class="line">| audit_logfile  | /tmp/mysql_audit.log |</div><div class="line">| audit_myswitch | OFF                  |</div><div class="line">| audit_num      | 0                    |</div><div class="line">| audit_sql      | all_sql              |</div><div class="line">| audit_user     | all_user             |</div><div class="line">+----------------+----------------------+</div><div class="line">5 rows in set (0.01 sec)</div><div class="line"></div><div class="line">mysql&gt; set global audit_logfile=&apos;/tmp/mysql_audit_1.log&apos;;----只读变量，审计仅指定在/tmp/mysql_audit.log文件，保障权限可以写</div><div class="line">ERROR 1238 (HY000): Variable &apos;audit_logfile&apos; is a read only variable</div><div class="line"></div><div class="line">set global audit_sql=&apos;delete;select;drop&apos;;   -----这些审计关键字用;分开</div><div class="line">set global audit_user=&apos;user2;user3&apos;;         ----审计用户用;隔开</div><div class="line">set global audit_num =0;                          ----审计sql影响的最少行数，默认为0</div><div class="line">set global audit_myswitch=on|off|ON|OFF|1|0;       -----开启关闭审计</div></pre></td></tr></table></figure></p>
+<p>查看日志linux下tailf /tmp/mysql_audit.log</p>
+<p>ref<br><a href="https://blog.csdn.net/heizistudio/article/details/50954294" target="_blank" rel="external">mysql审计插件(运维不在背锅)</a><br><a href="https://dev.mysql.com/doc/refman/5.5/en/writing-audit-plugins.html" target="_blank" rel="external">Writing Audit Plugins</a><br><a href="https://github.com/mcafee/mysql-audit/wiki/Configuration" target="_blank" rel="external">mcafee/mysql-audit</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;此文转载于&lt;a href=&quot;https://blog.csdn.net/heizistudio/article/details/50954294&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;ora600&lt;/a&gt;,略作调整.&lt;/p&gt;
+&lt;p&gt;下载地址如下&lt;b
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Spark On YARN</title>
@@ -401,45 +430,6 @@
 &lt;ul&gt;
 &lt;li&gt;redis slowlog分析&lt;/li&gt;
 &lt;li&gt;SCAN
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>spark develop env on eclipse</title>
-    <link href="https://t1ger.github.io/2018/03/27/spark-develop-env-on-eclipse/"/>
-    <id>https://t1ger.github.io/2018/03/27/spark-develop-env-on-eclipse/</id>
-    <published>2018-03-27T07:51:04.000Z</published>
-    <updated>2018-05-10T07:31:57.728Z</updated>
-    
-    <content type="html"><![CDATA[<h5 id="开发准备"><a href="#开发准备" class="headerlink" title="开发准备"></a><b>开发准备</b></h5><p>　　jdk1.8.45<br>　　spark-2.1.1-bin-hadoop2.7<br>　　CentOS系统<br>　　spark安装环境<br>　　hadoop-2.7.2<br>　　Hadoop安装环境</p>
-<h5 id="开发环境配置"><a href="#开发环境配置" class="headerlink" title="开发环境配置"></a><b>开发环境配置</b></h5><ol>
-<li>这里下载<a href="http://downloads.typesafe.com/scalaide-pack/4.7.0-vfinal-oxygen-212-20170929/scala-SDK-4.7.0-vfinal-2.12-win32.win32.x86_64.zip" target="_blank" rel="external">ScaleIDE for Win64</a>,其他可选对应版本</li>
-<li>解压后，直接运行里边的eclipse</li>
-<li>建立scala project,并创建scala类 WordCount</li>
-<li><p>右键工程属性，添加spark-2.1.1-bin-hadoop2.7下面所有的库，可自定义库放进来：Java Build Path =&gt; Libraries =&gt; Add library,这里有个小知识:<br>add external jars  = 增加工程外部的包<br>add jars = 增加工程内包<br>add library = 增加一个库 // 是一些已经定义好的jar的集合<br>add class folder = 添加类的目录，是指本Eclipse范围中的，在工程列表下选取接口<br>区别:通过“add jar” 和“add external jars”添加的jar包作为程序的一部分被打包到最终的程序中。通过“User Libraries”添加的jar包不是。</p>
-</li>
-<li><p>编辑代码如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">package cn.spark.study.core</div><div class="line">import org.apache.spark.SparkConf</div><div class="line">import org.apache.spark.SparkContext </div><div class="line"></div><div class="line">object WordCount &#123;</div><div class="line">  </div><div class="line">    def main(args: Array[String]) &#123;</div><div class="line">      val conf= new SparkConf()</div><div class="line">            .setAppName(&quot;WordCount&quot;)</div><div class="line">            .setMaster(&quot;local&quot;)</div><div class="line">            </div><div class="line">      val sc = new SparkContext(conf)</div><div class="line">      val lines = sc.textFile(&quot;C:\\Users\\Administrator\\Desktop\\spark.txt&quot;)</div><div class="line">      </div><div class="line">      val words = lines.flatMap&#123;line =&gt; line.split(&quot; &quot;)&#125;</div><div class="line">      val pairs = words.map&#123;word =&gt; (word,1)&#125;</div><div class="line">      </div><div class="line">      val wordCounts = pairs.reduceByKey(_+_)</div><div class="line">      wordCounts.foreach(wordNumberPair =&gt; println(wordNumberPair._1 + &quot; : &quot; + wordNumberPair._2 + &quot;times .&quot;))</div><div class="line">      sc.stop()  </div><div class="line">            </div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>右键，导出jar文件</p>
-</li>
-<li><p>在spark部署路径执行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">/usr/local/spark/bin/spark-submit \</div><div class="line">  --class cn.spark.study.core.WordCount \</div><div class="line">  --num-executors 1 \</div><div class="line">  --executor-memory 1g \</div><div class="line">  /spark/scala/spark.study.scala.jar \</div></pre></td></tr></table></figure>
-</li>
-<li><p>参数解析：<br>可以执行./spark-submit –help获得帮助</p>
-</li>
-</ol>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h5 id=&quot;开发准备&quot;&gt;&lt;a href=&quot;#开发准备&quot; class=&quot;headerlink&quot; title=&quot;开发准备&quot;&gt;&lt;/a&gt;&lt;b&gt;开发准备&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;　　jdk1.8.45&lt;br&gt;　　spark-2.1.1-bin-hadoop2.7&lt;br&gt;　　CentOS系
     
     </summary>
     
