@@ -1,8 +1,8 @@
 	<!DOCTYPE HTML>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
-  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
   
   <title>Rsyslog 连接 Kafka 指北 | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
@@ -13,8 +13,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta property="og:title" content="Rsyslog 连接 Kafka 指北"/>
-  <meta property="og:site_name" content="t1ger的茶馆"/>
+  <meta property="og:title" content="Rsyslog 连接 Kafka 指北">
+  <meta property="og:site_name" content="t1ger的茶馆">
 
   
   
@@ -62,7 +62,7 @@
 	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
 
 </head>
-
+</html>
  	<body>
 	  <nav class="navbar navbar-default">
     <div class="container">
@@ -125,20 +125,20 @@
 					
 
 					<div class="article-content">
-						<h5 id="运行环境"><a href="#运行环境" class="headerlink" title="运行环境"></a><b>运行环境</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">[root@bogon ~]# cat /etc/redhat-release </div><div class="line">CentOS Linux release 7.4.1708 (Core) </div><div class="line"></div><div class="line">[root@bogon ~]# rpm -qa|grep rsyslog</div><div class="line">rsyslog-kafka-8.28.0-1.el7.x86_64</div><div class="line">rsyslog-8.28.0-1.el7.x86_64</div></pre></td></tr></table></figure>
-<h5 id="安装"><a href="#安装" class="headerlink" title="安装"></a><b>安装</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">wget -O /etc/yum.repos.d/rsyslog.repo http://rpms.adiscon.com/v8-stable/rsyslog.repo</div><div class="line">yum install rsyslog rsyslog-kafka.x86_64</div></pre></td></tr></table></figure>
-<p>国内的同学可能无法安装，同学们也可以通过<a href="http://rpms.adiscon.com/v8-stable/epel-7/x86_64/RPMS/" target="_blank" rel="external">这里</a>下载安装</p>
-<h5 id="配置"><a href="#配置" class="headerlink" title="配置"></a><b>配置</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">[root@bogon ~]# cat /etc/rsyslog.d/kafka.conf</div><div class="line">module(load=&quot;omkafka&quot;)</div><div class="line">action (</div><div class="line">        type=&quot;omkafka&quot;</div><div class="line">        topic=&quot;topicA&quot;</div><div class="line">        broker=&quot;cdh1:9092,cdh2:9092,cdh3:9092&quot;</div><div class="line">    )</div><div class="line"></div><div class="line"></div><div class="line">#如果保存到本地</div><div class="line">[root@bogon ~]# cat /etc/rsyslog.d/router.conf</div><div class="line">template (name=&quot;DynFile&quot; type=&quot;string&quot; string=&quot;/data/%fromhost-ip%.log&quot;)</div><div class="line">if $fromhost-ip startswith &apos;192.168.100.2&apos; and $programname != &apos;Type=SESSION;&apos; and $programname != &apos;Type=Login;&apos; and $programname != &apos;Type=AuthLog;&apos; and $programname != &apos;Type=Ftp&apos; then &#123;</div><div class="line">    action(type=&quot;omfile&quot; dynaFile=&quot;DynFile&quot;)</div><div class="line">    stop</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>低版本的rsyslog保存到本地配置如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">[root@localhost ~]# rpm -qa|grep rsyslog</div><div class="line">rsyslog-5.8.10-6.el6.x86_64</div><div class="line"></div><div class="line">添加到 /etc/rsyslog.conf </div><div class="line">#### GLOBAL DIRECTIVES ####</div><div class="line">$template RemoteLogs,&quot;/data/var/log/%HOSTNAME%/%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot; *</div><div class="line">*.* ?RemoteLogs</div><div class="line">&amp;~</div></pre></td></tr></table></figure></p>
-<p>通过kafka查看消息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cd /usr/local/kafka&amp;&amp; bin/kafka-console-consumer.sh  --bootstrap-server cdh1:9092,cdh2:9092,cdh3:9092   --topic topicA</div></pre></td></tr></table></figure></p>
-<p>ref<br><a href="https://doc.yonyoucloud.com/doc/logstash-best-practice-cn/ecosystem/rsyslog.html" target="_blank" rel="external">Rsyslog</a><br><a href="http://wdxtub.com/2016/08/17/rsyslog-kafka-guide/" target="_blank" rel="external">Rsyslog 连接 Kafka 指南</a><br><a href="https://serverfault.com/questions/807108/how-to-call-template-so-rsyslog-8-creates-one-log-file-per-client" target="_blank" rel="external">How to call template so rsyslog 8 creates one log file per client</a><br><a href="http://wiki.rsyslog.com/index.php/DailyLogRotation" target="_blank" rel="external">DailyLogRotation</a><br><a href="http://blog.kompaz.win/2018/01/11/20180111%20CentOS7%20rsyslog%20+loganalyzer%E9%85%8D%E7%BD%AE/" target="_blank" rel="external">CentOS7 rsyslog +loganalyzer配置</a></p>
+						<h5 id="运行环境"><a href="#运行环境" class="headerlink" title="运行环境"></a><b>运行环境</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@bogon ~]# cat /etc/redhat-release </span><br><span class="line">CentOS Linux release 7.4.1708 (Core) </span><br><span class="line"></span><br><span class="line">[root@bogon ~]# rpm -qa|grep rsyslog</span><br><span class="line">rsyslog-kafka-8.28.0-1.el7.x86_64</span><br><span class="line">rsyslog-8.28.0-1.el7.x86_64</span><br></pre></td></tr></table></figure>
+<h5 id="安装"><a href="#安装" class="headerlink" title="安装"></a><b>安装</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget -O /etc/yum.repos.d/rsyslog.repo http://rpms.adiscon.com/v8-stable/rsyslog.repo</span><br><span class="line">yum install rsyslog rsyslog-kafka.x86_64</span><br></pre></td></tr></table></figure>
+<p>国内的同学可能无法安装，同学们也可以通过<a href="http://rpms.adiscon.com/v8-stable/epel-7/x86_64/RPMS/" target="_blank" rel="noopener">这里</a>下载安装</p>
+<h5 id="配置"><a href="#配置" class="headerlink" title="配置"></a><b>配置</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[root@bogon ~]# cat /etc/rsyslog.d/kafka.conf</span><br><span class="line">module(load=&quot;omkafka&quot;)</span><br><span class="line">action (</span><br><span class="line">        type=&quot;omkafka&quot;</span><br><span class="line">        topic=&quot;topicA&quot;</span><br><span class="line">        broker=&quot;cdh1:9092,cdh2:9092,cdh3:9092&quot;</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#如果保存到本地</span><br><span class="line">[root@bogon ~]# cat /etc/rsyslog.d/router.conf</span><br><span class="line">template (name=&quot;DynFile&quot; type=&quot;string&quot; string=&quot;/data/%fromhost-ip%.log&quot;)</span><br><span class="line">if $fromhost-ip startswith &apos;192.168.100.2&apos; and $programname != &apos;Type=SESSION;&apos; and $programname != &apos;Type=Login;&apos; and $programname != &apos;Type=AuthLog;&apos; and $programname != &apos;Type=Ftp&apos; then &#123;</span><br><span class="line">    action(type=&quot;omfile&quot; dynaFile=&quot;DynFile&quot;)</span><br><span class="line">    stop</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>低版本的rsyslog保存到本地配置如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# rpm -qa|grep rsyslog</span><br><span class="line">rsyslog-5.8.10-6.el6.x86_64</span><br><span class="line"></span><br><span class="line">添加到 /etc/rsyslog.conf </span><br><span class="line">#### GLOBAL DIRECTIVES ####</span><br><span class="line">$template RemoteLogs,&quot;/data/var/log/%HOSTNAME%/%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot; *</span><br><span class="line">*.* ?RemoteLogs</span><br><span class="line">&amp;~</span><br></pre></td></tr></table></figure></p>
+<p>通过kafka查看消息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/kafka&amp;&amp; bin/kafka-console-consumer.sh  --bootstrap-server cdh1:9092,cdh2:9092,cdh3:9092   --topic topicA</span><br></pre></td></tr></table></figure></p>
+<p>ref<br><a href="https://doc.yonyoucloud.com/doc/logstash-best-practice-cn/ecosystem/rsyslog.html" target="_blank" rel="noopener">Rsyslog</a><br><a href="http://wdxtub.com/2016/08/17/rsyslog-kafka-guide/" target="_blank" rel="noopener">Rsyslog 连接 Kafka 指南</a><br><a href="https://serverfault.com/questions/807108/how-to-call-template-so-rsyslog-8-creates-one-log-file-per-client" target="_blank" rel="noopener">How to call template so rsyslog 8 creates one log file per client</a><br><a href="http://wiki.rsyslog.com/index.php/DailyLogRotation" target="_blank" rel="noopener">DailyLogRotation</a><br><a href="http://blog.kompaz.win/2018/01/11/20180111%20CentOS7%20rsyslog%20+loganalyzer%E9%85%8D%E7%BD%AE/" target="_blank" rel="noopener">CentOS7 rsyslog +loganalyzer配置</a></p>
 <hr>
 <p>您的鼓励是我写作最大的动力</p>
 <p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
 
 							<!-- 支付宝打赏图案 -->
       						<div id="donate_guide" class="donate_bar center ">
-          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
           					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
           					</a> 
       						</div>

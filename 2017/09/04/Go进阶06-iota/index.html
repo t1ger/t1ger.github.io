@@ -1,8 +1,8 @@
 	<!DOCTYPE HTML>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
-  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
   
   <title>Go进阶06 iota | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
@@ -13,8 +13,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta property="og:title" content="Go进阶06 iota"/>
-  <meta property="og:site_name" content="t1ger的茶馆"/>
+  <meta property="og:title" content="Go进阶06 iota">
+  <meta property="og:site_name" content="t1ger的茶馆">
 
   
   
@@ -62,7 +62,7 @@
 	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
 
 </head>
-
+</html>
  	<body>
 	  <nav class="navbar navbar-default">
     <div class="container">
@@ -129,16 +129,16 @@
 <h5 id="常见用法"><a href="#常见用法" class="headerlink" title="常见用法"></a><b>常见用法</b></h5><ul>
 <li>iota只能在常量表达式中使用</li>
 <li><p>每次const出现时,iota会初始化为0</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">const a = iota  // a = 0</div><div class="line">const (</div><div class="line">    b = iota    // b = 0 </div><div class="line">    c 		// c = 1</div><div class="line">)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">const a = iota  // a = 0</span><br><span class="line">const (</span><br><span class="line">    b = iota    // b = 0 </span><br><span class="line">    c 		// c = 1</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>自定义类型</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">const (</div><div class="line">    red = iota</div><div class="line">    blue</div><div class="line">    green</div><div class="line">)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">const (</span><br><span class="line">    red = iota</span><br><span class="line">    blue</span><br><span class="line">    green</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>可跳过的值</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">const (</div><div class="line">    red = iota  // 0</div><div class="line">    blue        // 1 </div><div class="line">    green       // 2</div><div class="line">    - </div><div class="line">    -</div><div class="line">    yellow      // 5</div><div class="line">    black       // 6</div><div class="line">)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const (</span><br><span class="line">    red = iota  // 0</span><br><span class="line">    blue        // 1 </span><br><span class="line">    green       // 2</span><br><span class="line">    - </span><br><span class="line">    -</span><br><span class="line">    yellow      // 5</span><br><span class="line">    black       // 6</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>定义数量级</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">type ByteSize float64</div><div class="line">const(</div><div class="line">    _     = iota                 // ignore first value by assigning to blank identifier</div><div class="line">    KB ByteSize = 1 &lt;&lt; (10*iota) // 1&lt;&lt;(10*1)</div><div class="line">    MB                           // 1&lt;&lt;(10*2)</div><div class="line">    GB                           // 1&lt;&lt;(10*3)</div><div class="line">    TB                           // 1&lt;&lt;(10*4)</div><div class="line">    PB                           // 1&lt;&lt;(10*5)</div><div class="line">    EB                           // 1&lt;&lt;(10*6)</div><div class="line">    ZB                           // 1&lt;&lt;(10*7)</div><div class="line">    YB                           // 1&lt;&lt;(10*8)</div><div class="line">)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">type ByteSize float64</span><br><span class="line">const(</span><br><span class="line">    _     = iota                 // ignore first value by assigning to blank identifier</span><br><span class="line">    KB ByteSize = 1 &lt;&lt; (10*iota) // 1&lt;&lt;(10*1)</span><br><span class="line">    MB                           // 1&lt;&lt;(10*2)</span><br><span class="line">    GB                           // 1&lt;&lt;(10*3)</span><br><span class="line">    TB                           // 1&lt;&lt;(10*4)</span><br><span class="line">    PB                           // 1&lt;&lt;(10*5)</span><br><span class="line">    EB                           // 1&lt;&lt;(10*6)</span><br><span class="line">    ZB                           // 1&lt;&lt;(10*7)</span><br><span class="line">    YB                           // 1&lt;&lt;(10*8)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <hr>
@@ -147,7 +147,7 @@
 
 							<!-- 支付宝打赏图案 -->
       						<div id="donate_guide" class="donate_bar center ">
-          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
           					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
           					</a> 
       						</div>

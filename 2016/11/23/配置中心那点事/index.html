@@ -1,8 +1,8 @@
 	<!DOCTYPE HTML>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
-  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
   
   <title>配置中心那点事 | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
@@ -13,8 +13,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta property="og:title" content="配置中心那点事"/>
-  <meta property="og:site_name" content="t1ger的茶馆"/>
+  <meta property="og:title" content="配置中心那点事">
+  <meta property="og:site_name" content="t1ger的茶馆">
 
   
   
@@ -62,7 +62,7 @@
 	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
 
 </head>
-
+</html>
  	<body>
 	  <nav class="navbar navbar-default">
     <div class="container">
@@ -145,19 +145,19 @@
 </ul>
 <h4 id="开源解决方案现状"><a href="#开源解决方案现状" class="headerlink" title="开源解决方案现状"></a><b>开源解决方案现状</b></h4><ul>
 <li>淘宝的<a href="">Diamond</a></li>
-<li>携程开源的<a href="https://github.com/ctripcorp/apollo" target="_blank" rel="external">Applo</a>，支持Java，其他语言通过Http支持</li>
-<li>个人开源的<a href="https://github.com/knightliao/disconf/tree/master/disconf-web" target="_blank" rel="external">disconf</a>，只支持Java＋Spring</li>
-<li>360的<a href="https://github.com/Qihoo360/QConf" target="_blank" rel="external">Qconf</a>，基于zk，特色是基于Agent模式的多语言支持。但服务端也没有界面、灰度、预案什么的，直接通过API操作ZK而已</li>
-<li>个人开源的<a href="https://github.com/hengyunabc/xdiamond" target="_blank" rel="external">xdiamond</a></li>
-<li>个人开源的<a href="https://github.com/cncduLee/zk-ucc" target="_blank" rel="external">zk-ucc</a></li>
-<li>个人开源的<a href="https://github.com/xuxueli/xxl-conf" target="_blank" rel="external">xxlconf</a></li>
-<li>个人开源的<a href="https://github.com/ihaolin/diablo" target="_blank" rel="external">diablo</a></li>
-<li><a href="https://github.com/coreos/etcd" target="_blank" rel="external">etcd</a></li>
-<li><a href="https://zookeeper.apache.org" target="_blank" rel="external">zookeeper</a></li>
-<li><a href="https://www.consul.io/" target="_blank" rel="external">consul</a></li>
-<li><a href="https://github.com/kelseyhightower/confd" target="_blank" rel="external">confd</a></li>
-<li><a href="http://www.cfg4j.org" target="_blank" rel="external">cfg4j</a></li>
-<li><a href="https://github.com/melin/super-diamond" target="_blank" rel="external">super-diamond</a> ,已停止更新</li>
+<li>携程开源的<a href="https://github.com/ctripcorp/apollo" target="_blank" rel="noopener">Applo</a>，支持Java，其他语言通过Http支持</li>
+<li>个人开源的<a href="https://github.com/knightliao/disconf/tree/master/disconf-web" target="_blank" rel="noopener">disconf</a>，只支持Java＋Spring</li>
+<li>360的<a href="https://github.com/Qihoo360/QConf" target="_blank" rel="noopener">Qconf</a>，基于zk，特色是基于Agent模式的多语言支持。但服务端也没有界面、灰度、预案什么的，直接通过API操作ZK而已</li>
+<li>个人开源的<a href="https://github.com/hengyunabc/xdiamond" target="_blank" rel="noopener">xdiamond</a></li>
+<li>个人开源的<a href="https://github.com/cncduLee/zk-ucc" target="_blank" rel="noopener">zk-ucc</a></li>
+<li>个人开源的<a href="https://github.com/xuxueli/xxl-conf" target="_blank" rel="noopener">xxlconf</a></li>
+<li>个人开源的<a href="https://github.com/ihaolin/diablo" target="_blank" rel="noopener">diablo</a></li>
+<li><a href="https://github.com/coreos/etcd" target="_blank" rel="noopener">etcd</a></li>
+<li><a href="https://zookeeper.apache.org" target="_blank" rel="noopener">zookeeper</a></li>
+<li><a href="https://www.consul.io/" target="_blank" rel="noopener">consul</a></li>
+<li><a href="https://github.com/kelseyhightower/confd" target="_blank" rel="noopener">confd</a></li>
+<li><a href="http://www.cfg4j.org" target="_blank" rel="noopener">cfg4j</a></li>
+<li><a href="https://github.com/melin/super-diamond" target="_blank" rel="noopener">super-diamond</a> ,已停止更新</li>
 </ul>
 <p>开源之外呢？<br>应该说最好的配置中心还是在各个互联网公司的基础架构部里，虽然不是完美，虽然修修补补，常见的两种玩法</p>
 <ul>
@@ -166,14 +166,14 @@
 <li><p>另一种玩法是基于运维自动化的配置文件的推送，一样有数据库与界面或API来管理配置，下发时生成配置文件，基于各种运维自动化工具如Puppet，Ansible推送到每个客户端。而应用则定时重新读取这个外部的配置文件</p>
 </li>
 </ul>
-<p>ref<br><a href="http://jm.taobao.org/2016/09/28/an-article-about-config-center/" target="_blank" rel="external">一篇好TM长的关于配置中心的文章</a><br><a href="http://calvin1978.blogcn.com/articles/serviceconfig.html" target="_blank" rel="external">服务化体系之－配置中心，在ZK或etcd之外</a><br><a href="http://vernonzheng.com/2015/02/09/%E5%BC%80%E6%BA%90%E5%88%86%E5%B8%83%E5%BC%8F%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E9%80%89%E5%9E%8B/" target="_blank" rel="external">开源分布式配置中心选型</a></p>
+<p>ref<br><a href="http://jm.taobao.org/2016/09/28/an-article-about-config-center/" target="_blank" rel="noopener">一篇好TM长的关于配置中心的文章</a><br><a href="http://calvin1978.blogcn.com/articles/serviceconfig.html" target="_blank" rel="noopener">服务化体系之－配置中心，在ZK或etcd之外</a><br><a href="http://vernonzheng.com/2015/02/09/%E5%BC%80%E6%BA%90%E5%88%86%E5%B8%83%E5%BC%8F%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E9%80%89%E5%9E%8B/" target="_blank" rel="noopener">开源分布式配置中心选型</a></p>
 <hr>
 <p>您的鼓励是我写作最大的动力</p>
 <p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
 
 							<!-- 支付宝打赏图案 -->
       						<div id="donate_guide" class="donate_bar center ">
-          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
           					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
           					</a> 
       						</div>

@@ -1,8 +1,8 @@
 	<!DOCTYPE HTML>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
-  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
   
   <title>docker学习笔记-AUFS | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
@@ -13,8 +13,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta property="og:title" content="docker学习笔记-AUFS"/>
-  <meta property="og:site_name" content="t1ger的茶馆"/>
+  <meta property="og:title" content="docker学习笔记-AUFS">
+  <meta property="og:site_name" content="t1ger的茶馆">
 
   
   
@@ -62,7 +62,7 @@
 	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
 
 </head>
-
+</html>
  	<body>
 	  <nav class="navbar navbar-default">
     <div class="container">
@@ -130,21 +130,21 @@
 <p>AUFS是一种Union File System，所谓UnionFS就是把不同物理位置的目录合并mount到同一个目录中。UnionFS的一个最主要的应用是，把一张CD/DVD和一个硬盘目录给联合 mount在一起，然后，你就可以对这个只读的CD/DVD上的文件进行修改（当然,修改的文件存于硬盘上的目录里）</p>
 <p>传统的Linux加载bootfs时会先将rootfs设为read-only，然后在系统自检之后将rootfs从read-only改为read-write，然后就可以在rootfs上进行写和读的操作了。但Docker的镜像却不是这样，它在bootfs自检完毕之后并不会把rootfs的read-only改为read-write。而是利用union mount（UnionFS的一种挂载机制）将一个或多个read-only的rootfs加载到之前的read-only的rootfs层之上。在加载了这么多层的rootfs之后，仍然让它看起来只像是一个文件系统，在Docker的体系里把union mount的这些read-only的rootfs叫做Docker的镜像。但是，此时的每一层rootfs都是read-only的，此时还不能对其进行操作。当创建一个容器，也就是将Docker镜像进行实例化，系统会在一层或是多层read-only的rootfs之上分配一层空的read-write的rootfs</p>
 <p>回到AUFS,让我们来看个示例吧<br>首先，建上两个目录（水果和蔬菜），并在这两个目录中放上一些文件，水果中有苹果和蕃茄，蔬菜有胡萝卜和蕃茄。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">tree</div><div class="line">.</div><div class="line">├── fruits</div><div class="line">│   ├── apple</div><div class="line">│   └── tomato</div><div class="line">└── vegetables</div><div class="line">    ├── carrots</div><div class="line">    └── tomato</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">tree</span><br><span class="line">.</span><br><span class="line">├── fruits</span><br><span class="line">│   ├── apple</span><br><span class="line">│   └── tomato</span><br><span class="line">└── vegetables</span><br><span class="line">    ├── carrots</span><br><span class="line">    └── tomato</span><br></pre></td></tr></table></figure>
 <p>然后，输入以下命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"># 创建一个mount目录</div><div class="line">$ mkdir mnt</div><div class="line"># 把水果目录和蔬菜目录union mount到 ./mnt目录中</div><div class="line">$ sudo mount -t aufs -o dirs=./fruits:./vegetables none ./mnt</div><div class="line">#  查看./mnt目录</div><div class="line">$ tree ./mnt</div><div class="line">./mnt</div><div class="line">├── apple</div><div class="line">├── carrots</div><div class="line">└── tomato</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># 创建一个mount目录</span><br><span class="line">$ mkdir mnt</span><br><span class="line"># 把水果目录和蔬菜目录union mount到 ./mnt目录中</span><br><span class="line">$ sudo mount -t aufs -o dirs=./fruits:./vegetables none ./mnt</span><br><span class="line">#  查看./mnt目录</span><br><span class="line">$ tree ./mnt</span><br><span class="line">./mnt</span><br><span class="line">├── apple</span><br><span class="line">├── carrots</span><br><span class="line">└── tomato</span><br></pre></td></tr></table></figure>
 <p>可以看到在./mnt目录下有三个文件，苹果apple、胡萝卜carrots和蕃茄tomato。水果和蔬菜的目录被union到了./mnt目录下了。<br>修改一下其中的文件内容</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ echo mnt &gt; ./mnt/apple</div><div class="line">$ cat ./mnt/apple</div><div class="line">mnt</div><div class="line">$ cat ./fruits/apple</div><div class="line">mnt</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ echo mnt &gt; ./mnt/apple</span><br><span class="line">$ cat ./mnt/apple</span><br><span class="line">mnt</span><br><span class="line">$ cat ./fruits/apple</span><br><span class="line">mnt</span><br></pre></td></tr></table></figure>
 <p>可以看到./mnt/apple的内容改了，./fruits/apple的内容也改</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ echo mnt_carrots &gt; ./mnt/carrots</div><div class="line">$ cat ./vegetables/carrots</div><div class="line">$ cat ./fruits/carrots</div><div class="line">mnt_carrots</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ echo mnt_carrots &gt; ./mnt/carrots</span><br><span class="line">$ cat ./vegetables/carrots</span><br><span class="line">$ cat ./fruits/carrots</span><br><span class="line">mnt_carrots</span><br></pre></td></tr></table></figure>
 <p>修改了./mnt/carrots的文件内容，./vegetables/carrots并没有变化，反而是./fruits/carrots的目录中出现了carrots文件，其内容是在./mnt/carrots里的内容。<br>在mount aufs命令中，没有指定它vegetables和fruits的目录权限，默认上来说，命令行上第一个(最左边)的目录是可读可写的，后面的全都是只读的</p>
 <p>所以，如果像下面这样指定权限来mount aufs，就会发现有不一样的效果(记得先把上面./fruits/carrots的文件删除了)。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"> sudo mount -t aufs -o dirs=./fruits=rw:./vegetables=rw none ./mnt</div><div class="line">$ echo &quot;mnt_carrots&quot; &gt; ./mnt/carrots</div><div class="line">$ cat ./vegetables/carrots</div><div class="line">mnt_carrots</div><div class="line">$ cat ./fruits/carrots</div><div class="line">cat: ./fruits/carrots: No such file or directory</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> sudo mount -t aufs -o dirs=./fruits=rw:./vegetables=rw none ./mnt</span><br><span class="line">$ echo &quot;mnt_carrots&quot; &gt; ./mnt/carrots</span><br><span class="line">$ cat ./vegetables/carrots</span><br><span class="line">mnt_carrots</span><br><span class="line">$ cat ./fruits/carrots</span><br><span class="line">cat: ./fruits/carrots: No such file or directory</span><br></pre></td></tr></table></figure>
 <p>如果要修改./mnt/tomato这个文件，那么究竟是哪个文件会被改写？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ echo &quot;mnt_tomato&quot; &gt; ./mnt/tomato</div><div class="line">$ cat ./fruits/tomato</div><div class="line">mnt_tomato</div><div class="line">$ cat ./vegetables/tomato</div><div class="line">I am a vegetable</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ echo &quot;mnt_tomato&quot; &gt; ./mnt/tomato</span><br><span class="line">$ cat ./fruits/tomato</span><br><span class="line">mnt_tomato</span><br><span class="line">$ cat ./vegetables/tomato</span><br><span class="line">I am a vegetable</span><br></pre></td></tr></table></figure>
 <p>可见，如果有重复的文件名，在mount命令行上，越往前的就优先级越高。</p>
 <p>关于docker的分层镜像，除了aufs，docker还支持btrfs, devicemapper和vfs，你可以使用-s或–storage-driver=选项来指定相关的镜像存储。在Ubuntu 14.04下，docker默认Ubuntu的aufs。在CentOS7下，用的是devicemapper，可以在下面的目录中查看相关的每个层的镜像</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/var/lib/docker/aufs/diff/&lt;id&gt;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/var/lib/docker/aufs/diff/&lt;id&gt;</span><br></pre></td></tr></table></figure>
 <h4 id="AUFS的一些特性"><a href="#AUFS的一些特性" class="headerlink" title="AUFS的一些特性"></a><b>AUFS的一些特性</b></h4><p>AUFS实现了所有Union FS的特性，把多个目录合并为同一目录，并可以按每个需要合并的目录指定相应的权限，实时的添加、删除、修改已经mount好的目录，还可以在多个可写的branch/dir间进行负载均衡<br>被union的目录（分支）的相关权限</p>
 <ul>
 <li>rw表示可写可读read-write</li>
@@ -163,20 +163,20 @@
 <li>在阻止readdir的情况下，名字是’.wh..wh..opq’或者 ’.wh.__dir_opaque’</li>
 </ul>
 <p>假设有三个目录和文件如下所示（test是个空目录）：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"># tree</div><div class="line">.</div><div class="line">├── fruits</div><div class="line">│   ├── apple</div><div class="line">│   └── tomato</div><div class="line">├── test</div><div class="line">└── vegetables</div><div class="line">    ├── carrots</div><div class="line">    └── tomato</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># tree</span><br><span class="line">.</span><br><span class="line">├── fruits</span><br><span class="line">│   ├── apple</span><br><span class="line">│   └── tomato</span><br><span class="line">├── test</span><br><span class="line">└── vegetables</span><br><span class="line">    ├── carrots</span><br><span class="line">    └── tomato</span><br></pre></td></tr></table></figure>
 <p>如下mount：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># mkdir mnt</div><div class="line"># mount -t aufs -o dirs=./test=rw:./fruits=ro:./vegetables=ro none ./mnt</div><div class="line"># # ls ./mnt/</div><div class="line">apple carrots tomato</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># mkdir mnt</span><br><span class="line"># mount -t aufs -o dirs=./test=rw:./fruits=ro:./vegetables=ro none ./mnt</span><br><span class="line"># # ls ./mnt/</span><br><span class="line">apple carrots tomato</span><br></pre></td></tr></table></figure>
 <p>现在在权限为rw的test目录下建个whiteout的隐藏文件.wh.apple，会发现./mnt/apple这个文件就消失了:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># touch ./test/.wh.apple</div><div class="line"># ls ./mnt</div><div class="line">carrots  tomato</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># touch ./test/.wh.apple</span><br><span class="line"># ls ./mnt</span><br><span class="line">carrots  tomato</span><br></pre></td></tr></table></figure>
 <p>ref</p>
-<p><a href="http://coolshell.cn/articles/17061.html" target="_blank" rel="external">Docker基础技术：AUFS</a><br><a href="http://70data.net/1174.html" target="_blank" rel="external">Docker学习笔记（五）Linux AUFS</a></p>
+<p><a href="http://coolshell.cn/articles/17061.html" target="_blank" rel="noopener">Docker基础技术：AUFS</a><br><a href="http://70data.net/1174.html" target="_blank" rel="noopener">Docker学习笔记（五）Linux AUFS</a></p>
 <hr>
 <p>您的鼓励是我写作最大的动力</p>
 <p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
 
 							<!-- 支付宝打赏图案 -->
       						<div id="donate_guide" class="donate_bar center ">
-          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
           					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
           					</a> 
       						</div>

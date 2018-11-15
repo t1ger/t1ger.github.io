@@ -1,8 +1,8 @@
 	<!DOCTYPE HTML>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
-  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
   
   <title>Docker CE vs Docker EE | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
@@ -13,8 +13,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta property="og:title" content="Docker CE vs Docker EE"/>
-  <meta property="og:site_name" content="t1ger的茶馆"/>
+  <meta property="og:title" content="Docker CE vs Docker EE">
+  <meta property="og:site_name" content="t1ger的茶馆">
 
   
   
@@ -62,7 +62,7 @@
 	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
 
 </head>
-
+</html>
  	<body>
 	  <nav class="navbar navbar-default">
     <div class="container">
@@ -130,20 +130,20 @@
 <p>项目    说明<br>版本格式    YY.MM<br>stable版本    每个季度发行<br>edge版本    每个月发行<br>当前CE版本    17.03.0-ce</p>
 <p>同时将Docker分成CE和EE2个版本。CE版本即社区版(免费，支持周期三个月),EE企业版，强调安全，付费使用。<br>当前的CE版本为17.03.0-ce，基于V1.13.0.主要修复错误，没有重大功能增加，API亦保持不变。</p>
 <h5 id="安装CE版本的Docker"><a href="#安装CE版本的Docker" class="headerlink" title="安装CE版本的Docker"></a><b>安装CE版本的Docker</b></h5><p>安装参看官方提供Manual如下</p>
-<p>项目    详细<br>CENTOS安装CE版    <a href="https://store.docker.com/editions/community/docker-ce-server-centos?tab=description" target="_blank" rel="external">https://store.docker.com/editions/community/docker-ce-server-centos?tab=description</a><br>也可以使用Easypack下面提供的脚本，只是将上面的内容顺次写进去，加上enable和start以及firewall的关闭等操作而已。</p>
-<p>项目    详细<br>CENTOS安装CE（Easypack）版    <a href="https://github.com/liumiaocn/easypack/tree/master/docker" target="_blank" rel="external">https://github.com/liumiaocn/easypack/tree/master/docker</a></p>
+<p>项目    详细<br>CENTOS安装CE版    <a href="https://store.docker.com/editions/community/docker-ce-server-centos?tab=description" target="_blank" rel="noopener">https://store.docker.com/editions/community/docker-ce-server-centos?tab=description</a><br>也可以使用Easypack下面提供的脚本，只是将上面的内容顺次写进去，加上enable和start以及firewall的关闭等操作而已。</p>
+<p>项目    详细<br>CENTOS安装CE（Easypack）版    <a href="https://github.com/liumiaocn/easypack/tree/master/docker" target="_blank" rel="noopener">https://github.com/liumiaocn/easypack/tree/master/docker</a></p>
 <h5 id="安装FAQ"><a href="#安装FAQ" class="headerlink" title="安装FAQ"></a><b>安装FAQ</b></h5><p>在yum 安装时候，报出Peer’s Certificate has expired的错误</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">failure: repodata/repomd.xml from docker-ce-stable: [Errno 256] No more mirrors to try.</div><div class="line">https://download.docker.com/linux/centos/7/x86_64/stable/repodata/repomd.xml: [Errno 14] curl#60 - &quot;Peer&apos;s Certificate has expired.&quot;</div></pre></td></tr></table></figure>
-<p>搜索很久，终于看到有位兄弟碰到过，原来是本地时间不正确造成的，详情见<a href="https://xuxinkun.github.io/2016/04/21/curl-ca-problem/" target="_blank" rel="external">这里</a></p>
-<p>进行一次ntp同步时间同步，问题解决<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ntpdate pool.ntp.org</div></pre></td></tr></table></figure></p>
-<p>ref<br><a href="https://docs.docker.com/engine/installation/linux/centos/" target="_blank" rel="external">Get Docker for CentOS</a><br><a href="https://xuxinkun.github.io/2016/04/21/curl-ca-problem/" target="_blank" rel="external">记一次解决curl https证书问题</a><br><a href="https://github.com/tiny1990/aboutTest" target="_blank" rel="external">docker的环境部署</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">failure: repodata/repomd.xml from docker-ce-stable: [Errno 256] No more mirrors to try.</span><br><span class="line">https://download.docker.com/linux/centos/7/x86_64/stable/repodata/repomd.xml: [Errno 14] curl#60 - &quot;Peer&apos;s Certificate has expired.&quot;</span><br></pre></td></tr></table></figure>
+<p>搜索很久，终于看到有位兄弟碰到过，原来是本地时间不正确造成的，详情见<a href="https://xuxinkun.github.io/2016/04/21/curl-ca-problem/" target="_blank" rel="noopener">这里</a></p>
+<p>进行一次ntp同步时间同步，问题解决<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ntpdate pool.ntp.org</span><br></pre></td></tr></table></figure></p>
+<p>ref<br><a href="https://docs.docker.com/engine/installation/linux/centos/" target="_blank" rel="noopener">Get Docker for CentOS</a><br><a href="https://xuxinkun.github.io/2016/04/21/curl-ca-problem/" target="_blank" rel="noopener">记一次解决curl https证书问题</a><br><a href="https://github.com/tiny1990/aboutTest" target="_blank" rel="noopener">docker的环境部署</a></p>
 <hr>
 <p>您的鼓励是我写作最大的动力</p>
 <p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
 
 							<!-- 支付宝打赏图案 -->
       						<div id="donate_guide" class="donate_bar center ">
-          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
           					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
           					</a> 
       						</div>

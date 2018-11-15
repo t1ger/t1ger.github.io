@@ -1,8 +1,8 @@
 	<!DOCTYPE HTML>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
-  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
   
   <title>ESXi-5.x FAQ | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
@@ -13,8 +13,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta property="og:title" content="ESXi-5.x FAQ"/>
-  <meta property="og:site_name" content="t1ger的茶馆"/>
+  <meta property="og:title" content="ESXi-5.x FAQ">
+  <meta property="og:site_name" content="t1ger的茶馆">
 
   
   
@@ -62,7 +62,7 @@
 	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
 
 </head>
-
+</html>
  	<body>
 	  <nav class="navbar navbar-default">
     <div class="container">
@@ -150,7 +150,7 @@
 <ul>
 <li>确保已经完好备份 vCenter Server Database</li>
 <li>关闭 VMware VirtualCenter Server 服务及任何其他使用该数据库的服务</li>
-<li>截断 VPX_HIST_STAT1 表及相应的 VPX_SAMPLE_TIME1 表。 截断完成后，验证汇总作业现在是否已成功完成。<br>注意： 在 vCenter Server 5.1 和 5.5 中，表名称为 VPX_HIST_STAT1_n。参考<a href="https://kb.vmware.com/selfservice/microsites/search.do?language=en_US&amp;cmd=displayKC&amp;externalId=2038474" target="_blank" rel="external">Troubleshooting VPX_HIST_STAT table sizes in VMware vCenter Server 5.x</a><br>注意： 要减小 vCenter Server 数据库的大小，还可以删除 VPX_EVENT、VPX_EVENT_ARG 和 VPX_TASK 表中的数据.参考<a href="https://kb.vmware.com/selfservice/search.do?cmd=displayKC&amp;docType=kc&amp;docTypeID=DT_KB_1_1&amp;externalId=1025914" target="_blank" rel="external">Purging old data from the database used by vCenter Server (1025914)</a></li>
+<li>截断 VPX_HIST_STAT1 表及相应的 VPX_SAMPLE_TIME1 表。 截断完成后，验证汇总作业现在是否已成功完成。<br>注意： 在 vCenter Server 5.1 和 5.5 中，表名称为 VPX_HIST_STAT1_n。参考<a href="https://kb.vmware.com/selfservice/microsites/search.do?language=en_US&amp;cmd=displayKC&amp;externalId=2038474" target="_blank" rel="noopener">Troubleshooting VPX_HIST_STAT table sizes in VMware vCenter Server 5.x</a><br>注意： 要减小 vCenter Server 数据库的大小，还可以删除 VPX_EVENT、VPX_EVENT_ARG 和 VPX_TASK 表中的数据.参考<a href="https://kb.vmware.com/selfservice/search.do?cmd=displayKC&amp;docType=kc&amp;docTypeID=DT_KB_1_1&amp;externalId=1025914" target="_blank" rel="noopener">Purging old data from the database used by vCenter Server (1025914)</a></li>
 <li>要运行汇总脚本，请执行以下步骤：<br>  a.使用 SQL Management Studio 连接到 vCenter Server 的 SQL 数据库。<br>  b.导航到 SQL Server Agent &gt; 作业。<br>  c.选择各个汇总作业，然后右键单击并选择启动作业于步骤。</li>
 <li>启动 VMware VirtualCenter Server 服务及任何其他在步骤 2 中停止的服务</li>
 </ul>
@@ -159,14 +159,14 @@
 <li>开启ssh终端，使用dell Exsi5收集脚本收集。</li>
 </ul>
 <p>ref</p>
-<p><a href="http://kb.vmware.com/selfservice/microsites/search.do?language=en_US&amp;cmd=displayKC&amp;externalId=2075522" target="_blank" rel="external">在远程控制台中键入时出现重复字符</a><br><a href="http://blog.csdn.net/zhgn2/article/details/18603529" target="_blank" rel="external">ESXI 5.5的搭建以及VMware9.0的虚拟机移植</a><br><a href="https://kb.vmware.com/selfservice/microsites/search.do?language=en_US&amp;cmd=displayKC&amp;externalId=1028042" target="_blank" rel="external">Cloning and converting virtual machine disks with vmkfstools</a><br><a href="https://kb.vmware.com/selfservice/microsites/search.do?cmd=displayKC&amp;docType=kc&amp;externalId=2077855" target="_blank" rel="external">当汇总脚本需要很长时间才能运行时减小 vCenter Server 数据库的大小</a><br><a href="ftp://64.199.0.197/" target="_blank" rel="external">dell收集工具exsi5_TTY.sh</a></p>
+<p><a href="http://kb.vmware.com/selfservice/microsites/search.do?language=en_US&amp;cmd=displayKC&amp;externalId=2075522" target="_blank" rel="noopener">在远程控制台中键入时出现重复字符</a><br><a href="http://blog.csdn.net/zhgn2/article/details/18603529" target="_blank" rel="noopener">ESXI 5.5的搭建以及VMware9.0的虚拟机移植</a><br><a href="https://kb.vmware.com/selfservice/microsites/search.do?language=en_US&amp;cmd=displayKC&amp;externalId=1028042" target="_blank" rel="noopener">Cloning and converting virtual machine disks with vmkfstools</a><br><a href="https://kb.vmware.com/selfservice/microsites/search.do?cmd=displayKC&amp;docType=kc&amp;externalId=2077855" target="_blank" rel="noopener">当汇总脚本需要很长时间才能运行时减小 vCenter Server 数据库的大小</a><br><a href="ftp://64.199.0.197/" target="_blank" rel="noopener">dell收集工具exsi5_TTY.sh</a></p>
 <hr>
 <p>您的鼓励是我写作最大的动力</p>
 <p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
 
 							<!-- 支付宝打赏图案 -->
       						<div id="donate_guide" class="donate_bar center ">
-          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
           					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
           					</a> 
       						</div>

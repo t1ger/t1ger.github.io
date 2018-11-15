@@ -1,8 +1,8 @@
 	<!DOCTYPE HTML>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
-  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
   
   <title>how to migrate Gitlab to a new server | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
@@ -13,8 +13,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta property="og:title" content="how to migrate Gitlab to a new server"/>
-  <meta property="og:site_name" content="t1ger的茶馆"/>
+  <meta property="og:title" content="how to migrate Gitlab to a new server">
+  <meta property="og:site_name" content="t1ger的茶馆">
 
   
   
@@ -62,7 +62,7 @@
 	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
 
 </head>
-
+</html>
  	<body>
 	  <nav class="navbar navbar-default">
     <div class="container">
@@ -125,33 +125,33 @@
 					
 
 					<div class="article-content">
-						<p>gitlab安装有三种方法: docker、yum 、源码,本文环境是yum安装方式<br>1.确认旧gitlab版本信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo gitlab-rake gitlab:env:info</div></pre></td></tr></table></figure></p>
-<p>注意: 新服务版本要求保持一致,否则无法导入,如果版本比较旧,需要升级旧版本服务器或新服务版本降级后在升级<br>旧服务器升级也比较简单<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">#stop some service</div><div class="line">sudo gitlab-ctl stop unicorn</div><div class="line">sudo gitlab-ctl stop sidekiq</div><div class="line">sudo gitlab-ctl stop nginx</div><div class="line">#update</div><div class="line">sudo yum update gitlab-ce</div><div class="line">sudo gitlab-ctl reconfigure</div><div class="line">sudo gitlab-ctl restart</div></pre></td></tr></table></figure></p>
+						<p>gitlab安装有三种方法: docker、yum 、源码,本文环境是yum安装方式<br>1.确认旧gitlab版本信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gitlab-rake gitlab:env:info</span><br></pre></td></tr></table></figure></p>
+<p>注意: 新服务版本要求保持一致,否则无法导入,如果版本比较旧,需要升级旧版本服务器或新服务版本降级后在升级<br>旧服务器升级也比较简单<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#stop some service</span><br><span class="line">sudo gitlab-ctl stop unicorn</span><br><span class="line">sudo gitlab-ctl stop sidekiq</span><br><span class="line">sudo gitlab-ctl stop nginx</span><br><span class="line">#update</span><br><span class="line">sudo yum update gitlab-ce</span><br><span class="line">sudo gitlab-ctl reconfigure</span><br><span class="line">sudo gitlab-ctl restart</span><br></pre></td></tr></table></figure></p>
 <p>2.备份配置文件和数据<br>将 /etc/gitlab/gitlab.rb 和 gitlab-secrets.json 拷贝到新服务对应目录<br>注意,我旧环境是用了自带的nginx,新环境用了机器上已经存在的nginx</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">#disable nginx service</div><div class="line">vi /etc/gitlab/gitlab.rb...#设置nginx为false,关闭自带Nginxnginx[‘enable‘] = false...</div><div class="line"></div><div class="line">#check nginx config,migrate to new nginx</div><div class="line">/var/opt/gitlab/nginx/conf/nginx.conf  </div><div class="line">/var/opt/gitlab/nginx/conf/gitlab-http.conf</div><div class="line">/var/opt/gitlab/nginx/conf/nginx-status.conf</div><div class="line"></div><div class="line">#restart service</div><div class="line">sudo gitlab-ctl reconfigure</div><div class="line">sudo service nginx restart</div></pre></td></tr></table></figure>
-<p>备份旧机器git数据,同时拷贝到新服务上<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#backup gitlab to  /var/opt/gitlab/backups</div><div class="line">gitlab-rake gitlab:backup:create</div></pre></td></tr></table></figure></p>
-<p>在新机器上恢复数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gitlab-rake gitlab:backup:restore RAILS_ENV=production   BACKUP=1513135372_2017_12_13</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#disable nginx service</span><br><span class="line">vi /etc/gitlab/gitlab.rb...#设置nginx为false,关闭自带Nginxnginx[‘enable‘] = false...</span><br><span class="line"></span><br><span class="line">#check nginx config,migrate to new nginx</span><br><span class="line">/var/opt/gitlab/nginx/conf/nginx.conf  </span><br><span class="line">/var/opt/gitlab/nginx/conf/gitlab-http.conf</span><br><span class="line">/var/opt/gitlab/nginx/conf/nginx-status.conf</span><br><span class="line"></span><br><span class="line">#restart service</span><br><span class="line">sudo gitlab-ctl reconfigure</span><br><span class="line">sudo service nginx restart</span><br></pre></td></tr></table></figure>
+<p>备份旧机器git数据,同时拷贝到新服务上<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#backup gitlab to  /var/opt/gitlab/backups</span><br><span class="line">gitlab-rake gitlab:backup:create</span><br></pre></td></tr></table></figure></p>
+<p>在新机器上恢复数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gitlab-rake gitlab:backup:restore RAILS_ENV=production   BACKUP=1513135372_2017_12_13</span><br></pre></td></tr></table></figure></p>
 <p>如果新机器数据不全,可以把／var/opt/gitlab/git-data拷贝过去</p>
 <p>3.迁移遇到的问题</p>
 <ul>
 <li><p>在新机器执行gitlab-ctl reconfigure,查看进程ps -ef|grep nginx</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">root 11485 0.0 0.0 1836 608 ? Ss Mar18 0:02 runsvdir -P /opt/gitlab/service log: </div><div class="line">…..runsv nginx: warning: unable to open supervise/stat.new: </div><div class="line">file does not exist runsv nginx: warning: unable to open supervise/stat.new:</div><div class="line">file does not exist runsv nginx: warning: unable to open supervise/pid.new: </div><div class="line">file does not exist runsv nginx: warning: unable to open log/supervise/pid.new:</div><div class="line">file does not exist runsv nginx: warning: unable to open log/supervise/pid.new:</div><div class="line">file does not exist</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">root 11485 0.0 0.0 1836 608 ? Ss Mar18 0:02 runsvdir -P /opt/gitlab/service log: </span><br><span class="line">…..runsv nginx: warning: unable to open supervise/stat.new: </span><br><span class="line">file does not exist runsv nginx: warning: unable to open supervise/stat.new:</span><br><span class="line">file does not exist runsv nginx: warning: unable to open supervise/pid.new: </span><br><span class="line">file does not exist runsv nginx: warning: unable to open log/supervise/pid.new:</span><br><span class="line">file does not exist runsv nginx: warning: unable to open log/supervise/pid.new:</span><br><span class="line">file does not exist</span><br></pre></td></tr></table></figure>
 <p>  解决方法: 重启系统解决</p>
 </li>
 <li><p>查看nginx日志报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">2017/12/13 13:19:00 [crit] 2436#0: *2 connect() to unix:/var/opt/gitlab/gitlab-workhorse/socket failed (13: Permission denied) while connecting to upstream, client: 119.6.3.75, server: gitlab.weishao.com.cn, request: &quot;GET /index.html HTTP/1.1&quot;, upstream: &quot;http://unix:/var/opt/gitlab/gitlab-workhorse/socket:/index.html&quot;, host: &quot;59.110.114.10&quot;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2017/12/13 13:19:00 [crit] 2436#0: *2 connect() to unix:/var/opt/gitlab/gitlab-workhorse/socket failed (13: Permission denied) while connecting to upstream, client: 119.6.3.75, server: gitlab.weishao.com.cn, request: &quot;GET /index.html HTTP/1.1&quot;, upstream: &quot;http://unix:/var/opt/gitlab/gitlab-workhorse/socket:/index.html&quot;, host: &quot;59.110.114.10&quot;</span><br></pre></td></tr></table></figure>
 <p>  解决方法: 由于旧服务nginx使用git启动nginx,新服务器用nobody用户运行nginx,我们通过修改 /etc/gitlab/gitlab.rb文件解决</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">##! When bundled nginx is disabled we need to add the external webserver user to</div><div class="line">##! the GitLab webserver group.</div><div class="line">web_server[&apos;external_users&apos;] = [&apos;nobody&apos;]</div><div class="line">web_server[&apos;username&apos;] = &apos;nobody&apos;</div><div class="line">web_server[&apos;group&apos;] = &apos;nobody&apos;</div><div class="line">web_server[&apos;uid&apos;] = 99</div><div class="line">web_server[&apos;gid&apos;] = 99</div><div class="line">web_server[&apos;shell&apos;] = &apos;/bin/false&apos;</div><div class="line">web_server[&apos;home&apos;] = &apos;/var/opt/gitlab/nginx&apos;</div><div class="line"></div><div class="line">sudo gitlab-ctl reconfigure</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">##! When bundled nginx is disabled we need to add the external webserver user to</span><br><span class="line">##! the GitLab webserver group.</span><br><span class="line">web_server[&apos;external_users&apos;] = [&apos;nobody&apos;]</span><br><span class="line">web_server[&apos;username&apos;] = &apos;nobody&apos;</span><br><span class="line">web_server[&apos;group&apos;] = &apos;nobody&apos;</span><br><span class="line">web_server[&apos;uid&apos;] = 99</span><br><span class="line">web_server[&apos;gid&apos;] = 99</span><br><span class="line">web_server[&apos;shell&apos;] = &apos;/bin/false&apos;</span><br><span class="line">web_server[&apos;home&apos;] = &apos;/var/opt/gitlab/nginx&apos;</span><br><span class="line"></span><br><span class="line">sudo gitlab-ctl reconfigure</span><br></pre></td></tr></table></figure>
 <p>  也可以将nginx运行账号添加到gitlab-www组中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo usermod -a -G gitlab-www nobody</div><div class="line">sudo service nginx restart</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo usermod -a -G gitlab-www nobody</span><br><span class="line">sudo service nginx restart</span><br></pre></td></tr></table></figure>
 <p>  但是执行sudo gitlab-ctl reconfigure后需要重新执行</p>
 </li>
 </ul>
-<p>ref<br><a href="http://blog.pzxbc.com/2016/03/22/gitlab-install-configure/" target="_blank" rel="external">Gitlab安装配置及使用</a></p>
+<p>ref<br><a href="http://blog.pzxbc.com/2016/03/22/gitlab-install-configure/" target="_blank" rel="noopener">Gitlab安装配置及使用</a></p>
 
 							<!-- 支付宝打赏图案 -->
       						<div id="donate_guide" class="donate_bar center ">
-          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
           					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
           					</a> 
       						</div>

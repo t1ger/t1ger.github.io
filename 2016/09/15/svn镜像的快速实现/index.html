@@ -1,8 +1,8 @@
 	<!DOCTYPE HTML>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
-  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
   
   <title>svn镜像的快速实现 | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
@@ -13,8 +13,8 @@
   <meta name="keywords" content="svn,http,mirror">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta property="og:title" content="svn镜像的快速实现"/>
-  <meta property="og:site_name" content="t1ger的茶馆"/>
+  <meta property="og:title" content="svn镜像的快速实现">
+  <meta property="og:site_name" content="t1ger的茶馆">
 
   
   
@@ -62,7 +62,7 @@
 	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
 
 </head>
-
+</html>
  	<body>
 	  <nav class="navbar navbar-default">
     <div class="container">
@@ -127,7 +127,7 @@
 					<div class="article-content">
 						<h4 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h4><p>在实际的应用环境，现有的SVN代码库数据量大，而svnsync却需要先初始化一个空库，然后再从0开始一直同步到相同的版本；<br>而主从服务器之间网络不好，因此需要较长时间或者传输中断。</p>
 <h3 id="配置过程："><a href="#配置过程：" class="headerlink" title="配置过程："></a>配置过程：</h3><ul>
-<li><p>备份主库(master)<br>svnadmin hotcopy path/to/repository path/to/backup –clean-logs<br>推荐使用hotcopy ，另外一种方法：<br>svnadmin dump <a href="http://source-server/svn/source-repo" target="_blank" rel="external">http://source-server/svn/source-repo</a> &gt; source-repo.dump</p>
+<li><p>备份主库(master)<br>svnadmin hotcopy path/to/repository path/to/backup –clean-logs<br>推荐使用hotcopy ，另外一种方法：<br>svnadmin dump <a href="http://source-server/svn/source-repo" target="_blank" rel="noopener">http://source-server/svn/source-repo</a> &gt; source-repo.dump</p>
 </li>
 <li><p>将备份文件拷贝到从服务器上(master)</p>
 </li>
@@ -140,8 +140,8 @@
 </li>
 </ul>
 <ul>
-<li><p>在master上通过svnsync 初始化(master)<br>svnsync initialize URL_MIRROR_REPO URL_MASTER_REPO –username=svnsync –password=svnsyncpassword<br>svnsync init file:///home/backup/svn/svnsync/Project1/  <a href="http://svntest.subversion.com/repos/Project1" target="_blank" rel="external">http://svntest.subversion.com/repos/Project1</a><br>语法是：svnsync init {你刚创建的库url} {源库url}<br>注意本地url是三个斜杠的：///</p>
-<p>  svnsync init <a href="http://192.168.1.100/svn/Code" target="_blank" rel="external">http://192.168.1.100/svn/Code</a> <a href="http://192.168.1.101/svn/Code" target="_blank" rel="external">http://192.168.1.101/svn/Code</a> –username=svnsync –password=svnsync</p>
+<li><p>在master上通过svnsync 初始化(master)<br>svnsync initialize URL_MIRROR_REPO URL_MASTER_REPO –username=svnsync –password=svnsyncpassword<br>svnsync init file:///home/backup/svn/svnsync/Project1/  <a href="http://svntest.subversion.com/repos/Project1" target="_blank" rel="noopener">http://svntest.subversion.com/repos/Project1</a><br>语法是：svnsync init {你刚创建的库url} {源库url}<br>注意本地url是三个斜杠的：///</p>
+<p>  svnsync init <a href="http://192.168.1.100/svn/Code" target="_blank" rel="noopener">http://192.168.1.100/svn/Code</a> <a href="http://192.168.1.101/svn/Code" target="_blank" rel="noopener">http://192.168.1.101/svn/Code</a> –username=svnsync –password=svnsync</p>
 </li>
 <li><p>在slave上备份初始化后的库(slave)<br>  cd /data/backup<br>  mv Code /opt/mirrorbak</p>
 </li>
@@ -150,9 +150,9 @@
 <p>  替换初始版本日志<br>  cd revprops/0/<br>  cp -p /opt/mirrorbak/db/revprops/0/0 .</p>
 <p>  更改仓库目录属主<br>  chown -R apache.apache /data/backup/Code</p>
 </li>
-<li><p>复制sync-last-merged-rev（最后一次同步）版本号(master)<br>  获取当前版本号，eg:7289<br>  cat Code/db/current<br>  将当前版本好复制到slave<br>  svn propset –revprop -r0 svn:sync-last-merged-rev 7289 <a href="http://192.168.1.100/svn/Code" target="_blank" rel="external">http://192.168.1.100/svn/Code</a><br>  执行一次同步<br>  svnsync sync <a href="http://192.168.1.100/svn/Code" target="_blank" rel="external">http://192.168.1.100/svn/Code</a></p>
+<li><p>复制sync-last-merged-rev（最后一次同步）版本号(master)<br>  获取当前版本号，eg:7289<br>  cat Code/db/current<br>  将当前版本好复制到slave<br>  svn propset –revprop -r0 svn:sync-last-merged-rev 7289 <a href="http://192.168.1.100/svn/Code" target="_blank" rel="noopener">http://192.168.1.100/svn/Code</a><br>  执行一次同步<br>  svnsync sync <a href="http://192.168.1.100/svn/Code" target="_blank" rel="noopener">http://192.168.1.100/svn/Code</a></p>
 </li>
-<li><p>配置实时同步<br>  在主库的hooks目录下开启post-commit<br>  mv post-commit.tmpl post-commit<br>  chmod +x post-commit<br>  svnsync synchronize <a href="http://192.168.1.100/svn/Code" target="_blank" rel="external">http://192.168.1.100/svn/Code</a> –username=svnsync –password=svnsync &amp;<br>  exit 0 </p>
+<li><p>配置实时同步<br>  在主库的hooks目录下开启post-commit<br>  mv post-commit.tmpl post-commit<br>  chmod +x post-commit<br>  svnsync synchronize <a href="http://192.168.1.100/svn/Code" target="_blank" rel="noopener">http://192.168.1.100/svn/Code</a> –username=svnsync –password=svnsync &amp;<br>  exit 0 </p>
 </li>
 <li><p>配置slave只让sync用户提交</p>
 <p>  pre-revprop-change<br>  if [ “$USER” = “svnsync” ]; then<br>  exit 0<br>  fi<br>  echo “Only the svnsync user may change revision properties as this is a read-only, mirror repository.” &gt;&amp;2<br>  exit 1 </p>
@@ -164,7 +164,7 @@
 
 							<!-- 支付宝打赏图案 -->
       						<div id="donate_guide" class="donate_bar center ">
-          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
           					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
           					</a> 
       						</div>

@@ -1,8 +1,8 @@
 	<!DOCTYPE HTML>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
-  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
   
   <title>python闭包的理解 | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
@@ -13,8 +13,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta property="og:title" content="python闭包的理解"/>
-  <meta property="og:site_name" content="t1ger的茶馆"/>
+  <meta property="og:title" content="python闭包的理解">
+  <meta property="og:site_name" content="t1ger的茶馆">
 
   
   
@@ -62,7 +62,7 @@
 	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
 
 </head>
-
+</html>
  	<body>
 	  <nav class="navbar navbar-default">
     <div class="container">
@@ -128,9 +128,9 @@
 						<h4 id="什么是闭包"><a href="#什么是闭包" class="headerlink" title="什么是闭包"></a>什么是闭包</h4><p>维基上的解释:<br>在计算机科学中，闭包（Closure）是词法闭包（Lexical Closure）的简称，是引用了自由变量的函数。这个被引用的自由变量将和这个函数一同存在，即使已经离开了创造它的环境也不例外。所以，有另一种说法认为闭包是由函数和与其相关的引用环境组合而成的实体。闭包在运行时可以有多个实例，不同的引用环境和相同的函数组合可以产生不同的实例。</p>
 <p>假如用一句话来理解这段话：函数内在包含子函数，并最终return子函数</p>
 <p>举个栗子：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">def parent(name):</div><div class="line">    def child(age):</div><div class="line">        print &apos;name:&apos;, name, &apos;age:&apos;, age</div><div class="line">    return child</div><div class="line"></div><div class="line">who = parent(&apos;tomcat&apos;)</div><div class="line">who(26)  # &gt;&gt;&gt; name: tomcat age: 26</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">def parent(name):</span><br><span class="line">    def child(age):</span><br><span class="line">        print &apos;name:&apos;, name, &apos;age:&apos;, age</span><br><span class="line">    return child</span><br><span class="line"></span><br><span class="line">who = parent(&apos;tomcat&apos;)</span><br><span class="line">who(26)  # &gt;&gt;&gt; name: tomcat age: 26</span><br></pre></td></tr></table></figure>
 <p>在调用parent的时候就产生了一个闭包–child,该闭包持有自由变量–name.即当函数parent的生命周期结束后，name的变量依然存在。因为它被闭包引用了，所以不会被回收。</p>
-<h4 id="闭包的应用"><a href="#闭包的应用" class="headerlink" title="闭包的应用"></a>闭包的应用</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">def decorator_func(func):</div><div class="line">    def wrapper(*args, **kwargs):</div><div class="line">        return func(*args, **kwargs)</div><div class="line">    return wrapper</div><div class="line">	</div><div class="line">@decorator_func</div><div class="line">def func(name):</div><div class="line">    print &apos;my name is&apos;, name</div><div class="line">	</div><div class="line">#等价于</div><div class="line">decorator_func(func)</div></pre></td></tr></table></figure>
+<h4 id="闭包的应用"><a href="#闭包的应用" class="headerlink" title="闭包的应用"></a>闭包的应用</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">def decorator_func(func):</span><br><span class="line">    def wrapper(*args, **kwargs):</span><br><span class="line">        return func(*args, **kwargs)</span><br><span class="line">    return wrapper</span><br><span class="line">	</span><br><span class="line">@decorator_func</span><br><span class="line">def func(name):</span><br><span class="line">    print &apos;my name is&apos;, name</span><br><span class="line">	</span><br><span class="line">#等价于</span><br><span class="line">decorator_func(func)</span><br></pre></td></tr></table></figure>
 <p>在这个例子中，闭包(wrapper)有外部的func这个参数，并且能接收外部传来的参数，并将参数传递给func,返回执行结果</p>
 <h4 id="总结-在Python中创建一个闭包可以归结为以下三点"><a href="#总结-在Python中创建一个闭包可以归结为以下三点" class="headerlink" title="总结,在Python中创建一个闭包可以归结为以下三点:"></a>总结,在Python中创建一个闭包可以归结为以下三点:</h4><ul>
 <li>闭包函数必须有内嵌函数</li>
@@ -138,14 +138,14 @@
 <li>闭包函数必须返回内嵌函数</li>
 </ul>
 <p>参考</p>
-<p><a href="http://www.cnblogs.com/vamei/archive/2012/12/15/2772451.html" target="_blank" rel="external">python 深入闭包</a><br><a href="https://www.the5fire.com/closure-in-python.html" target="_blank" rel="external">python 中的闭包</a></p>
+<p><a href="http://www.cnblogs.com/vamei/archive/2012/12/15/2772451.html" target="_blank" rel="noopener">python 深入闭包</a><br><a href="https://www.the5fire.com/closure-in-python.html" target="_blank" rel="noopener">python 中的闭包</a></p>
 <hr>
 <p>您的鼓励是我写作最大的动力</p>
 <p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
 
 							<!-- 支付宝打赏图案 -->
       						<div id="donate_guide" class="donate_bar center ">
-          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
           					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
           					</a> 
       						</div>

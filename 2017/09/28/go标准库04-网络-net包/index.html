@@ -1,8 +1,8 @@
 	<!DOCTYPE HTML>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
-  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls" />
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
   
   <title>go标准库04 网络(net包) | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
@@ -13,8 +13,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta property="og:title" content="go标准库04 网络(net包)"/>
-  <meta property="og:site_name" content="t1ger的茶馆"/>
+  <meta property="og:title" content="go标准库04 网络(net包)">
+  <meta property="og:site_name" content="t1ger的茶馆">
 
   
   
@@ -62,7 +62,7 @@
 	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
 
 </head>
-
+</html>
  	<body>
 	  <nav class="navbar navbar-default">
     <div class="container">
@@ -127,15 +127,15 @@
 					<div class="article-content">
 						<p>net包提供了可移植的网络I/O接口，包括TCP/IP、UDP、域名解析和Unix域socket。</p>
 <p>我们大部分使用者只需要Dial、Listen和Accept函数提供的基本接口；以及相关的Conn和Listener接口。crypto/tls包提供了相同的接口和类似的Dial和Listen函数。</p>
-<p>Dial函数和服务端建立连接：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">conn, err := net.Dial(&quot;tcp&quot;, &quot;google.com:80&quot;)</div><div class="line">if err != nil &#123;</div><div class="line">	// handle error</div><div class="line">&#125;</div><div class="line">fmt.Fprintf(conn, &quot;GET / HTTP/1.0\r\n\r\n&quot;)</div><div class="line">status, err := bufio.NewReader(conn).ReadString(&apos;\n&apos;)</div><div class="line">// ...</div></pre></td></tr></table></figure></p>
-<p>Listen函数创建的服务端：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">ln, err := net.Listen(&quot;tcp&quot;, &quot;:8080&quot;)</div><div class="line">if err != nil &#123;</div><div class="line">	// handle error</div><div class="line">&#125;</div><div class="line">for &#123;</div><div class="line">	conn, err := ln.Accept()</div><div class="line">	if err != nil &#123;</div><div class="line">		// handle error</div><div class="line">		continue</div><div class="line">	&#125;</div><div class="line">	go handleConnection(conn)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>Dial函数和服务端建立连接：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">conn, err := net.Dial(&quot;tcp&quot;, &quot;google.com:80&quot;)</span><br><span class="line">if err != nil &#123;</span><br><span class="line">	// handle error</span><br><span class="line">&#125;</span><br><span class="line">fmt.Fprintf(conn, &quot;GET / HTTP/1.0\r\n\r\n&quot;)</span><br><span class="line">status, err := bufio.NewReader(conn).ReadString(&apos;\n&apos;)</span><br><span class="line">// ...</span><br></pre></td></tr></table></figure></p>
+<p>Listen函数创建的服务端：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ln, err := net.Listen(&quot;tcp&quot;, &quot;:8080&quot;)</span><br><span class="line">if err != nil &#123;</span><br><span class="line">	// handle error</span><br><span class="line">&#125;</span><br><span class="line">for &#123;</span><br><span class="line">	conn, err := ln.Accept()</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		// handle error</span><br><span class="line">		continue</span><br><span class="line">	&#125;</span><br><span class="line">	go handleConnection(conn)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>如果我们要实现一个http web服务,一般通过两种方法实现,一种是我们使用net包的net.Listen来对端口进行监听,另一个是使用net/http包,这里我们看下用net/http如何实现</p>
 <ul>
 <li><p>http客户端</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">import (</div><div class="line">    &quot;fmt&quot;</div><div class="line">    &quot;net/http&quot;</div><div class="line">    &quot;io/ioutil&quot;</div><div class="line">)</div><div class="line"> </div><div class="line">func main() &#123;</div><div class="line">    response,_ := http.Get(&quot;http://www.baidu.com&quot;)</div><div class="line">    defer response.Body.Close()</div><div class="line">    body,_ := ioutil.ReadAll(response.Body)</div><div class="line">    fmt.Println(string(body))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">import (</span><br><span class="line">    &quot;fmt&quot;</span><br><span class="line">    &quot;net/http&quot;</span><br><span class="line">    &quot;io/ioutil&quot;</span><br><span class="line">)</span><br><span class="line"> </span><br><span class="line">func main() &#123;</span><br><span class="line">    response,_ := http.Get(&quot;http://www.baidu.com&quot;)</span><br><span class="line">    defer response.Body.Close()</span><br><span class="line">    body,_ := ioutil.ReadAll(response.Body)</span><br><span class="line">    fmt.Println(string(body))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>http服务端</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"> </div><div class="line">import (</div><div class="line">    &quot;net/http&quot;</div><div class="line">)</div><div class="line"> </div><div class="line">func SayHello(w http.ResponseWriter, req *http.Request) &#123;</div><div class="line">    w.Write([]byte(&quot;Hello&quot;))</div><div class="line">&#125;</div><div class="line"> </div><div class="line">func main() &#123;</div><div class="line">    http.HandleFunc(&quot;/hello&quot;, SayHello)</div><div class="line">    http.ListenAndServe(&quot;:8001&quot;, nil)</div><div class="line"> </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"> </span><br><span class="line">import (</span><br><span class="line">    &quot;net/http&quot;</span><br><span class="line">)</span><br><span class="line"> </span><br><span class="line">func SayHello(w http.ResponseWriter, req *http.Request) &#123;</span><br><span class="line">    w.Write([]byte(&quot;Hello&quot;))</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">func main() &#123;</span><br><span class="line">    http.HandleFunc(&quot;/hello&quot;, SayHello)</span><br><span class="line">    http.ListenAndServe(&quot;:8001&quot;, nil)</span><br><span class="line"> </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>  进行端口的监听：http.ListenAndServe(“:8001”, nil)<br>注册路径处理函数：http.HandleFunc(“/hello”, SayHello)<br>处理函数：func SayHello(w http.ResponseWriter, req *http.Request)</p>
 </li>
 </ul>
@@ -145,7 +145,7 @@
 
 							<!-- 支付宝打赏图案 -->
       						<div id="donate_guide" class="donate_bar center ">
-          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
           					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
           					</a> 
       						</div>
