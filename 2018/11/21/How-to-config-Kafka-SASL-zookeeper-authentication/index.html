@@ -1,0 +1,255 @@
+	<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
+  
+  <title>How to config Kafka SASL zookeeper authentication | t1ger的茶馆</title>
+  <meta name="author" content="t1ger">
+  
+  <meta name="description" content="https://t1ger.github.io/">
+  
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta property="og:title" content="How to config Kafka SASL zookeeper authentication">
+  <meta property="og:site_name" content="t1ger的茶馆">
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+</head>
+</html>
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">t1ger的茶馆</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="这是一个订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>How to config Kafka SASL zookeeper authentication</h2>
+					
+					<div>
+						<span class="post-time">2018-11-21 17:06:00</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<p>单节点zookeeper配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost kafka]# cat /etc/zookeeper/zoo.cfg </span><br><span class="line"># The number of milliseconds of each tick</span><br><span class="line">tickTime=2000</span><br><span class="line"># The number of ticks that the initial </span><br><span class="line"># synchronization phase can take</span><br><span class="line">initLimit=10</span><br><span class="line"># The number of ticks that can pass between </span><br><span class="line"># sending a request and getting an acknowledgement</span><br><span class="line">syncLimit=5</span><br><span class="line"># the directory where the snapshot is stored.</span><br><span class="line">dataDir=/var/lib/zookeeper/data</span><br><span class="line"># the port at which the clients will connect</span><br><span class="line">clientPort=2181</span><br><span class="line"></span><br><span class="line">authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider</span><br><span class="line">requireClientAuthScheme=sasl</span><br><span class="line">jaasLoginRenew=3600000</span><br></pre></td></tr></table></figure></p>
+<p>JAAS配置文件指定身份认证插件，并提供登录到zookeeper的登录名与密码。我创建了一个配置文件kafka_zoo_jaas.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Server &#123;</span><br><span class="line">  org.apache.kafka.common.security.plain.PlainLoginModule required</span><br><span class="line">    username=&quot;admin&quot;</span><br><span class="line">    password=&quot;admin&quot;</span><br><span class="line">    user_admin=&quot;admin&quot;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>拷贝第三方Jar包到ZooKeeper目录,可以从<a href="https://mvnrepository.com/" target="_blank" rel="noopener">https://mvnrepository.com/</a> 查看需要的包依赖<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">kafka-clients-2.0.1.jar </span><br><span class="line">lz4-java-1.4.jar</span><br><span class="line">org.osgi.core-4.3.0.jar</span><br><span class="line">slf4j-api-1.7.25.jar</span><br><span class="line">snappy-java-1.1.4.jar</span><br></pre></td></tr></table></figure></p>
+<p> /usr/local/kafka_2.12-1.1.1/config 目录下的   server.properties 文件 进行修改</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">listeners=SASL_PLAINTEXT://172.16.10.112:9092</span><br><span class="line">security.inter.broker.protocol=SASL_PLAINTEXT  </span><br><span class="line">sasl.enabled.mechanisms=PLAIN </span><br><span class="line">sasl.mechanism.inter.broker.protocol=PLAIN  </span><br><span class="line">authorizer.class.name=kafka.security.auth.SimpleAclAuthorizer</span><br><span class="line">allow.everyone.if.no.acl.found=true</span><br><span class="line">auto.create.topics.enable=false</span><br><span class="line">super.users=User:admin</span><br><span class="line">delete.topic.enable=true</span><br></pre></td></tr></table></figure>
+<p>在config目录添加kafka_server_jaas.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">KafkaServer &#123;</span><br><span class="line">    org.apache.kafka.common.security.plain.PlainLoginModule required</span><br><span class="line">    username=&quot;admin&quot;</span><br><span class="line">    password=&quot;admin&quot;</span><br><span class="line">    user_admin=&quot;admin&quot;</span><br><span class="line">    user_kafka=&quot;kafka&quot;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Client &#123;</span><br><span class="line">    org.apache.kafka.common.security.plain.PlainLoginModule required</span><br><span class="line">        username=&quot;admin&quot;</span><br><span class="line">        password=&quot;admin&quot;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">KafkaClient &#123;</span><br><span class="line">    org.apache.kafka.common.security.plain.PlainLoginModule required</span><br><span class="line">            username=&quot;kafka&quot;</span><br><span class="line">            password=&quot;kafka&quot;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>kafka-run-class.sh添加下面配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">KAFKA_SASL_OPTS=&quot;-Djava.security.auth.login.config=/opt/kafka/config/kafka_server_jaas.conf&quot;</span><br><span class="line"></span><br><span class="line"># Launch mode</span><br><span class="line">if [ &quot;x$DAEMON_MODE&quot; = &quot;xtrue&quot; ]; then</span><br><span class="line">  nohup $JAVA $KAFKA_HEAP_OPTS $KAFKA_JVM_PERFORMANCE_OPTS $KAFKA_GC_LOG_OPTS $KAFKA_SASL_OPTS $KAFKA_JMX_OPTS $KAFKA_LOG4J_OPTS -cp $CLASSPATH $KAFKA_OPTS &quot;$@&quot; &gt; &quot;$CONSOLE_OUTPUT_FILE&quot; 2&gt;&amp;1 &lt; /dev/null &amp;</span><br><span class="line">else</span><br><span class="line">  exec $JAVA $KAFKA_HEAP_OPTS $KAFKA_JVM_PERFORMANCE_OPTS $KAFKA_GC_LOG_OPTS $KAFKA_SASL_OPTS $KAFKA_JMX_OPTS $KAFKA_LOG4J_OPTS -cp $CLASSPATH $KAFKA_OPTS &quot;$@&quot;</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+<p>kafka已经开启了SASL/PLAIN权限认证,producer和consumer不做配置是无法连接kafka的<br>在config目录下创建kafka_client_jaas.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">KafkaClient &#123;</span><br><span class="line">        org.apache.kafka.common.security.plain.PlainLoginModule required</span><br><span class="line">        username=&quot;kafka&quot;</span><br><span class="line">        password=&quot;kafka&quot;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>在config下的producer.properties和consumer.properties添加下面配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">security.protocol=SASL_PLAINTEXT</span><br><span class="line">sasl.mechanism=PLAIN</span><br></pre></td></tr></table></figure></p>
+<p>在bin下的kafka-console-producer.sh和kafka-console-consumer.sh下添加下面配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if [ &quot;x$KAFKA_OPTS&quot; ]; then</span><br><span class="line"> export KAFKA_OPTS=&quot;-Djava.security.auth.login.config=/opt/kafka/config/kafka_client_jaas.conf&quot;</span><br><span class="line">fi</span><br></pre></td></tr></table></figure></p>
+<p>为你需要使用的用户授权<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181/kafka --add --allow-principal User:alice --operation Read --operation Write --topic sean-security</span><br></pre></td></tr></table></figure></p>
+<p>查询已经授权的用户</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181/kafka --list --topic sean-security</span><br></pre></td></tr></table></figure>
+<p>配置完成后，测试下,注意如果有开机自启,需要修改相应脚本,加载KAFKA_OPTS 选项<br>创建topic<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./kafka-topics.sh  --zookeeper localhost:2181/kafka --create --topic Test  --partitions 1 --replication-factor 1</span><br></pre></td></tr></table></figure></p>
+<p>producer发送消息：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">./kafka-console-producer.sh --broker-list 172.16.10.100:9092 --topic test</span><br><span class="line">--producer.config /opt/kafk/config/producer.properties</span><br></pre></td></tr></table></figure></p>
+<p>consumer消费消息：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./kafka-console-consumer.sh --bootstrap-server 172.16.10.100:9092 --topic test --from-beginning</span><br><span class="line"> --consumer.config /opt/kafk/config/consumer.properties</span><br></pre></td></tr></table></figure></p>
+<p>如果是在程序里面只需要在kafka配置信息里添加如下配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">System.setProperty(&quot;java.security.auth.login.config&quot;, &quot;kafka_client_jaas.conf&quot;); // 环境变量添加，需要输入配置文件的路径</span><br><span class="line">propsMap.put(&quot;security.protocol&quot;,&quot;SASL_PLAINTEXT&quot;);</span><br><span class="line">propsMap.put(&quot;sasl.mechanism&quot;, &quot;PLAIN&quot;);</span><br></pre></td></tr></table></figure></p>
+<p>无论是producer还是consumer，都需要配置认证信息，其中kafka_client_jaas.conf的内容如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">KafkaClient &#123;</span><br><span class="line">        org.apache.kafka.common.security.plain.PlainLoginModule required</span><br><span class="line">        username=&quot;kafka&quot;</span><br><span class="line">        password=&quot;kafka&quot;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>ref<br><a href="http://kafka.apache.org/documentation/" target="_blank" rel="noopener">Documentation</a><br><a href="https://blog.csdn.net/u012040869/article/details/82589002?utm_source=blogkpcl4" target="_blank" rel="noopener">为Kafka 添加用户名 密码权限，即SASL/PLAIN</a><br><a href="http://www.2bowl.info/kafka%E7%9A%84saslplain%E8%AE%A4%E8%AF%81%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E/" target="_blank" rel="noopener">Kafka的SASL/PLAIN认证配置说明</a><br><a href="https://stackoverflow.com/questions/43469962/kafka-sasl-zookeeper-authentication" target="_blank" rel="noopener">Kafka SASL zookeeper authentication</a><br><a href="https://blog.csdn.net/u012842205/article/details/73188534?utm_source=blogxgwz0" target="_blank" rel="noopener">单机节点Kafka配置SASL用户名密码认证</a><br><a href="https://blog.csdn.net/u010416101/article/details/79562214" target="_blank" rel="noopener">Kafka SASL配置 &amp; Demo测试</a></p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+	  
+	    
+		<!-- 来必力City版安装代码 -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zOTQ5MS8xNjAxOA==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+		
+<!--		<div class="comment-section">
+  
+  
+
+
+</div> -->
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+
+<p>
+  由 <a href="https://hexo.io">hexo</a> 强力驱动 |&nbsp;&nbsp;本站总点击 <span id="busuanzi_value_site_pv"></span> 次
+&nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
+</p>
+<p>
+  &copy; 2018 <a href="https://t1ger.github.io"> t1ger </a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
+
+</p>
+
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-99921399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>
