@@ -1,0 +1,261 @@
+	<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
+  
+  <title>Getting Started with osquery | t1ger的茶馆</title>
+  <meta name="author" content="t1ger">
+  
+  <meta name="description" content="https://t1ger.github.io/">
+  
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta property="og:title" content="Getting Started with osquery">
+  <meta property="og:site_name" content="t1ger的茶馆">
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+</head>
+</html>
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">t1ger的茶馆</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="这是一个订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>Getting Started with osquery</h2>
+					
+					<div>
+						<span class="post-time">2018-12-11 17:04:39</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<ol>
+<li><p>How to install</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">#for Centos7</span><br><span class="line">sudo rpm -ivh https://osquery-packages.s3.amazonaws.com/centos7/noarch/osquery-s3-centos7-repo-1-0.0.noarch.rpm</span><br><span class="line">sudo yum install osquery</span><br><span class="line"></span><br><span class="line">sudo cp /usr/share/osquery/osquery.example.conf /etc/osquery/osquery.conf</span><br><span class="line"># sudo service osqueryd start</span><br><span class="line">sudo systemctl start osqueryd</span><br><span class="line"># for CentOS6.x</span><br><span class="line">sudo rpm -ivh https://osquery-packages.s3.amazonaws.com/centos6/noarch/osquery-s3-centos6-repo-1-0.0.noarch.rpm</span><br><span class="line">sudo yum install osquery</span><br><span class="line"></span><br><span class="line"># default packages create the following structure</span><br><span class="line">/etc/osquery/</span><br><span class="line">/usr/share/osquery/osquery.example.conf</span><br><span class="line">/usr/share/osquery/lenses/&#123;*&#125;.aug</span><br><span class="line">/usr/share/osquery/packs/&#123;*&#125;.conf</span><br><span class="line">/var/log/osquery/</span><br><span class="line">/usr/lib/osquery/</span><br><span class="line">/usr/bin/osqueryctl</span><br><span class="line">/usr/bin/osqueryd</span><br><span class="line">/usr/bin/osqueryi</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>How to use</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">osquery&gt; SELECT pid, name, path FROM processes LIMIT 1;</span><br><span class="line">+-----+------+------------+</span><br><span class="line">| pid | name | path       |</span><br><span class="line">+-----+------+------------+</span><br><span class="line">| 1   | init | /sbin/init |</span><br><span class="line">+-----+------+------------+</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">osqueryi --json &quot;SELECT * FROM processes limit 1&quot;</span><br><span class="line">[</span><br><span class="line">  &#123;&quot;cmdline&quot;:&quot;/sbin/init&quot;,&quot;cwd&quot;:&quot;/&quot;,&quot;disk_bytes_read&quot;:&quot;150400097280&quot;,&quot;disk_bytes_written&quot;:&quot;31441313792&quot;,&quot;egid&quot;:&quot;0&quot;,&quot;euid&quot;:&quot;0&quot;,&quot;gid&quot;:&quot;0&quot;,&quot;name&quot;:&quot;init&quot;,&quot;nice&quot;:&quot;0&quot;,&quot;on_disk&quot;:&quot;1&quot;,&quot;parent&quot;:&quot;0&quot;,&quot;path&quot;:&quot;/sbin/init&quot;,&quot;pgroup&quot;:&quot;1&quot;,&quot;pid&quot;:&quot;1&quot;,&quot;resident_size&quot;:&quot;396000&quot;,&quot;root&quot;:&quot;/&quot;,&quot;sgid&quot;:&quot;0&quot;,&quot;start_time&quot;:&quot;0&quot;,&quot;state&quot;:&quot;S&quot;,&quot;suid&quot;:&quot;0&quot;,&quot;system_time&quot;:&quot;1440&quot;,&quot;threads&quot;:&quot;1&quot;,&quot;total_size&quot;:&quot;19356000&quot;,&quot;uid&quot;:&quot;0&quot;,&quot;user_time&quot;:&quot;230&quot;,&quot;wired_size&quot;:&quot;0&quot;&#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Features Overview</p>
+</li>
+</ol>
+<ul>
+<li><p>osqueryd<br>The high-performance and low-footprint distributed host monitoring daemon,osqueryd, allows you to schedule queries to be executed across your entire infrastructure. The daemon takes care of aggregating the query results over time and generates logs which indicate state changes in your infrastructure. You can use this to maintain insight into the security, performance, configuration, and state of your entire infrastructure. osqueryd’s logging can integrate into your internal log aggregation pipeline, regardless of your technology stack, via a robust plugin architecture.</p>
+</li>
+<li><p>osqueryi<br>The interactive query console, gives you a SQL interface to try out new queries and explore your operating system.With the power of a complete SQL language and dozens of useful tables built-in,osqueryi is an invaluable tool when performing incident response, diagnosing an systems operations problem, troubleshooting a performance issue, etc.</p>
+</li>
+<li><p>osquery<br>osquery is cross platform. Even though osquery takes advantage of very low-level operating system APIs, you can build and use osquery on Mac OS X, Ubuntu, Cent OS and other popular enterprise Linux distributions</p>
+</li>
+<li><p>plugin architecture<br>To assist with the rollout process, the osquery user guide has detailed documentation on internal deployment. osquery was built so that every environment specific aspect of the toolchain can be hot-swapped at run-time with custom plugins. Use these interfaces to deeply integrate osquery into your infrastructure if one of the several existing plugins don not suit your needs</p>
+</li>
+</ul>
+<ol start="4">
+<li>Logging<br>The osquery daemon uses a default filesystem logging plugin. Like the config, output from the filesystem plugin is written as JSON.Results from the query schedule are written to /var/log/osquery/osqueryd.results.log.<br>There are two types of logs<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. Status logs (info, warning, error, and fatal)</span><br><span class="line">2. Query schedule results logs</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>ref<br><a href="https://github.com/facebook/osquery" target="_blank" rel="noopener">osquery</a><br><a href="https://blog.spoock.com/2018/11/27/usage-of-osqueryd/" target="_blank" rel="noopener">使用osqueryd监控系统</a></p>
+<hr>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+	  
+	    
+		<!-- 来必力City版安装代码 -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zOTQ5MS8xNjAxOA==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+		
+<!--		<div class="comment-section">
+  
+  
+
+
+</div> -->
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+
+<p>
+  由 <a href="https://hexo.io">hexo</a> 强力驱动 |&nbsp;&nbsp;本站总点击 <span id="busuanzi_value_site_pv"></span> 次
+&nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
+</p>
+<p>
+  &copy; 2018 <a href="https://t1ger.github.io"> t1ger </a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
+
+</p>
+
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-99921399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>

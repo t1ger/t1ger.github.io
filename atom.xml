@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2018-11-22T09:44:29.757Z</updated>
+  <updated>2018-12-11T09:38:20.091Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,52 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Getting Started with osquery</title>
+    <link href="https://t1ger.github.io/2018/12/11/Getting-Started-with-osquery/"/>
+    <id>https://t1ger.github.io/2018/12/11/Getting-Started-with-osquery/</id>
+    <published>2018-12-11T09:04:39.000Z</published>
+    <updated>2018-12-11T09:38:20.091Z</updated>
+    
+    <content type="html"><![CDATA[<ol>
+<li><p>How to install</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">#for Centos7</span><br><span class="line">sudo rpm -ivh https://osquery-packages.s3.amazonaws.com/centos7/noarch/osquery-s3-centos7-repo-1-0.0.noarch.rpm</span><br><span class="line">sudo yum install osquery</span><br><span class="line"></span><br><span class="line">sudo cp /usr/share/osquery/osquery.example.conf /etc/osquery/osquery.conf</span><br><span class="line"># sudo service osqueryd start</span><br><span class="line">sudo systemctl start osqueryd</span><br><span class="line"># for CentOS6.x</span><br><span class="line">sudo rpm -ivh https://osquery-packages.s3.amazonaws.com/centos6/noarch/osquery-s3-centos6-repo-1-0.0.noarch.rpm</span><br><span class="line">sudo yum install osquery</span><br><span class="line"></span><br><span class="line"># default packages create the following structure</span><br><span class="line">/etc/osquery/</span><br><span class="line">/usr/share/osquery/osquery.example.conf</span><br><span class="line">/usr/share/osquery/lenses/&#123;*&#125;.aug</span><br><span class="line">/usr/share/osquery/packs/&#123;*&#125;.conf</span><br><span class="line">/var/log/osquery/</span><br><span class="line">/usr/lib/osquery/</span><br><span class="line">/usr/bin/osqueryctl</span><br><span class="line">/usr/bin/osqueryd</span><br><span class="line">/usr/bin/osqueryi</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>How to use</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">osquery&gt; SELECT pid, name, path FROM processes LIMIT 1;</span><br><span class="line">+-----+------+------------+</span><br><span class="line">| pid | name | path       |</span><br><span class="line">+-----+------+------------+</span><br><span class="line">| 1   | init | /sbin/init |</span><br><span class="line">+-----+------+------------+</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">osqueryi --json &quot;SELECT * FROM processes limit 1&quot;</span><br><span class="line">[</span><br><span class="line">  &#123;&quot;cmdline&quot;:&quot;/sbin/init&quot;,&quot;cwd&quot;:&quot;/&quot;,&quot;disk_bytes_read&quot;:&quot;150400097280&quot;,&quot;disk_bytes_written&quot;:&quot;31441313792&quot;,&quot;egid&quot;:&quot;0&quot;,&quot;euid&quot;:&quot;0&quot;,&quot;gid&quot;:&quot;0&quot;,&quot;name&quot;:&quot;init&quot;,&quot;nice&quot;:&quot;0&quot;,&quot;on_disk&quot;:&quot;1&quot;,&quot;parent&quot;:&quot;0&quot;,&quot;path&quot;:&quot;/sbin/init&quot;,&quot;pgroup&quot;:&quot;1&quot;,&quot;pid&quot;:&quot;1&quot;,&quot;resident_size&quot;:&quot;396000&quot;,&quot;root&quot;:&quot;/&quot;,&quot;sgid&quot;:&quot;0&quot;,&quot;start_time&quot;:&quot;0&quot;,&quot;state&quot;:&quot;S&quot;,&quot;suid&quot;:&quot;0&quot;,&quot;system_time&quot;:&quot;1440&quot;,&quot;threads&quot;:&quot;1&quot;,&quot;total_size&quot;:&quot;19356000&quot;,&quot;uid&quot;:&quot;0&quot;,&quot;user_time&quot;:&quot;230&quot;,&quot;wired_size&quot;:&quot;0&quot;&#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Features Overview</p>
+</li>
+</ol>
+<ul>
+<li><p>osqueryd<br>The high-performance and low-footprint distributed host monitoring daemon,osqueryd, allows you to schedule queries to be executed across your entire infrastructure. The daemon takes care of aggregating the query results over time and generates logs which indicate state changes in your infrastructure. You can use this to maintain insight into the security, performance, configuration, and state of your entire infrastructure. osqueryd’s logging can integrate into your internal log aggregation pipeline, regardless of your technology stack, via a robust plugin architecture.</p>
+</li>
+<li><p>osqueryi<br>The interactive query console, gives you a SQL interface to try out new queries and explore your operating system.With the power of a complete SQL language and dozens of useful tables built-in,osqueryi is an invaluable tool when performing incident response, diagnosing an systems operations problem, troubleshooting a performance issue, etc.</p>
+</li>
+<li><p>osquery<br>osquery is cross platform. Even though osquery takes advantage of very low-level operating system APIs, you can build and use osquery on Mac OS X, Ubuntu, Cent OS and other popular enterprise Linux distributions</p>
+</li>
+<li><p>plugin architecture<br>To assist with the rollout process, the osquery user guide has detailed documentation on internal deployment. osquery was built so that every environment specific aspect of the toolchain can be hot-swapped at run-time with custom plugins. Use these interfaces to deeply integrate osquery into your infrastructure if one of the several existing plugins don not suit your needs</p>
+</li>
+</ul>
+<ol start="4">
+<li>Logging<br>The osquery daemon uses a default filesystem logging plugin. Like the config, output from the filesystem plugin is written as JSON.Results from the query schedule are written to /var/log/osquery/osqueryd.results.log.<br>There are two types of logs<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. Status logs (info, warning, error, and fatal)</span><br><span class="line">2. Query schedule results logs</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>ref<br><a href="https://github.com/facebook/osquery" target="_blank" rel="noopener">osquery</a><br><a href="https://blog.spoock.com/2018/11/27/usage-of-osqueryd/" target="_blank" rel="noopener">使用osqueryd监控系统</a></p>
+<hr>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;ol&gt;
+&lt;li&gt;&lt;p&gt;How to install&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>How to install ModSecurity with Nginx</title>
@@ -370,34 +416,6 @@
     <summary type="html">
     
       &lt;h5 id=&quot;install&quot;&gt;&lt;a href=&quot;#install&quot; class=&quot;headerlink&quot; title=&quot;install&quot;&gt;&lt;/a&gt;&lt;b&gt;install&lt;/b&gt;&lt;/h5&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Rsyslog 连接 Kafka 指北</title>
-    <link href="https://t1ger.github.io/2018/05/22/Rsyslog-%E8%BF%9E%E6%8E%A5-Kafka-%E6%8C%87%E5%8C%97/"/>
-    <id>https://t1ger.github.io/2018/05/22/Rsyslog-连接-Kafka-指北/</id>
-    <published>2018-05-22T07:20:48.000Z</published>
-    <updated>2018-05-22T06:51:56.401Z</updated>
-    
-    <content type="html"><![CDATA[<h5 id="运行环境"><a href="#运行环境" class="headerlink" title="运行环境"></a><b>运行环境</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@bogon ~]# cat /etc/redhat-release </span><br><span class="line">CentOS Linux release 7.4.1708 (Core) </span><br><span class="line"></span><br><span class="line">[root@bogon ~]# rpm -qa|grep rsyslog</span><br><span class="line">rsyslog-kafka-8.28.0-1.el7.x86_64</span><br><span class="line">rsyslog-8.28.0-1.el7.x86_64</span><br></pre></td></tr></table></figure>
-<h5 id="安装"><a href="#安装" class="headerlink" title="安装"></a><b>安装</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget -O /etc/yum.repos.d/rsyslog.repo http://rpms.adiscon.com/v8-stable/rsyslog.repo</span><br><span class="line">yum install rsyslog rsyslog-kafka.x86_64</span><br></pre></td></tr></table></figure>
-<p>国内的同学可能无法安装，同学们也可以通过<a href="http://rpms.adiscon.com/v8-stable/epel-7/x86_64/RPMS/" target="_blank" rel="noopener">这里</a>下载安装</p>
-<h5 id="配置"><a href="#配置" class="headerlink" title="配置"></a><b>配置</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[root@bogon ~]# cat /etc/rsyslog.d/kafka.conf</span><br><span class="line">module(load=&quot;omkafka&quot;)</span><br><span class="line">action (</span><br><span class="line">        type=&quot;omkafka&quot;</span><br><span class="line">        topic=&quot;topicA&quot;</span><br><span class="line">        broker=&quot;cdh1:9092,cdh2:9092,cdh3:9092&quot;</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#如果保存到本地</span><br><span class="line">[root@bogon ~]# cat /etc/rsyslog.d/router.conf</span><br><span class="line">template (name=&quot;DynFile&quot; type=&quot;string&quot; string=&quot;/data/%fromhost-ip%.log&quot;)</span><br><span class="line">if $fromhost-ip startswith &apos;192.168.100.2&apos; and $programname != &apos;Type=SESSION;&apos; and $programname != &apos;Type=Login;&apos; and $programname != &apos;Type=AuthLog;&apos; and $programname != &apos;Type=Ftp&apos; then &#123;</span><br><span class="line">    action(type=&quot;omfile&quot; dynaFile=&quot;DynFile&quot;)</span><br><span class="line">    stop</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>低版本的rsyslog保存到本地配置如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# rpm -qa|grep rsyslog</span><br><span class="line">rsyslog-5.8.10-6.el6.x86_64</span><br><span class="line"></span><br><span class="line">添加到 /etc/rsyslog.conf </span><br><span class="line">#### GLOBAL DIRECTIVES ####</span><br><span class="line">$template RemoteLogs,&quot;/data/var/log/%HOSTNAME%/%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot; *</span><br><span class="line">*.* ?RemoteLogs</span><br><span class="line">&amp;~</span><br></pre></td></tr></table></figure></p>
-<p>通过kafka查看消息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/kafka&amp;&amp; bin/kafka-console-consumer.sh  --bootstrap-server cdh1:9092,cdh2:9092,cdh3:9092   --topic topicA</span><br></pre></td></tr></table></figure></p>
-<p>ref<br><a href="https://doc.yonyoucloud.com/doc/logstash-best-practice-cn/ecosystem/rsyslog.html" target="_blank" rel="noopener">Rsyslog</a><br><a href="http://wdxtub.com/2016/08/17/rsyslog-kafka-guide/" target="_blank" rel="noopener">Rsyslog 连接 Kafka 指南</a><br><a href="https://serverfault.com/questions/807108/how-to-call-template-so-rsyslog-8-creates-one-log-file-per-client" target="_blank" rel="noopener">How to call template so rsyslog 8 creates one log file per client</a><br><a href="http://wiki.rsyslog.com/index.php/DailyLogRotation" target="_blank" rel="noopener">DailyLogRotation</a><br><a href="http://blog.kompaz.win/2018/01/11/20180111%20CentOS7%20rsyslog%20+loganalyzer%E9%85%8D%E7%BD%AE/" target="_blank" rel="noopener">CentOS7 rsyslog +loganalyzer配置</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h5 id=&quot;运行环境&quot;&gt;&lt;a href=&quot;#运行环境&quot; class=&quot;headerlink&quot; title=&quot;运行环境&quot;&gt;&lt;/a&gt;&lt;b&gt;运行环境&lt;/b&gt;&lt;/h5&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutt
     
     </summary>
     

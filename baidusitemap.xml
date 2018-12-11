@@ -4,6 +4,36 @@
 
     
   <url>
+    <loc>https://t1ger.github.io/2018/12/11/Getting-Started-with-osquery/</loc>
+    <lastmod>2018-12-11T09:38:20.091Z</lastmod>
+    <data>
+        <display>
+        <title>Getting Started with osquery</title>
+        <pubTime>2018-12-11T09:04:39.000Z</pubTime>
+        
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://t1ger.github.io/2017/07/04/Prometheus-%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88/</loc>
+    <lastmod>2018-11-26T02:38:48.476Z</lastmod>
+    <data>
+        <display>
+        <title>Prometheus 监控方案</title>
+        <pubTime>2017-07-04T08:01:05.000Z</pubTime>
+        
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://t1ger.github.io/2018/11/21/How-to-config-Kafka-SASL-zookeeper-authentication/</loc>
     <lastmod>2018-11-22T09:56:59.367Z</lastmod>
     <data>
@@ -145,21 +175,6 @@
         <display>
         <title>Rsyslog 连接 Kafka 指北</title>
         <pubTime>2018-05-22T07:20:48.000Z</pubTime>
-        
-         
-           
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://t1ger.github.io/2017/07/04/Prometheus-%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88/</loc>
-    <lastmod>2018-05-18T02:03:08.607Z</lastmod>
-    <data>
-        <display>
-        <title>Prometheus 监控方案</title>
-        <pubTime>2017-07-04T08:01:05.000Z</pubTime>
         
          
            
