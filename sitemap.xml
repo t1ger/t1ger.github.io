@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://t1ger.github.io/2018/12/27/how-to-use-hexo-deploy-blog-by-private-gitlab/</loc>
+    
+    <lastmod>2018-12-27T08:24:50.264Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://t1ger.github.io/2018/12/12/CentOS6-install-Supervisor3/</loc>
     
     <lastmod>2018-12-12T10:28:32.318Z</lastmod>
