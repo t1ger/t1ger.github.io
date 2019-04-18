@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2018-12-27T08:24:50.264Z</updated>
+  <updated>2019-04-18T10:54:16.730Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -16,11 +16,35 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>How to align partitions for best performance using parted</title>
+    <link href="https://t1ger.github.io/2019/04/18/How-to-align-partitions-for-best-performance-using-parted/"/>
+    <id>https://t1ger.github.io/2019/04/18/How-to-align-partitions-for-best-performance-using-parted/</id>
+    <published>2019-04-18T10:26:10.000Z</published>
+    <updated>2019-04-18T10:54:16.730Z</updated>
+    
+    <content type="html"><![CDATA[<h5 id="backgroud"><a href="#backgroud" class="headerlink" title="backgroud"></a><b>backgroud</b></h5><p>as usual, Trying to create a 10TB partition using parted,I type command like<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">parted -s -a optimal /dev/sdb mklabel gpt -- mkpart primary xfs 1 -1</span><br></pre></td></tr></table></figure></p>
+<p>but parted always complains as follows<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">The resulting partition is not properly aligned for best performance</span><br></pre></td></tr></table></figure></p>
+<h5 id="soulation"><a href="#soulation" class="headerlink" title="soulation"></a><b>soulation</b></h5><p>Add optimal_io_size to alignment_offset and divide the result by physical_block_size. In my case this was<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># cat /sys/block/sdb/queue/optimal_io_size</span><br><span class="line">1048576</span><br><span class="line"># cat /sys/block/sdb/alignment_offset</span><br><span class="line">0</span><br><span class="line">(1048576 + 0) / 512 = 2048</span><br><span class="line"></span><br><span class="line">#Your new parted command should look like</span><br><span class="line">parted -s -a optimal /dev/sdb mklabel gpt -- mkpart primary xfs 4608s 100%</span><br></pre></td></tr></table></figure></p>
+<p>The trailing ‘s’ is important: it tells parted that you’re talking about sectors, not bytes or megabytes</p>
+<p>finally,let check it,the partition will have been created with no warnings. You can check the alignment thusly (replacing ‘1’ with the partition number if necessary):<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(parted) align-check optimal 1                                            </span><br><span class="line">1 aligned</span><br></pre></td></tr></table></figure></p>
+<hr>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h5 id=&quot;backgroud&quot;&gt;&lt;a href=&quot;#backgroud&quot; class=&quot;headerlink&quot; title=&quot;backgroud&quot;&gt;&lt;/a&gt;&lt;b&gt;backgroud&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;as usual, Trying to create a 10TB p
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
     <title>how to use hexo deploy blog by  private gitlab</title>
     <link href="https://t1ger.github.io/2018/12/27/how-to-use-hexo-deploy-blog-by-private-gitlab/"/>
     <id>https://t1ger.github.io/2018/12/27/how-to-use-hexo-deploy-blog-by-private-gitlab/</id>
     <published>2018-12-27T07:52:17.000Z</published>
-    <updated>2018-12-27T08:24:50.264Z</updated>
+    <updated>2018-12-27T08:24:50.000Z</updated>
     
     <content type="html"><![CDATA[<p>环境：<br>gitlab访问地址： gitlab.io.com.cn<br>博客访问地址: tiger.pages.io.com.cn</p>
 <p>1.开启GitLab Pages功能<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">##! Define to enable GitLab Pages</span><br><span class="line">pages_external_url &quot;pages.io.com.cn&quot;</span><br><span class="line">gitlab_pages[&apos;enable&apos;] = true</span><br></pre></td></tr></table></figure></p>
@@ -64,7 +88,7 @@
     <link href="https://t1ger.github.io/2018/12/12/CentOS6-install-Supervisor3/"/>
     <id>https://t1ger.github.io/2018/12/12/CentOS6-install-Supervisor3/</id>
     <published>2018-12-12T10:06:52.000Z</published>
-    <updated>2018-12-12T10:28:32.318Z</updated>
+    <updated>2018-12-12T10:28:32.000Z</updated>
     
     <content type="html"><![CDATA[<ol>
 <li><p>install python-pip</p>
@@ -103,7 +127,7 @@
     <link href="https://t1ger.github.io/2018/12/11/Getting-Started-with-osquery/"/>
     <id>https://t1ger.github.io/2018/12/11/Getting-Started-with-osquery/</id>
     <published>2018-12-11T09:04:39.000Z</published>
-    <updated>2018-12-11T09:38:20.091Z</updated>
+    <updated>2018-12-11T09:38:20.000Z</updated>
     
     <content type="html"><![CDATA[<ol>
 <li><p>How to install</p>
@@ -149,7 +173,7 @@
     <link href="https://t1ger.github.io/2018/11/22/How-to-install-ModSecurity-with-Nginx/"/>
     <id>https://t1ger.github.io/2018/11/22/How-to-install-ModSecurity-with-Nginx/</id>
     <published>2018-11-22T08:45:00.000Z</published>
-    <updated>2018-11-22T09:44:29.757Z</updated>
+    <updated>2018-11-22T09:44:29.000Z</updated>
     
     <content type="html"><![CDATA[<p>本文不打算写安装过程，具体安装参考<a href="https://github.com/SpiderLabs/ModSecurity/wiki/Compilation-recipes-for-v3.x" target="_blank" rel="noopener">这里</a><br>安装环境： centos6.8 </p>
 <p>安装前准备,需要安装gcc4.8 和 更新autoconf，参考<a href="https://gist.github.com/tkuchiki/543e277a2f7221a7833a" target="_blank" rel="noopener">这里</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost opt]# curl -L -O http://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.gz</span><br><span class="line">[root@localhost opt]# tar zxf autoconf-2.69.tar.gz</span><br><span class="line">[root@localhost opt]# cd autoconf-2.69</span><br><span class="line">[root@localhost opt]# yum install -y openssl-devel</span><br><span class="line">[root@localhost opt]# ./configure</span><br><span class="line">[root@localhost opt]# make &amp;&amp; make install</span><br><span class="line"></span><br><span class="line">[root@localhost opt]#  wget http://people.centos.org/tru/devtools-2/devtools-2.repo -O /etc/yum.repos.d/devtools-2.repo</span><br><span class="line">[root@localhost opt]#  yum install -y devtoolset-2-gcc-c++ devtoolset-2-binutils</span><br><span class="line">[root@localhost opt]#  source /opt/rh/devtoolset-2/enable</span><br></pre></td></tr></table></figure></p>
@@ -186,7 +210,7 @@
     <link href="https://t1ger.github.io/2018/11/21/How-to-config-Kafka-SASL-zookeeper-authentication/"/>
     <id>https://t1ger.github.io/2018/11/21/How-to-config-Kafka-SASL-zookeeper-authentication/</id>
     <published>2018-11-21T09:06:00.000Z</published>
-    <updated>2018-11-22T09:56:59.367Z</updated>
+    <updated>2018-11-22T09:56:59.000Z</updated>
     
     <content type="html"><![CDATA[<p>单节点zookeeper配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost kafka]# cat /etc/zookeeper/zoo.cfg </span><br><span class="line"># The number of milliseconds of each tick</span><br><span class="line">tickTime=2000</span><br><span class="line"># The number of ticks that the initial </span><br><span class="line"># synchronization phase can take</span><br><span class="line">initLimit=10</span><br><span class="line"># The number of ticks that can pass between </span><br><span class="line"># sending a request and getting an acknowledgement</span><br><span class="line">syncLimit=5</span><br><span class="line"># the directory where the snapshot is stored.</span><br><span class="line">dataDir=/var/lib/zookeeper/data</span><br><span class="line"># the port at which the clients will connect</span><br><span class="line">clientPort=2181</span><br><span class="line"></span><br><span class="line">authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider</span><br><span class="line">requireClientAuthScheme=sasl</span><br><span class="line">jaasLoginRenew=3600000</span><br></pre></td></tr></table></figure></p>
 <p>JAAS配置文件指定身份认证插件，并提供登录到zookeeper的登录名与密码。我创建了一个配置文件kafka_zoo_jaas.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Server &#123;</span><br><span class="line">  org.apache.kafka.common.security.plain.PlainLoginModule required</span><br><span class="line">    username=&quot;admin&quot;</span><br><span class="line">    password=&quot;admin&quot;</span><br><span class="line">    user_admin=&quot;admin&quot;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
@@ -224,7 +248,7 @@
     <link href="https://t1ger.github.io/2018/11/14/How-to-install-Cabot-on-CentOS/"/>
     <id>https://t1ger.github.io/2018/11/14/How-to-install-Cabot-on-CentOS/</id>
     <published>2018-11-14T09:56:36.000Z</published>
-    <updated>2018-11-15T06:11:12.188Z</updated>
+    <updated>2018-11-15T06:11:12.000Z</updated>
     
     <content type="html"><![CDATA[<p>Cabot环境搭建</p>
 <p>初始化mysql数据库<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -u root -p -e &quot;CREATE USER cabot@localhost IDENTIFIED BY &apos;cabot&apos;&quot;;</span><br><span class="line">$ mysql -u root -p -e &quot;CREATE DATABASE cabot&quot;;</span><br><span class="line">$ mysql -u root -p -e &quot;GRANT ALL PRIVILEGES ON \`cabot\`.* TO \`cabot\`@localhost&quot;;</span><br></pre></td></tr></table></figure></p>
@@ -261,7 +285,7 @@
     <link href="https://t1ger.github.io/2018/11/05/mysql-audit-plugin/"/>
     <id>https://t1ger.github.io/2018/11/05/mysql-audit-plugin/</id>
     <published>2018-11-05T09:40:06.000Z</published>
-    <updated>2018-11-05T09:59:45.781Z</updated>
+    <updated>2018-11-05T09:59:45.000Z</updated>
     
     <content type="html"><![CDATA[<p>此文转载于<a href="https://blog.csdn.net/heizistudio/article/details/50954294" target="_blank" rel="noopener">ora600</a>,略作调整.</p>
 <p>下载地址如下<br><a href="http://pan.baidu.com/s/1dFGFCrv" target="_blank" rel="noopener">http://pan.baidu.com/s/1dFGFCrv</a></p>
@@ -290,7 +314,7 @@
     <link href="https://t1ger.github.io/2018/10/30/Spark-On-YARN/"/>
     <id>https://t1ger.github.io/2018/10/30/Spark-On-YARN/</id>
     <published>2018-10-30T07:27:47.000Z</published>
-    <updated>2018-10-30T10:02:56.495Z</updated>
+    <updated>2018-10-30T10:02:56.000Z</updated>
     
     <content type="html"><![CDATA[<h5 id="Deployment-Modes"><a href="#Deployment-Modes" class="headerlink" title="Deployment Modes"></a><b>Deployment Modes</b></h5><p>在YARN中，每个应用实例有一个ApplicationMaster进程，这是应用实例开启的第一个容器。 ResourceManager向ApplicationMaster申请资源，<br>在资源分配后，应用实例会通知NodeManagers去启动容器。ApplicationMasters 评估每个客户端的需要:进程启动的应用可以被中断，持续协调管理进程。</p>
 <h5 id="Cluster-Deployment-Mode"><a href="#Cluster-Deployment-Mode" class="headerlink" title="Cluster Deployment Mode"></a><b>Cluster Deployment Mode</b></h5><p>在集群模式，Spark driver 运行在ApplicationMaster集群主机里边，在Yarn容器里的进程负责驱动应用和向YARN请求资源。<br>集群模式不适合交互<br><img src="https://www.cloudera.com/documentation/enterprise/latest/images/xspark-yarn-cluster.png.pagespeed.ic.f4CfMwda2i.webp" alt="cluster mode"></p>
@@ -317,7 +341,7 @@
     <link href="https://t1ger.github.io/2018/10/24/how-to-cleanup-keys-without-exipiration-in-Redis/"/>
     <id>https://t1ger.github.io/2018/10/24/how-to-cleanup-keys-without-exipiration-in-Redis/</id>
     <published>2018-10-24T04:02:18.000Z</published>
-    <updated>2018-10-24T03:29:42.634Z</updated>
+    <updated>2018-10-24T03:29:42.000Z</updated>
     
     <content type="html"><![CDATA[<p>在排查redis内存一直增长问题的时候，我们首先想到的是如何找出有多少key没有设置失效时间</p>
 <p>我们可以通过 info keyspace 命令查看：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; info keyspace</span><br><span class="line"># Keyspace</span><br><span class="line">db0:keys=473688,expires=1645,avg_ttl=1625894</span><br></pre></td></tr></table></figure></p>
@@ -337,58 +361,6 @@
     
       &lt;p&gt;在排查redis内存一直增长问题的时候，我们首先想到的是如何找出有多少key没有设置失效时间&lt;/p&gt;
 &lt;p&gt;我们可以通过 info keyspace 命令查看：&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>How to install CDH6.0 Cluster on Centos7.5</title>
-    <link href="https://t1ger.github.io/2018/09/03/How-to-install-CDH6-0-Cluster-on-Centos7-5/"/>
-    <id>https://t1ger.github.io/2018/09/03/How-to-install-CDH6-0-Cluster-on-Centos7-5/</id>
-    <published>2018-09-03T02:21:26.000Z</published>
-    <updated>2018-09-03T10:22:33.977Z</updated>
-    
-    <content type="html"><![CDATA[<h5 id="Cloudera-简介"><a href="#Cloudera-简介" class="headerlink" title="Cloudera 简介"></a><b>Cloudera 简介</b></h5><ul>
-<li>Cloudera 官网：<a href="https://www.cloudera.com" target="_blank" rel="noopener">https://www.cloudera.com</a></li>
-<li>Cloudera 官方文档： <a href="https://www.cloudera.com/documentation/enterprise/latest.html" target="_blank" rel="noopener">https://www.cloudera.com/documentation/enterprise/latest.html</a></li>
-</ul>
-<h5 id="安装Cloudera-Manager和CDH"><a href="#安装Cloudera-Manager和CDH" class="headerlink" title="安装Cloudera Manager和CDH"></a><b>安装Cloudera Manager和CDH</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">系统环境：CentOS7.5 </span><br><span class="line">软件环境：Oracle JDK、Cloudera Manager Server 和 Agent 、数据库、CDH各组件</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>系统初始化<br>关闭防火墙 禁用selinux,服务器之间免密，时间保持同步</p>
-</li>
-<li><p>Cloudera安装,官方文档参考<a href="https://www.cloudera.com/documentation/enterprise/6/6.0/topics/install_cm_cdh.html" target="_blank" rel="noopener">这里</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">#Configure a Repository</span><br><span class="line">wget https://archive.cloudera.com/cm6/6.0.0/redhat7/yum/cloudera-manager.repo -P /etc/yum.repos.d/</span><br><span class="line">sudo rpm --import https://archive.cloudera.com/cm6/6.0.0/redhat7/yum/RPM-GPG-KEY-cloudera</span><br><span class="line"></span><br><span class="line">#Installing the JDK</span><br><span class="line">sudo yum install oracle-j2sdk1.8</span><br><span class="line"></span><br><span class="line">#Install Cloudera Manager Packages</span><br><span class="line">sudo yum install cloudera-manager-daemons cloudera-manager-agent cloudera-manager-server</span><br><span class="line"></span><br><span class="line">#Install Databases</span><br><span class="line">wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm</span><br><span class="line">sudo rpm -ivh mysql-community-release-el7-5.noarch.rpm</span><br><span class="line">sudo yum update</span><br><span class="line">sudo yum install mysql-server</span><br><span class="line">sudo systemctl start mysqld</span><br><span class="line"></span><br><span class="line">#Set up the Cloudera Manager Database</span><br><span class="line">1. /opt/cloudera/cm/schema/scm_prepare_database.sh \</span><br><span class="line">[options] &lt;databaseType&gt; &lt;databaseName&gt; &lt;databaseUser&gt; &lt;password&gt;</span><br><span class="line">2. If it exists, remove the embedded PostgreSQL properties file:</span><br><span class="line">sudo rm /etc/cloudera-scm-server/db.mgmt.properties</span><br><span class="line"></span><br><span class="line">Example：</span><br><span class="line">sudo /opt/cloudera/cm/schema/scm_prepare_database.sh mysql scm scm</span><br><span class="line"></span><br><span class="line">#Install CDH and Other Software</span><br><span class="line">sudo systemctl start cloudera-scm-server</span><br><span class="line"></span><br><span class="line">we go to browser http://&lt;server_host&gt;:7180,login admin/admin</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>创建必需的数据库，可以参考<a href="https://www.cloudera.com/documentation/enterprise/latest/topics/install_cm_mariadb.html" target="_blank" rel="noopener">这里</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">create database metastore DEFAULT CHARACTER SET utf8;</span><br><span class="line">grant all on metastore.* TO &apos;hive&apos;@&apos;%&apos; IDENTIFIED BY &apos;hive&apos;;</span><br><span class="line"></span><br><span class="line">create database amon DEFAULT CHARACTER SET utf8;</span><br><span class="line">grant all on amon.* TO &apos;amon&apos;@&apos;%&apos; IDENTIFIED BY &apos;amon&apos;;</span><br><span class="line"></span><br><span class="line">create database hue DEFAULT CHARACTER SET utf8;</span><br><span class="line">grant all on hue.* TO &apos;hue&apos;@&apos;%&apos; IDENTIFIED BY &apos;hue&apos;;</span><br><span class="line"></span><br><span class="line">create database rman DEFAULT CHARACTER SET utf8;</span><br><span class="line">grant all on rman.* TO &apos;rman&apos;@&apos;%&apos; IDENTIFIED BY &apos;rman&apos;;</span><br><span class="line"></span><br><span class="line">create database navms DEFAULT CHARACTER SET utf8;</span><br><span class="line">grant all on navms.* TO &apos;navms&apos;@&apos;%&apos; IDENTIFIED BY &apos;navms&apos;;</span><br><span class="line"></span><br><span class="line">create database nas DEFAULT CHARACTER SET utf8;</span><br><span class="line">grant all on nas.* TO &apos;nas&apos;@&apos;%&apos; IDENTIFIED BY &apos;nas&apos;;</span><br><span class="line"></span><br><span class="line">create database oos DEFAULT CHARACTER SET utf8;</span><br><span class="line">grant all on oos.* TO &apos;oos&apos;@&apos;%&apos; IDENTIFIED BY &apos;oos&apos;;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h5 id="卸载重装CM服务"><a href="#卸载重装CM服务" class="headerlink" title="卸载重装CM服务"></a><b>卸载重装CM服务</b></h5><p>如果，第一次没有安装成功，那这部分就对你有帮助了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 安装CDH manager的服务器上面执行</span><br><span class="line">yum remove cloudera-manager-server -y</span><br><span class="line"></span><br><span class="line"># 在所有的服务器执行下面操作</span><br><span class="line">systemctl stop  cloudera-scm-agent</span><br><span class="line">yum remove cloudera-manager-agennt-y</span><br><span class="line">ps -ef | grep cmf | grep -v grep | awk &apos;&#123;print $2&#125;&apos; | xargs kill -9</span><br><span class="line">find / -name clouder* | xargs rm -rf </span><br><span class="line">find / -name cmf* | xargs rm -rf</span><br></pre></td></tr></table></figure></p>
-<h5 id="Custom-Installation-Solutions"><a href="#Custom-Installation-Solutions" class="headerlink" title="Custom Installation Solutions"></a><b>Custom Installation Solutions</b></h5><p>如果在线安装很慢，我们可以通过以下方式来加速安装</p>
-<ul>
-<li><p>Creating a Permanent Internal Repository(Option)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">#Setting Up a Web Server</span><br><span class="line">sudo yum install httpd</span><br><span class="line">sudo systemctl start httpd</span><br><span class="line"></span><br><span class="line">#Edit the Apache HTTP Server configuration file (/etc/httpd/conf/httpd.conf by default) to add or edit the following line in the &lt;IfModule mime_module&gt; section:</span><br><span class="line">AddType application/x-gzip .gz .tgz .parcel</span><br><span class="line"></span><br><span class="line">#Downloading and Publishing the Package Repository</span><br><span class="line"></span><br><span class="line">#Cloudera Manager 6</span><br><span class="line">sudo mkdir -p /var/www/html/cloudera-repos</span><br><span class="line">sudo wget --recursive --no-parent --no-host-directories https://archive.cloudera.com/cm6/6.0.0/redhat7/ -P /var/www/html/cloudera-repos</span><br><span class="line">sudo chmod -R ugo+rX /var/www/html/cloudera-repos/cm6</span><br><span class="line"></span><br><span class="line">#CDH 6</span><br><span class="line">sudo mkdir -p /var/www/html/cloudera-repos</span><br><span class="line">sudo wget --recursive --no-parent --no-host-directories https://archive.cloudera.com/cdh6/6.0.0/redhat7/ -P /var/www/html/cloudera-repos</span><br><span class="line"></span><br><span class="line">sudo wget --recursive --no-parent --no-host-directories https://archive.cloudera.com/gplextras6/6.0.0/redhat7/ -P /var/www/html/cloudera-repos</span><br><span class="line"></span><br><span class="line">sudo chmod -R ugo+rX /var/www/html/cloudera-repos/cdh6</span><br><span class="line">sudo chmod -R ugo+rX /var/www/html/cloudera-repos/gplextras6</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Creating a Temporary Internal Repository(Option)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># Download the repository you need following the instructions in Downloading and Publishing the Package Repository.</span><br><span class="line">cd /var/www/html</span><br><span class="line">python -m SimpleHTTPServer 8900</span><br><span class="line"></span><br><span class="line">#Visit the Repository URL http://&lt;web_server&gt;:8900/cloudera-repos/</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Configuring Hosts to Use the Internal Repository</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># Create /etc/yum.repos.d/cloudera-repo.repo files on cluster hosts with the following content, </span><br><span class="line">where &lt;web_server&gt; is the hostname of the web server:</span><br><span class="line"></span><br><span class="line">[cloudera-repo]</span><br><span class="line">name=cloudera-repo</span><br><span class="line">baseurl=http://&lt;web_server&gt;/cm/5</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h5 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a><b>遇到的问题</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># jdbc驱动未找到</span><br><span class="line">mkdir -p /usr/share/java</span><br><span class="line">rz mysql-connector-java-5.1.45-bin.jar</span><br><span class="line">ln -s mysql-connector-java-5.1.45-bin.jar mysql-connector-java.jar</span><br><span class="line">systemctl restart cloudera-scm-server.service</span><br><span class="line"></span><br><span class="line"># host命令为找到</span><br><span class="line">yum install bind-utils -y</span><br></pre></td></tr></table></figure>
-<p>ref<br><a href="https://gist.github.com/lilongen/b179b3868d2c2839ca7303b7605ce16b" target="_blank" rel="noopener">deploy-cm-cdh-on-centos7</a><br><a href="https://www.cloudera.com/documentation/enterprise/6/6.0/topics/cm_ig_create_local_package_repo.html#download_publish_package_repo" target="_blank" rel="noopener">Custom Installation Solutions</a><br><a href="https://www.cloudera.com/documentation/enterprise/6/latest/topics/cm_ig_create_local_parcel_repo.html#" target="_blank" rel="noopener">Using an Internally Hosted Remote Parcel Repository</a></p>
-<hr>
-<p>您的鼓励是我写作最大的动力</p>
-<p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h5 id=&quot;Cloudera-简介&quot;&gt;&lt;a href=&quot;#Cloudera-简介&quot; class=&quot;headerlink&quot; title=&quot;Cloudera 简介&quot;&gt;&lt;/a&gt;&lt;b&gt;Cloudera 简介&lt;/b&gt;&lt;/h5&gt;&lt;ul&gt;
-&lt;li&gt;Cloudera 官网：&lt;a href=&quot;
     
     </summary>
     

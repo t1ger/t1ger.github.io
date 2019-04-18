@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
   
-  <title>Go基础03数组和切片 | t1ger的茶馆</title>
+  <title>Go快速教程(手册) | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
   
   <meta name="description" content="https://t1ger.github.io/">
@@ -13,7 +13,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta property="og:title" content="Go基础03数组和切片">
+  <meta property="og:title" content="Go快速教程(手册)">
   <meta property="og:site_name" content="t1ger的茶馆">
 
   
@@ -117,25 +117,26 @@
 			<!-- index -->
 		   
 
-			  		<h2>Go基础03数组和切片</h2>
+			  		<h2>Go快速教程(手册)</h2>
 					
 					<div>
-						<span class="post-time">2017-08-21 18:54:54</span>
+						<span class="post-time">2017-08-21 16:17:41</span>
 					</div>	
 					
 
 					<div class="article-content">
-						<ul>
-<li><p>数组<br>数组是一系列同一类型数据的集合.数组中包含的每个元素被称为数组元素,一个数组包含的元素个数称为数组的长度.数组长度在定义后就不能更改.<br>go数组的定义:<br>[32]byte<br>[2<em>N] struct {x, y int 32}<br>[1000]</em>float64<br>[3][5]int<br>[2][2][2]float64<br>go数组初始化:<br>初始化数组中 {} 中的元素个数不能大于 [] 中的数字<br>var balance = [5]float32{999.9, 3.0, 5.8, 8.9, 3.9}<br>如果忽略 [] 中的数字不设置数组大小，Go 语言会根据元素的个数来设置数组的大小：<br>var balance = […]float32{999.9, 3.0, 5.8, 8.9, 3.9}<br>go数组的完整操作:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import &quot;fmt&quot;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">    var n [10]int  // n 是一个长度为10的数组</span><br><span class="line">	var i,j int</span><br><span class="line">	</span><br><span class="line">	// 初始化数组元素</span><br><span class="line">	for i=0;i&lt;10;i++&#123;</span><br><span class="line">	    n[i]=i+100</span><br><span class="line">	&#125;</span><br><span class="line">    </span><br><span class="line">	//输出每个数组元素的值</span><br><span class="line">	for j=0;j&lt;10;j++ &#123;</span><br><span class="line">	    fmt.Printf(&quot;Element[%d] = %d\n&quot;, j, n[j] )</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>切片<br>切片是对数组的抽象,是在数组之上进行的一层封装,切片的长度不固定,可以追加元素.切片的容量即隐藏数组的长度。长度可变指的是在数组长度的范围内可变<br>go切片的定义:<br>var slice1 []type<br>var slice1 []type = make([]type, len)<br>slice1 := make([]type, len)<br>slice1 := make([]type, len, cap)<br>go切片初始化:<br>s := []int{1, 2, 3} //直接初始化切片，[]表示是切片类型，{1,2,3}初始化值依次是1,2,3.其cap=len=3<br>s := arr[:]  //初始化切片s,是数组arr的引用<br>s := arr[startIndex:endIndex] //将arr中从下标startIndex到endIndex-1 下的元素创建为一个新的切片<br>s := arr[startIndex:] //缺省endIndex时将表示一直到arr的最后一个元素<br>s := arr[:endIndex]  //缺省startIndex时将表示从arr的第一个元素开始<br>s1 := s[startIndex:endIndex] //通过切片s初始化切片s1<br>s :=make([]int,len,cap)  //通过内置函数make()初始化切片s,[]int 标识为其元素类型为int的切片<br>创建数组切片:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import &quot;fmt&quot;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">   </span><br><span class="line">	var myArray [10]int = [10]int&#123;1, 2, 3, 4, 5, 6, 7, 8, 9, 10&#125;  //定义一个数组</span><br><span class="line">	var mySlice []int = myArray[:5]</span><br><span class="line">	var mySlice1 []int  //一个切片在未初始化之前默认为 nil，长度为 0</span><br><span class="line">	</span><br><span class="line">	fmt.Println(&quot;Elements of myArray: &quot;)</span><br><span class="line">	for _,v := range myArray&#123;</span><br><span class="line">	    fmt.Print(v, &quot; &quot;)</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	fmt.Println(&quot;\nElements of mySlice: &quot;)</span><br><span class="line">	</span><br><span class="line">	//元素遍历</span><br><span class="line">	for _, v := range mySlice &#123;</span><br><span class="line">	    fmt.Print(v, &quot; &quot;)</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println()</span><br><span class="line">	</span><br><span class="line">	//动态增加	</span><br><span class="line">	mySlice = append(mySlice, 1, 2, 3)</span><br><span class="line">	fmt.Println(mySlice)</span><br><span class="line">	</span><br><span class="line">	//内容复制</span><br><span class="line">	copy(mySlice, mySlice1)</span><br><span class="line">	fmt.Println(mySlice1)</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>  关于动态追加,需要注意,如果定义 mySlice2 = []int{8, 9, 10} ,需要 mySlice = append(mySlice, mySlice2…)<br>mySlice2后的三个点表示把mySlice2包含的元素打散后传入,等同于 mySlice = append(mySlice, 7, 8, 9)</p>
-</li>
-<li><p>总结<br>数组定长,定义后不可更改.切片的长度不固定<br>数组的定义 初始化 遍历<br>切片的定义 初始化 遍历 增加 复制,空切片初始化之前默认为nil,长度为0</p>
-</li>
-</ul>
+						<p>说明</p>
+<ol>
+<li>教程将专注于go基础，语法基于go1.8 , 测试环境为Linux</li>
+<li>我将专注于go的主干，以便读者能以最快时间对go形成概念</li>
+<li>Linux命令行将以 $ 开始，比如 $ls</li>
+<li>单行注释会以 // 开始,多行均已以 /* 开头，并以 */ 结尾</li>
+</ol>
+<p>建议</p>
+<ol>
+<li>将教程中的命令敲到go中看看效果</li>
+<li>你可以在了解之后立即去查看相关更完备的内容 (比如查阅官方文档)</li>
+</ol>
 <hr>
 <p>您的鼓励是我写作最大的动力</p>
 <p>俗话说，投资效率是最好的投资。 如果您感觉我的文章质量不错，读后收获很大，预计能为您提高 10% 的工作效率，不妨小额捐助我一下，让我有动力继续写出更多好文章。</p>
@@ -197,7 +198,7 @@
 &nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
 </p>
 <p>
-  &copy; 2018 <a href="https://t1ger.github.io"> t1ger </a>
+  &copy; 2019 <a href="https://t1ger.github.io"> t1ger </a>
   &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
 
 </p>
