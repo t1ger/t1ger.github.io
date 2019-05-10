@@ -1,0 +1,243 @@
+	<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
+  
+  <title>Backup Mysql by [ZRM] for MySQL | t1ger的茶馆</title>
+  <meta name="author" content="t1ger">
+  
+  <meta name="description" content="https://t1ger.github.io/">
+  
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta property="og:title" content="Backup Mysql by [ZRM] for MySQL">
+  <meta property="og:site_name" content="t1ger的茶馆">
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+</head>
+</html>
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">t1ger的茶馆</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="这是一个订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>Backup Mysql by [ZRM] for MySQL</h2>
+					
+					<div>
+						<span class="post-time">2019-05-10 11:17:23</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<h5 id="install-zrm-backup"><a href="#install-zrm-backup" class="headerlink" title="install zrm backup"></a><b>install zrm backup</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install epel-release -y</span><br><span class="line">yum install MySQL-zrm.noarch -y</span><br></pre></td></tr></table></figure>
+<h5 id="create-mysql-user-account-privileges"><a href="#create-mysql-user-account-privileges" class="headerlink" title="create mysql user account privileges"></a><b>create mysql user account privileges</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grant select, insert, update, create, drop, reload, shutdown, alter, super, lock tables, replication client on *.* to &apos;backupuser@&apos;%&apos; identified by &apos;secret password&apos;;</span><br></pre></td></tr></table></figure>
+<h5 id="config-zrm-backup"><a href="#config-zrm-backup" class="headerlink" title="config zrm backup"></a><b>config zrm backup</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/mysql-zrm/</span><br><span class="line">mkdir dailyrun</span><br><span class="line">cp mysql-zrm.conf dailyrun</span><br><span class="line">cd dailyrun</span><br><span class="line">cat mysql-zrm.conf</span><br><span class="line"></span><br><span class="line">backup-mode=logical</span><br><span class="line">destination=/var/lib/mysql-zrm  //backup directory, make sure disk large enough</span><br><span class="line">retention-policy=180D</span><br><span class="line">compress=1</span><br><span class="line">compress-plugin=/usr/bin/gzip</span><br><span class="line">databases=wikidb forums</span><br><span class="line">user=&quot;backupuser&quot;</span><br><span class="line">password=&quot;password&quot;</span><br><span class="line">host=&quot;192.168.10.1&quot;</span><br><span class="line">port=3306</span><br><span class="line">default-character-set=utf8</span><br><span class="line">mysql-binpath=&quot;/usr/local/mysql/bin&quot;</span><br><span class="line">mailto=&quot;user@company.com.cn&quot;   // make user postfix service start </span><br><span class="line">mail-policy=only-on-error</span><br></pre></td></tr></table></figure>
+<h5 id="Perform-a-Backup"><a href="#Perform-a-Backup" class="headerlink" title="Perform a Backup"></a><b>Perform a Backup</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#backup now Verification of Backup Images</span><br><span class="line">mysql-zrm --action verify-backup --backup-set dailyrun</span><br><span class="line">mysql-zrm-scheduler --now --backup-set dailyrun     </span><br><span class="line"></span><br><span class="line">#add backup task to schedule, for example, backup database every day 1am</span><br><span class="line">mysql-zrm-scheduler --add --interval daily --start 01:00 --backup-level 0 --backup-set dailyrun</span><br><span class="line"></span><br><span class="line">#query backup schedule info</span><br><span class="line">mysql-zrm-scheduler --query</span><br></pre></td></tr></table></figure>
+<h5 id="Backup-Reports"><a href="#Backup-Reports" class="headerlink" title="Backup Reports"></a><b>Backup Reports</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mysql-zrm-reporter --where backup-set=dailyrun --show backup-status-info</span><br><span class="line">mysql-zrm-reporter --where backup-set=dailyrun --show backup-performance-info</span><br><span class="line"># Verification of Backup Images</span><br><span class="line">mysql-zrm --action verify-backup --backup-set dailyrun</span><br></pre></td></tr></table></figure>
+<h5 id="Perform-a-full-restoration"><a href="#Perform-a-full-restoration" class="headerlink" title="Perform a full restoration"></a><b>Perform a full restoration</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#example for restore database</span><br><span class="line">[root@localhost dailyrun]# mysql-zrm-reporter --show restore-info --where backup-set=dailyrun</span><br><span class="line"></span><br><span class="line">REPORT TYPE : restore-info </span><br><span class="line"></span><br><span class="line">          backup_set  backup_date                  backup_level  backup_directory                          backup_status         comment</span><br><span class="line">-----------------------------------------------------------------------------------------------------------------------------------------------------</span><br><span class="line">            dailyrun  Fri 10 May 2019 09:48:58                0  /var/lib/mysql-zrm/dailyrun/201905100948  Backup succeeded      ----</span><br><span class="line">                      AM CST                                     58</span><br><span class="line"></span><br><span class="line">[root@localhost dailyrun]# mysql-zrm --action restore --backup-set dailyrun --source-directory /var/lib/mysql-zrm/dailyrun/20190510094858/</span><br><span class="line">restore:INFO: ZRM for MySQL Community Edition - version 3.0</span><br><span class="line">dailyrun:restore:INFO: The quick backup-type is supported only for snapshot backups. Setting backup-type to &apos;regular&apos;</span><br><span class="line">dailyrun:restore:WARNING: Binary logging is off.</span><br><span class="line">Warning: Using a password on the command line interface can be insecure.</span><br><span class="line">dailyrun:restore:INFO: Restored database(s) from logical backup:  wikidb forums</span><br><span class="line">dailyrun:restore:INFO: Restore done in 3 seconds.</span><br></pre></td></tr></table></figure>
+<p>ref<br><a href="https://github.com/tuhoanganh/mysql-zrm" target="_blank" rel="noopener">mysql-zrm</a><br><a href="https://www.zmanda.com/quick-mysql-backup.html" target="_blank" rel="noopener">[ZRM] for MySQL</a><br><a href="https://www.linux-geex.com/mysql-zrm-backuppc-centos-7/" target="_blank" rel="noopener">MySQL-ZRM and BackupPC – CentOS 7</a></p>
+<hr>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+	  
+	    
+		<!-- 来必力City版安装代码 -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zOTQ5MS8xNjAxOA==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+		
+<!--		<div class="comment-section">
+  
+  
+
+
+</div> -->
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+
+<p>
+  由 <a href="https://hexo.io">hexo</a> 强力驱动 |&nbsp;&nbsp;本站总点击 <span id="busuanzi_value_site_pv"></span> 次
+&nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
+</p>
+<p>
+  &copy; 2019 <a href="https://t1ger.github.io"> t1ger </a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
+
+</p>
+
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-99921399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>
