@@ -4,12 +4,12 @@
 
     
   <url>
-    <loc>https://t1ger.github.io/2019/06/05/how-to-set-up-private-yum-repo/</loc>
-    <lastmod>2019-06-11T09:39:26.035Z</lastmod>
+    <loc>https://t1ger.github.io/2019/07/25/%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8Cjvm%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E5%AE%9A%E4%BD%8D/</loc>
+    <lastmod>2019-07-25T06:56:20.423Z</lastmod>
     <data>
         <display>
-        <title>how to set-up-private-yum-repo</title>
-        <pubTime>2019-06-05T05:56:19.000Z</pubTime>
+        <title>如何进行jvm故障排查定位</title>
+        <pubTime>2019-07-25T05:01:33.000Z</pubTime>
         
          
            
@@ -19,12 +19,44 @@
 
     
   <url>
+    <loc>https://t1ger.github.io/2016/09/08/nginx-proxy%E5%B8%B8%E7%94%A8%E7%9F%A5%E8%AF%86%E7%82%B9%E8%A7%A3%E6%9E%90/</loc>
+    <lastmod>2019-07-18T06:50:50.915Z</lastmod>
+    <data>
+        <display>
+        <title>nginx proxy 常用知识点解析</title>
+        <pubTime>2016-09-08T03:55:45.000Z</pubTime>
+        
+        <tag>nginx</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://t1ger.github.io/2019/06/06/How-to-Write-Rules-for-Prometheus/</loc>
-    <lastmod>2019-06-11T09:35:21.984Z</lastmod>
+    <lastmod>2019-06-14T09:51:02.213Z</lastmod>
     <data>
         <display>
         <title>How to Write Rules for Prometheus</title>
         <pubTime>2019-06-06T06:51:03.000Z</pubTime>
+        
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://t1ger.github.io/2019/06/05/how-to-set-up-private-yum-repo/</loc>
+    <lastmod>2019-06-11T09:39:26.035Z</lastmod>
+    <data>
+        <display>
+        <title>how to set-up-private-yum-repo</title>
+        <pubTime>2019-06-05T05:56:19.000Z</pubTime>
         
          
            
@@ -1700,23 +1732,6 @@
         <pubTime>2016-09-15T14:19:00.000Z</pubTime>
         
         <tag>svn http linux</tag>
-         
-         
-           
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://t1ger.github.io/2016/09/08/nginx-proxy-pass%E5%B8%B8%E7%94%A8%E7%9F%A5%E8%AF%86%E7%82%B9%E8%A7%A3%E6%9E%90/</loc>
-    <lastmod>2016-09-26T03:44:04.000Z</lastmod>
-    <data>
-        <display>
-        <title>nginx proxy_pass常用知识点解析</title>
-        <pubTime>2016-09-08T03:55:45.000Z</pubTime>
-        
-        <tag>nginx</tag>
          
          
            
