@@ -1,0 +1,264 @@
+	<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
+  
+  <title>数据分析小白入门之从Tushare获取财经数据 | t1ger的茶馆</title>
+  <meta name="author" content="t1ger">
+  
+  <meta name="description" content="https://t1ger.github.io/">
+  
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta property="og:title" content="数据分析小白入门之从Tushare获取财经数据">
+  <meta property="og:site_name" content="t1ger的茶馆">
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+</head>
+</html>
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">t1ger的茶馆</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="这是一个订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>数据分析小白入门之从Tushare获取财经数据</h2>
+					
+					<div>
+						<span class="post-time">2019-07-31 10:52:13</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<h5 id="tushare简介"><a href="#tushare简介" class="headerlink" title="tushare简介"></a><b>tushare简介</b></h5><p>下面是官网对其的介绍,详细参考<a href="http://tushare.org/" target="_blank" rel="noopener">http://tushare.org/</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Tushare是一个免费、开源的python财经数据接口包。</span><br><span class="line">主要实现对股票等金融数据从数据采集、清洗加工 到 数据存储的过程，能够为金融分析人员提供快速、整洁、</span><br><span class="line">和多样的便于分析的数据，为他们在数据获取方面极大地减轻工作量，</span><br><span class="line">使他们更加专注于策略和模型的研究与实现上。</span><br><span class="line">考虑到Python pandas包在金融量化分析中体现出的优势，Tushare返回的绝大部分的数据格式都是</span><br><span class="line">pandas DataFrame类型，非常便于用pandas/NumPy/Matplotlib进行数据分析和可视化。</span><br><span class="line">当然，如果您习惯了用Excel或者关系型数据库做分析，您也可以通过Tushare的数据存储功能，</span><br><span class="line">将数据全部保存到本地后进行分析。</span><br><span class="line">应一些用户的请求，从0.2.5版本开始，Tushare同时兼容Python 2.x和Python 3.x，</span><br><span class="line">对部分代码进行了重构，并优化了一些算法，确保数据获取的高效和稳定。</span><br></pre></td></tr></table></figure></p>
+<h5 id="tushare安装"><a href="#tushare安装" class="headerlink" title="tushare安装"></a><b>tushare安装</b></h5><p>不论是linux 还是window系统，在命令行里直接执行相关的pip命令即可<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pip install tushare</span><br><span class="line">pip install matplotlib </span><br><span class="line">pip install openpyxl</span><br><span class="line"></span><br><span class="line">pip install jupyter</span><br></pre></td></tr></table></figure></p>
+<p>一切静待执行完毕<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jupyter notebook</span><br></pre></td></tr></table></figure></p>
+<p>在浏览器打开的页面中选择“new” 创建一个新的python2文件，执行下面这行语句：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import tushare as ts</span><br><span class="line"></span><br><span class="line">print(ts.__version__)</span><br></pre></td></tr></table></figure></p>
+<p>正常输出的话就可以使用了</p>
+<h5 id="tushare简单使用"><a href="#tushare简单使用" class="headerlink" title="tushare简单使用"></a><b>tushare简单使用</b></h5><p>最新版本需要token来进行验证，而这个只要注册一个账户即可，下面就是注册链接<br><a href="https://tushare.pro/register?reg=289223" target="_blank" rel="noopener">https://tushare.pro/register?reg=289223</a><br>根据提示，根据我们日常的经验，轻松就可以注册完成</p>
+<p>我们可以在我们刚才注册过网站的右上角点击个人主页,在接口TOKEN中我们就可以复制到token<br>获取到token之后，就是设置token了，直接上代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">import tushare as ts</span><br><span class="line"></span><br><span class="line">#方式一</span><br><span class="line">ts.set_token(&apos;复制的token填在这里&apos;)</span><br><span class="line">#这种方式设置会保存token到本地,所以只需设置一次,失效之后,可以替换为新的token</span><br><span class="line"></span><br><span class="line">#方式二</span><br><span class="line">pro = ts.pro_api()</span><br><span class="line">pro = ts.pro_api(&apos;复制的token填在这里&apos;)</span><br><span class="line">这种在初始化接口的时候设置token</span><br></pre></td></tr></table></figure></p>
+<p>设置过token之后，就是使用tushare获取数据</p>
+<h5 id="基础功能"><a href="#基础功能" class="headerlink" title="基础功能"></a><b>基础功能</b></h5><ul>
+<li><p>get_hist_data<br>获取股票历史数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import tushare as ts</span><br><span class="line">ts.get_hist_data(&apos;601006&apos;)</span><br><span class="line"></span><br><span class="line">date		open	high	close	low	volume	price_change	p_change	ma5	ma10	ma20	v_ma5	v_ma10	v_ma20</span><br><span class="line">													</span><br><span class="line">2019-07-30	7.90	7.95	7.92	7.89	185306.34	0.03	0.38	7.882	7.847	7.906	206837.68	205383.95	253866.89</span><br><span class="line">2019-07-29	7.84	7.90	7.89	7.84	174947.23	0.04	0.51	7.862	7.839	7.924	207086.78	211223.57	264796.92</span><br><span class="line">2019-07-26	7.86	7.88	7.85	7.83	183398.98	-0.02	-0.25	7.840	7.838	7.939	218223.60	216809.15	275667.15</span><br><span class="line">2019-07-25	7.89	7.90	7.87	7.83	195916.06	-0.01	-0.13	7.828	7.838	7.951	218596.59	220304.86	285239.61</span><br><span class="line">2019-07-24	7.82	7.91	7.88	7.81	294619.81	0.06	0.77	7.812	7.838	7.965	227321.78	222894.04	308046.28</span><br><span class="line">2019-07-23	7.76	7.83	7.82	7.75	186551.83	0.04	0.51	7.812	7.837	8.009	203930.21	215005.02	323511.71</span><br><span class="line">2019-07-22	7.80	7.82	7.78	7.72	230631.33	-0.01	-0.13	7.816	7.849	8.056	215360.36	224992.43	333106.69</span><br><span class="line">2019-07-19	7.79	7.85	7.79	7.78	185263.91	0.00	0.00	7.836	7.870	8.107	215394.70	254050.48	341493.82</span><br><span class="line">2019-07-18	7.85	7.86	7.79	7.77	239542.00	-0.09	-1.14	7.848	7.902	8.156	222013.13	268792.96	354813.18</span><br><span class="line">2019-07-17	7.84	7.88	7.88	7.81	177661.97	0.04	0.51	7.864	7.933	8.204	218466.30	284275.44	370840.09</span><br><span class="line">2019-07-16	7.88	7.88	7.84	7.82	243702.58	-0.04	-0.51	7.862	7.965	8.241	226079.84	302349.83	395746.08</span><br><span class="line">2019-07-15	7.85	7.89	7.88	7.77	230803.05	0.03	0.38	7.882	8.008	8.272	234624.51	318370.28	394510.21</span><br><span class="line">2019-07-12	7.89	7.90	7.85	7.83	218356.06	-0.02	-0.25	7.904	8.040	8.298	292706.26	334525.14	403332.35</span><br><span class="line">2019-07-11	7.91	7.92	7.87	7.87	221807.84	0.00	0.00	7.956	8.064	8.329	315572.78	350174.36	422860.53</span><br><span class="line">2019-07-10	7.95	7.96	7.87	7.86	215729.67	-0.07	-0.88	8.002	8.092	8.356	350084.58	393198.52	427026.92</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>get_realtime_quotes<br>获取股票实时行情</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">import tushare as ts</span><br><span class="line">ts.get_realtime_quotes(&apos;601006&apos;)</span><br><span class="line"></span><br><span class="line">	name	open	pre_close	price	high	low	    bid	    ask	    volume	 amount	    ...	   a2_p	  a3_v	  a3_p	  a4_v	  a4_p	   a5_v	   a5_p	    date	   time	        code</span><br><span class="line">0	大秦铁路	7.910	7.920		7.920	7.940	7.900	7.920	7.930	8712132	69009119.000 ...	7.940	6582	7.950	4530	7.960	1752 7.970 2019-07-31	   11:16:02	       601006</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>get_deposit_rate<br>除了股票，TuShare 还提供了多种数据，比如宏观经济数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">import tushare as ts</span><br><span class="line">ts.get_deposit_rate()</span><br><span class="line"></span><br><span class="line">	date	deposit_type	rate</span><br><span class="line">0	2015-10-24	定活两便(定期)	--</span><br><span class="line">1	2015-10-24	定期存款整存整取(半年)	1.30</span><br><span class="line">2	2015-10-24	定期存款整存整取(二年)	2.10</span><br><span class="line">3	2015-10-24	定期存款整存整取(三个月)	1.10</span><br><span class="line">4	2015-10-24	定期存款整存整取(三年)	2.75</span><br><span class="line">5	2015-10-24	定期存款整存整取(五年)	--</span><br><span class="line">6	2015-10-24	定期存款整存整取(一年)	1.50</span><br><span class="line">7	2015-10-24	活期存款(不定期)	0.35</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>realtime_boxoffice<br>电影票房</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">import tushare as ts</span><br><span class="line">ts.realtime_boxoffice()</span><br><span class="line"></span><br><span class="line">	BoxOffice	Irank	MovieName	boxPer	default_url	larger_url	moblie_url	movieDay	sumBoxOffice	time</span><br><span class="line">0		4143.16	1	哪吒之魔童降世	81.56	http://images.entgroup.cn/group2/M00/02/8A/wKg...	http://images.entgroup.cn/group1/M00/05/13/wKg...	http://images.entgroup.cn/group2/M00/02/8A/wKg...	6	112864.35	2019-07-31 11:24:57</span><br><span class="line">1		428.82	2	银河补习班	8.44	http://images.entgroup.cn/group1/M00/05/0E/wKg...	http://images.entgroup.cn/group2/M00/02/8A/wKg...	http://images.entgroup.cn/group1/M00/05/0E/wKg...	14	78734.09	2019-07-31 11:24:57</span><br><span class="line">2		173.57	3	狮子王	3.42	http://images.entgroup.cn/group1/M00/05/0C/wKg...	http://images.entgroup.cn/group2/M00/02/8A/wKg...	http://images.entgroup.cn/group1/M00/05/0C/wKg...	20	80458.95	2019-07-31 11:24:57</span><br><span class="line">3		83.24	4	扫毒2：天地对决	1.64	http://images.entgroup.cn/group2/M00/00/59/wKg...	http://images.entgroup.cn/group1/M00/05/10/wKg...	http://images.entgroup.cn/group2/M00/00/9B/wKg...	27	128413.41	2019-07-31 11:24:57</span><br><span class="line">4		55.68	5	跳舞吧！大象	1.10	http://images.entgroup.cn/group2/M00/02/8A/wKg...		http://images.entgroup.cn/group1/M00/05/13/wKg...	6	3723.65	2019-07-31 11:24:57</span><br><span class="line">5		34.51	6	回到过去拥抱你	0.68	http://images.entgroup.cn/group1/M00/05/10/wKg...		http://images.entgroup.cn/group1/M00/05/10/wKg...	6	1703.80	2019-07-31 11:24:57</span><br><span class="line">6		28.01	7	烈火英雄	0.55	http://images.entgroup.cn/group1/M00/00/CA/wKg...		http://images.entgroup.cn/group1/M00/01/46/wKg...	0	5422.26	2019-07-31 11:24:57</span><br><span class="line">7		22.08	8	蜘蛛侠：英雄远征	0.43	http://images.entgroup.cn/group1/M00/05/0D/wKg...	http://images.entgroup.cn/group1/M00/05/0D/wKg...	http://images.entgroup.cn/group1/M00/05/0D/wKg...	34	140925.20	2019-07-31 11:24:57</span><br><span class="line">8		17.48	9	爱宠大机密2	0.34	http://images.entgroup.cn/group2/M00/00/4D/wKg...	http://images.entgroup.cn/group1/M00/05/10/wKg...	http://images.entgroup.cn/group1/M00/01/0A/wKg...	27	15257.41	2019-07-31 11:24:57</span><br><span class="line">9		15.14	10	猪八戒·传说	0.30	http://images.entgroup.cn/group1/M00/05/08/wKg...		http://images.entgroup.cn/group1/M00/05/08/wKg...	13	5802.09	2019-07-31 11:24:57</span><br><span class="line">10		78.23	11	其它	1.00				0	0.00	2019-07-31 11:24:57</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>演示<br>下面的代码来演示下 TuShare 的使用。这里我将获取今年上证指数的日K信息，然后保存成 excel 文件，再画出每日的收盘指数的折线图</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">import tushare as ts</span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line"></span><br><span class="line">df=ts.get_hist_data(&apos;sh&apos;, start=&apos;2019-01-01&apos;)</span><br><span class="line">df.to_excel(&apos;stock_sh.xlsx&apos;)</span><br><span class="line">df.close.plot()</span><br><span class="line">ax = plt.gca()</span><br><span class="line">ax.invert_xaxis()</span><br><span class="line">plt.figure()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><img src="data:image/png;base64,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" alt="image"></p>
+<ul>
+<li>后续的思考<br>通过接口我们看到的是冷冰冰数据，所以，接下来数据的可视化才是重头戏，将这些数据之间的联系结合起来更是具有挑战的事情，对所涉及到的金融概念及他们的意义需要领会，可以根据这些数据实现一些自己的想法。</li>
+</ul>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+	  
+	    
+		<!-- 来必力City版安装代码 -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zOTQ5MS8xNjAxOA==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+		
+<!--		<div class="comment-section">
+  
+  
+
+
+</div> -->
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+
+<p>
+  由 <a href="https://hexo.io">hexo</a> 强力驱动 |&nbsp;&nbsp;本站总点击 <span id="busuanzi_value_site_pv"></span> 次
+&nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
+</p>
+<p>
+  &copy; 2019 <a href="https://t1ger.github.io"> t1ger </a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
+
+</p>
+
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-99921399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>
