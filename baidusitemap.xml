@@ -4,8 +4,38 @@
 
     
   <url>
+    <loc>https://t1ger.github.io/2020/04/10/how-to-install-and-config-kong2-0/</loc>
+    <lastmod>2020-04-10T08:08:23.236Z</lastmod>
+    <data>
+        <display>
+        <title>how to install and config kong2.0</title>
+        <pubTime>2020-04-10T07:26:20.000Z</pubTime>
+        
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://t1ger.github.io/2020/01/02/How-to-install-ceph-nautilus-on-CentOS7/</loc>
+    <lastmod>2020-01-02T09:57:24.490Z</lastmod>
+    <data>
+        <display>
+        <title>How to install ceph-nautilus on CentOS7</title>
+        <pubTime>2020-01-02T07:45:04.000Z</pubTime>
+        
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://t1ger.github.io/2019/09/19/Ldap%E6%96%B0%E5%A2%9E%E7%94%A8%E6%88%B7%E6%97%A0%E6%B3%95%E7%99%BB%E5%BD%95GitLab%E6%8E%92%E6%9F%A5/</loc>
-    <lastmod>2019-09-19T05:32:58.425Z</lastmod>
+    <lastmod>2019-09-19T05:38:56.789Z</lastmod>
     <data>
         <display>
         <title>Ldap新增用户无法登录GitLab排查</title>

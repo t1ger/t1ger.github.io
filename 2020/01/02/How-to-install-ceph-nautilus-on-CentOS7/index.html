@@ -1,0 +1,272 @@
+	<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
+  
+  <title>How to install ceph-nautilus on CentOS7 | t1ger的茶馆</title>
+  <meta name="author" content="t1ger">
+  
+  <meta name="description" content="https://t1ger.github.io/">
+  
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta property="og:title" content="How to install ceph-nautilus on CentOS7">
+  <meta property="og:site_name" content="t1ger的茶馆">
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+</head>
+</html>
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">t1ger的茶馆</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="这是一个订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>How to install ceph-nautilus on CentOS7</h2>
+					
+					<div>
+						<span class="post-time">2020-01-02 15:45:04</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<h5 id="Prepare"><a href="#Prepare" class="headerlink" title="Prepare"></a><b>Prepare</b></h5><p>System: CentOS 7.5<br>IP: 192.168.1.129-132<br>Hostname: admin node1-3<br>Disk:/dev/sdb 100G<br>Role: admin osd</p>
+<ul>
+<li><p>replace ali yum source</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup</span><br><span class="line">wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo</span><br><span class="line">sed -i -e &apos;/mirrors.cloud.aliyuncs.com/d&apos; -e &apos;/mirrors.aliyuncs.com/d&apos; /etc/yum.repos.d/CentOS-Base.repo</span><br><span class="line">yum clean up &amp;&amp; yum makecache &amp;&amp; yum update -y</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>set ceph source and epel source, turn off firewalld</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">rpm -Uvh https://mirrors.aliyun.com/ceph/rpm-nautilus/el7/noarch/ceph-release-1-1.el7.noarch.rpm</span><br><span class="line">yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</span><br><span class="line"></span><br><span class="line">systemctl stop firewalld</span><br><span class="line">systemctl disable firewalld</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>make sure time sync,all node install chrony</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">yum install -y chrony</span><br><span class="line"></span><br><span class="line">#admin node sync aliyun ntp server</span><br><span class="line">sudo sed -i &apos;/^server .*/d&apos; /etc/chrony.conf</span><br><span class="line">sudo sed -ri &apos;3s#^$#server ntp1.aliyun.com iburst\nallow 192.168.1.0/24#&apos; /etc/chrony.conf</span><br><span class="line">sudo systemctl enable chronyd</span><br><span class="line">sudo systemctl restart chronyd</span><br><span class="line"></span><br><span class="line"># other node sync admin node</span><br><span class="line">ssh node1 &quot;sudo sed -i &apos;/^server .*/d&apos; /etc/chrony.conf&quot;</span><br><span class="line">ssh node1 &quot;sudo sed -ri &apos;3s#^\$#server 192.168.1.129 iburst#&apos; /etc/chrony.conf&quot;</span><br><span class="line">ssh node2 &quot;sudo sed -i &apos;/^server .*/d&apos; /etc/chrony.conf&quot;</span><br><span class="line">ssh node2 &quot;sudo sed -ri &apos;3s#^\$#server 192.168.1.129 iburst#&apos; /etc/chrony.conf&quot;</span><br><span class="line">ssh node3 &quot;sudo sed -i &apos;/^server .*/d&apos; /etc/chrony.conf&quot;</span><br><span class="line">ssh node3 &quot;sudo sed -ri &apos;3s#^\$#server 192.168.1.129 iburst#&apos; /etc/chrony.conf&quot;</span><br><span class="line"></span><br><span class="line">#reboot chrony service</span><br><span class="line">ssh node1 sudo systemctl enable chronyd</span><br><span class="line">ssh node1 sudo systemctl restart chronyd</span><br><span class="line">ssh node2 sudo systemctl enable chronyd</span><br><span class="line">ssh node2 sudo systemctl restart chronyd</span><br><span class="line">ssh node3 sudo systemctl enable chronyd</span><br><span class="line">ssh node3 sudo systemctl restart chronyd</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="Install-ceph"><a href="#Install-ceph" class="headerlink" title="Install ceph"></a><b>Install ceph</b></h5><ul>
+<li><p>install ceph-deploy</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y https://mirrors.aliyun.com/ceph/rpm-nautilus/el7/noarch/ceph-deploy-2.0.1-0.noarch.rpm</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>install ceph</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ceph-deploy install admin node1 node2 node3</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>add mon</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ceph-deploy new node1 node2 node3</span><br><span class="line">ceph-deploy mon create-initial</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>create ceph admin node</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ceph-deploy mgr create node1 node2 node3</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>create osd node</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ceph-deploy osd create --data /dev/sdb node1</span><br><span class="line">ceph-deploy osd create --data /dev/sdb node2</span><br><span class="line">ceph-deploy osd create --data /dev/sdb node3</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>enable dashboard</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#from nautilus, dashboard as Independent Modules. need install on all mgr node</span><br><span class="line">yum install -y ceph-mgr-dashboard</span><br><span class="line"># if error</span><br><span class="line">pip uninstall urllib3</span><br><span class="line">yum install python-urllib3 -y</span><br><span class="line"></span><br><span class="line">#enable dashboard</span><br><span class="line">ceph mgr module enable dashboard　--force</span><br><span class="line"></span><br><span class="line"># enable ssl/tls</span><br><span class="line">ceph mgr module enable dashboard　--force</span><br><span class="line"></span><br><span class="line"># create admin user</span><br><span class="line">ceph dashboard ac-user-create admin admin administrator</span><br><span class="line"></span><br><span class="line"># view ceph-mgr service</span><br><span class="line">ceph mgr services</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>sync conf to all node and copy mgr file to admin</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"># only push config</span><br><span class="line">[root@admin ~]#ceph-deploy --overwrite-conf admin node1 node2 node3</span><br><span class="line"></span><br><span class="line"># push config and client.admin key</span><br><span class="line">[root@admin ~]# ceph-deploy admin admin</span><br><span class="line"></span><br><span class="line">[ceph_deploy.conf][DEBUG ] found configuration file at: /root/.cephdeploy.conf</span><br><span class="line">[ceph_deploy.cli][INFO  ] Invoked (2.0.1): /usr/bin/ceph-deploy admin admin</span><br><span class="line">[ceph_deploy.cli][INFO  ] ceph-deploy options:</span><br><span class="line">[ceph_deploy.cli][INFO  ]  username                      : None</span><br><span class="line">[ceph_deploy.cli][INFO  ]  verbose                       : False</span><br><span class="line">[ceph_deploy.cli][INFO  ]  overwrite_conf                : False</span><br><span class="line">[ceph_deploy.cli][INFO  ]  quiet                         : False</span><br><span class="line">[ceph_deploy.cli][INFO  ]  cd_conf                       : &lt;ceph_deploy.conf.cephdeploy.Conf instance at 0x7f21349cad40&gt;</span><br><span class="line">[ceph_deploy.cli][INFO  ]  cluster                       : ceph</span><br><span class="line">[ceph_deploy.cli][INFO  ]  client                        : [&apos;admin&apos;]</span><br><span class="line">[ceph_deploy.cli][INFO  ]  func                          : &lt;function admin at 0x7f21356e01b8&gt;</span><br><span class="line">[ceph_deploy.cli][INFO  ]  ceph_conf                     : None</span><br><span class="line">[ceph_deploy.cli][INFO  ]  default_release               : False</span><br><span class="line">[ceph_deploy.admin][DEBUG ] Pushing admin keys and conf to admin</span><br><span class="line">[admin][DEBUG ] connected to host: admin </span><br><span class="line">[admin][DEBUG ] detect platform information from remote host</span><br><span class="line">[admin][DEBUG ] detect machine type</span><br><span class="line">[admin][DEBUG ] write cluster configuration to /etc/ceph/&#123;cluster&#125;.conf</span><br><span class="line"></span><br><span class="line">[root@admin ~]# ceph -s</span><br><span class="line">  cluster:</span><br><span class="line">    id:     376a41f4-2aa1-4f96-9bcb-700f2787ebd8</span><br><span class="line">    health: HEALTH_OK</span><br><span class="line"></span><br><span class="line">[root@admin ~]#  ceph osd tree</span><br><span class="line">ID CLASS WEIGHT  TYPE NAME      STATUS REWEIGHT PRI-AFF </span><br><span class="line">-1       0.29008 root default                           </span><br><span class="line">-3       0.09669     host node1                         </span><br><span class="line"> 0   hdd 0.09669         osd.0      up  1.00000 1.00000 </span><br><span class="line">-5       0.09669     host node2                         </span><br><span class="line"> 1   hdd 0.09669         osd.1      up  1.00000 1.00000 </span><br><span class="line">-7       0.09669     host node3                         </span><br><span class="line"> 2   hdd 0.09669         osd.2      up  1.00000 1.00000</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="how-to-clear-if-you-reinstall"><a href="#how-to-clear-if-you-reinstall" class="headerlink" title=" how to clear,if you reinstall"></a><b> how to clear,if you reinstall</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@admin ~]#  ceph-deploy purge admin node1 node2 node3</span><br><span class="line">[root@admin ~]#  ceph-deploy purgedata admin node1 node2 node3</span><br><span class="line">[root@admin ~]#  ceph-deploy forgetkeys</span><br></pre></td></tr></table></figure>
+<p>ref<br><a href="https://docs.ceph.com/docs/nautilus/mgr/dashboard/" target="_blank" rel="noopener">ceph dashboard</a></p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+	  
+	    
+		<!-- 来必力City版安装代码 -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zOTQ5MS8xNjAxOA==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+		
+<!--		<div class="comment-section">
+  
+  
+
+
+</div> -->
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+
+<p>
+  由 <a href="https://hexo.io">hexo</a> 强力驱动 |&nbsp;&nbsp;本站总点击 <span id="busuanzi_value_site_pv"></span> 次
+&nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
+</p>
+<p>
+  &copy; 2020 <a href="https://t1ger.github.io"> t1ger </a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
+
+</p>
+
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-99921399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>
