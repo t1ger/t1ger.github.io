@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
   
-  <title>第 5 页 | Archives | t1ger的茶馆</title>
+  <title>Welcome to GoCD - an open-source Continuous Integration and Continuous Delivery system | t1ger的茶馆</title>
   <meta name="author" content="t1ger">
   
   <meta name="description" content="https://t1ger.github.io/">
@@ -13,7 +13,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  
+  <meta property="og:title" content="Welcome to GoCD - an open-source Continuous Integration and Continuous Delivery system">
   <meta property="og:site_name" content="t1ger的茶馆">
 
   
@@ -116,66 +116,95 @@
 		<div class="content">
 			<!-- index -->
 		   
-			  	<h2>归档</h2>
-		  		
-	              <p class="archive-item">
-						<a href="/2017/09/07/go标准库01-正则表达式-regexp包/" class="archive-title">go标准库01 正则表达式(regexp包)</a><span class="archive post-time">2017-09-07</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/09/07/go标准库-走马观花/" class="archive-title">go标准库--走马观花</a><span class="archive post-time">2017-09-07</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/09/04/Go进阶07-defer-panic-recover/" class="archive-title">Go进阶07 defer,panic,recover</a><span class="archive post-time">2017-09-04</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/09/04/Go进阶06-iota/" class="archive-title">Go进阶06 iota</a><span class="archive post-time">2017-09-04</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/09/04/Go进阶05-fallthrough/" class="archive-title">Go进阶05 fallthrough</a><span class="archive post-time">2017-09-04</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/08/24/Go进阶04-函数闭包和不定参数/" class="archive-title">Go进阶04 函数闭包和不定参数</a><span class="archive post-time">2017-08-24</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/08/24/Go进阶03-Range/" class="archive-title">Go进阶03 Range</a><span class="archive post-time">2017-08-24</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/08/24/Go进阶02-channel/" class="archive-title">Go进阶02 channel</a><span class="archive post-time">2017-08-24</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/08/23/Go进阶01-map/" class="archive-title">Go进阶01 map</a><span class="archive post-time">2017-08-23</span>
-					</p>
-			  	
-	              <p class="archive-item">
-						<a href="/2017/08/23/Go基础08-面向对象的基本概念/" class="archive-title">Go基础08 面向对象的基本概念</a><span class="archive post-time">2017-08-23</span>
-					</p>
-			  	
-			  <!-- post -->
+
+			  		<h2>Welcome to GoCD - an open-source Continuous Integration and Continuous Delivery system</h2>
+					
+					<div>
+						<span class="post-time">2020-07-17 15:45:21</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<h3 id="Install"><a href="#Install" class="headerlink" title="Install"></a><b>Install</b></h3><h5 id="GoCD-Server-requirements"><a href="#GoCD-Server-requirements" class="headerlink" title="GoCD Server requirements"></a>GoCD Server requirements</h5><p>Hardware</p>
+<ul>
+<li>RAM - minimum 1GB, 2GB recommended</li>
+<li>CPU - minimum 2 cores, 2GHz</li>
+<li>Disk - minimum 1GB free space</li>
+</ul>
+<h5 id="GoCD-Agent-requirements"><a href="#GoCD-Agent-requirements" class="headerlink" title="GoCD Agent requirements"></a>GoCD Agent requirements</h5><ul>
+<li>RAM - minimum 128MB, 256MB recommended</li>
+<li>CPU - minimum 2GHz</li>
+</ul>
+<p>Supported Source Control Tools</p>
+<ul>
+<li>Git &gt;= 1.9</li>
+<li>Mercurial &gt;= 2.2.2</li>
+<li>Subversion &gt;= 1.6.11</li>
+<li>TFS SDK 14.0.3 (TFS 2012, 2013, 2015 and Visual Studio Team Services are supported by GoCD)</li>
+<li>Perforce &gt;= 2016.1</li>
+</ul>
+<p>Java Dependencies for GoCD (Server and Agent)<br>This version of GoCD works with Java Runtime Environment (JRE) versions 11 and 12</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#server</span><br><span class="line">docker run -d -p8153:8153 -p8154:8154 gocd/gocd-server:v20.5.0</span><br><span class="line"></span><br><span class="line">#agent</span><br><span class="line">docker run -d -e GO_SERVER_URL=... gocd/gocd-agent-alpine-3.11:v20.5.0</span><br></pre></td></tr></table></figure>
+<h3 id="Config"><a href="#Config" class="headerlink" title="Config"></a><b>Config</b></h3><ul>
+<li>Task 基本上为一个命令，如执行一个ls系统命令,ant构建命令</li>
+<li>Job  由多个Task组合而成，Task命令的执行是相互独立的.Task会按照配置顺序依次执行，但如果一个Task失败，后续task将会取消执行<br>Job的成功与否取决于所有Task是否全部执行成功</li>
+<li>Stage 由多个Job组合而成,成功与否由全部Task是否成功决定</li>
+<li>Pipeline 由多个Stage组合而成,执行方式为依次执行，其中一个Stage执行失败，将不会执行后续Stage</li>
+<li>Material  使用Git,Svn</li>
+<li>Fan-out and fan-in<br>Fan-out 表示一个Stage的结束可以触发多个Pipeline的Stage开始<br>Fan-in 表示一个Pipeline的开始可以等待多个Stage完成后才被触发</li>
+<li>VSM 数据驱动流图，即复杂的Fan-out和Fan-in的视图</li>
+<li>Artifacts 在Job上配置，默认会有console.log生成(所有的Job都会在agent上执行，Artifacts存在的意义就是将文件上传到server端，再供使用)</li>
+<li>Environment Variables</li>
+<li>Resource 可以将Agent进行别名命名，以在配置Job的执行位置时使用,可以将多个Agent命为相同名称</li>
+</ul>
+<p>以springboot项目为例，分为几部实现自动打包,参考<a href="https://docs.gocd.org/current/configuration/admin_add_job.html" target="_blank" rel="noopener">这里</a></p>
+<ul>
+<li>实现项目自动打包，自动重启</li>
+<li>创建tasks<br>Task1：执行maven打包操作，GoCD已内置了mvn命令，但是代理服务器上需要安装maven客户端<br>Task2：将打包后的jar文件，复制到项目部署目录<br>Task3：重启jar包，需要借助shell 命令来完成。</li>
+</ul>
+<p>Once the agent is started, switching to the agents tab by clicking on the “Agents” link in the header should take you to a screen where the agent shows up and is idle</p>
+<h3 id="Jenkins-VS-GoCD"><a href="#Jenkins-VS-GoCD" class="headerlink" title="Jenkins VS GoCD"></a><b>Jenkins VS GoCD</b></h3><table>
+<thead>
+<tr>
+<th>Jenkins</th>
+<th>GoCD</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Jenkins是通用自动化工具, 它是为持续集成（CI）构建的</td>
+<td>GoCD是连续交付工具</td>
+</tr>
+<tr>
+<td>可扩展性是Jenkins的核心特征,归因于插件对于Jenkins功能至关重要</td>
+<td>GoCD旨在支持无需安装任何插件即可立即使用的最常见的连续交付方案</td>
+</tr>
+<tr>
+<td>可以使用任何配置设置随时启用和禁用作业</td>
+<td>这种功能在GoCD中不可用</td>
+</tr>
+<tr>
+<td>Jenkins专为持续集成（CI）而设计。除此之外, 还需要插件</td>
+<td>尽管GoCD是专门为持续交付（CD）而设计的, 但它是用于持续集成的复杂功能</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://docs.gocd.org/current/" target="_blank" rel="noopener">GoCD User Documentation</a></p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
 			  
 		</div>
 
 		<!-- pagination -->
-	  
-
-			<div class="btn-group btn-group-justified">
-				
-
-					<a class="btn btn-default " href="/archives/page/4/">上一页</a>
-
-					<a class="btn btn-default" href="/">首页</a>
-
-					<a class="btn btn-default " href="/archives/page/6/">下一页</a>
-
-	    	
-			</div>
 	  
 	  
 	    
@@ -200,6 +229,8 @@
 		
 <!--		<div class="comment-section">
   
+  
+
 
 </div> -->
 	</div>
