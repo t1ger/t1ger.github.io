@@ -1,0 +1,314 @@
+	<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
+  
+  <title>how to config calico BGP | t1ger的茶馆</title>
+  <meta name="author" content="t1ger">
+  
+  <meta name="description" content="https://t1ger.github.io/">
+  
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta property="og:title" content="how to config calico BGP">
+  <meta property="og:site_name" content="t1ger的茶馆">
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+</head>
+</html>
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">t1ger的茶馆</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="这是一个订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>how to config calico BGP</h2>
+					
+					<div>
+						<span class="post-time">2020-08-22 17:50:33</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<p>默认为读者已经有一个运行正常的 Kubernetes 集群，并且采用 Calico 作为 CNI 组件，且 Calico 工作正常；同时应当在某个节点完成了 calicoctl 命令行工具的配置</p>
+<h5 id="BGP基本概念"><a href="#BGP基本概念" class="headerlink" title="ＢＧＰ基本概念"></a>ＢＧＰ基本概念</h5><p>动态路由协议可以按照工作范围分为IGP以及EGP。<br>IGP工作在同一个AS内，主要用来发现和计算路由，为AS内提供路由信息的交换；而EGP工作在AS与AS之间，在AS间提供无环路的路由信息交换。</p>
+<p>BGP则是EGP的一种。边界网关协议BGP（Border Gateway Protocol）是一种实现自治系统AS（Autonomous System）之间的路由可达，并选择最佳路由的距离矢量路由协议。</p>
+<p>AS（Autonomous system）：自治系统，在一个实体管辖下的拥有相同选路策略的IP网络。BGP网络中的每个AS都被分配一个唯一的AS号，用于区分不同的AS。AS号分为2字节AS号和4字节AS号，其中2字节AS号的范围为1至65535，4字节AS号的范围为1至4294967295。支持4字节AS号的设备能够与支持2字节AS号的设备兼容</p>
+<p>IGP（Interior Gateway Protocol）：内部网关协议，在一个AS内部所使用的一种路由协议。一个AS内部也可以有多个路由器管理多个网络。各个路由器之间需要路由信息以知道子网络的可达信息。IGP就是用来管理这些路由。代表的实现有RIP和OSPF。</p>
+<p>EGP（Exterior Gateway Protocol）：外部网关协议，在多个AS之间使用的一种路由协议，但是EGP设计得比较简单，只发布网络可达的路由信息，而不对路由信息进行优选，同时也没有考虑环路避免等问题，很快就无法满足网络管理的要求。现在已经淘汰，被BGP取而代之</p>
+<p>BGP按照运行方式分为EBGP（External/Exterior BGP）和IBGP（Internal/Interior BGP）<br>EBGP：运行于不同AS之间的BGP称为EBGP。为了防止AS间产生环路，当BGP设备接收EBGP对等体发送的路由时，会将带有本地AS号的路由丢弃。</p>
+<p>IBGP：运行于同一AS内部的BGP称为IBGP。为了防止AS内产生环路，BGP设备不将从IBGP对等体学到的路由通告给其他IBGP对等体，并与所有IBGP对等体建立全连接。为了解决IBGP对等体的连接数量太多的问题，BGP设计了路由反射器(RR)和BGP联盟</p>
+<p>BGP报文交互中的角色分为 Speaker 和 Peer 两种角色<br>Speaker：发送BGP报文的设备称为BGP发言者（Speaker），它接收或产生新的报文信息，并发布（Advertise）给其它BGP Speaker。</p>
+<p>Peer：相互交换报文的Speaker之间互称对等体（Peer）。</p>
+<p>BGP的Router ID是一个用于标识BGP设备的32位值，通常是IPv4地址的形式，在BGP会话建立时发送的Open报文中携带。对等体之间建立BGP会话时，每个BGP设备都必须有唯一的Router ID，否则对等体之间不能建立BGP连接。BGP的Router ID在BGP网络中必须是唯一的，可以采用手工配置，也可以让设备自动选取。缺省情况下，BGP选择设备上的Loopback接口的IPv4地址作为BGP的Router ID。如果设备上没有配置Loopback接口，系统会选择接口中最大的IPv4地址作为BGP的Router ID。一旦选出Router ID，除非发生接口地址删除等事件，否则即使配置了更大的地址，也保持原来的Router ID</p>
+<p>在一个AS内部关于路由反射器有以下几种角色：</p>
+<ul>
+<li>路由反射器RR（Route Reflector）：允许把从IBGP对等体学到的路由反射到其他IBGP对等体的BGP设备，类似OSPF网络中的DR。</li>
+<li>客户机（Client）：与RR形成反射邻居关系的IBGP设备。在AS内部客户机只需要与RR直连。</li>
+<li>非客户机（Non-Client）：既不是RR也不是客户机的IBGP设备。在AS内部非客户机与RR之间，以及所有的非客户机之间仍然必须建立全连接关系。</li>
+<li>始发者（Originator）：在AS内部始发路由的设备。Originator_ID属性用于防止集群内产生路由环路。</li>
+<li>集群（Cluster）：路由反射器及其客户机的集合。Cluster_List属性用于防止集群间产生路由环路。</li>
+</ul>
+<p>路由反射器原理<br>同一集群内的客户机只需要与该集群的RR直接交换路由信息，因此客户机只需要与RR之间建立IBGP连接，不需要与其他客户机建立IBGP连接，从而减少了IBGP连接数量。</p>
+<p>RR突破了“从IBGP对等体获得的BGP路由，BGP设备只发布给它的EBGP对等体。”的限制，并采用独有的Cluster_List属性和Originator_ID属性防止路由环路。RR向IBGP邻居发布路由规则如下：</p>
+<ul>
+<li>从非客户机学到的路由，发布给所有客户机。</li>
+<li>从客户机学到的路由，发布给所有非客户机和客户机（发起此路由的客户机除外）。</li>
+<li>从EBGP对等体学到的路由，发布给所有的非客户机和客户机</li>
+</ul>
+<p>BGP联盟是解决AS内部的IBGP网络连接激增问题，除了使用路由反射器之外，还可以使用联盟（Confederation）。联盟将一个AS划分为若干个子AS。每个子AS内部建立IBGP全连接关系，子AS之间建立联盟EBGP连接关系，但联盟外部AS仍认为联盟是一个AS。配置联盟后，原AS号将作为每个路由器的联盟ID</p>
+<h5 id="Calico策略实践"><a href="#Calico策略实践" class="headerlink" title="Calico策略实践"></a>Calico策略实践</h5><ul>
+<li>BGP</li>
+<li>RR （Route Reflector模式)</li>
+<li>IPIP</li>
+</ul>
+<p>BGP模式<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">[root@node01 ~]# calicoctl node status</span><br><span class="line">Calico process is running.</span><br><span class="line"></span><br><span class="line">IPv4 BGP status</span><br><span class="line">+----------------+-------------------+-------+----------+-------------+</span><br><span class="line">|  PEER ADDRESS  |     PEER TYPE     | STATE |  SINCE   |    INFO     |</span><br><span class="line">+----------------+-------------------+-------+----------+-------------+</span><br><span class="line">| 172.17.207.194 | node-to-node mesh | up    | 02:10:25 | Established |</span><br><span class="line">| 172.17.207.195 | node-to-node mesh | up    | 02:10:25 | Established |</span><br><span class="line">+----------------+-------------------+-------+----------+-------------+</span><br><span class="line"></span><br><span class="line">IPv6 BGP status</span><br><span class="line">No IPv6 peers found.</span><br><span class="line"></span><br><span class="line">node-to-node mesh是BGP的全互连模式</span><br><span class="line"></span><br><span class="line">[root@node01 ~]# ss -tan | grep 179</span><br><span class="line">LISTEN     0      8            *:179                      *:*                  </span><br><span class="line">ESTAB      0      0      172.17.207.193:179                172.17.207.195:61815              </span><br><span class="line">ESTAB      0      0      172.17.207.193:179                172.17.207.194:28190</span><br></pre></td></tr></table></figure></p>
+<p>这种情况下节点数量越多，网络中的连接数就会成倍增加，而且在100个节点左右会遇到性能瓶颈<br>解决办法就是把其中的几个calico节点当做路由反射器(route reflector), 然后其他节点只需要把这几个节点当做对等体建立连接就可以。<br>路由器反射器会把传递过来的路由，在传递给其他节点，来实现路由交换</p>
+<p>IPIP模式<br>calico默认为IPIP模式,如果有安全组策略需要开放TCP179端口；官方推荐使用在Node小于100的集群，IPIP模式能支撑了100-200规模的集群稳定运行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">[root@node01 ~]# calicoctl get ippool -o yaml</span><br><span class="line">apiVersion: projectcalico.org/v3</span><br><span class="line">items:</span><br><span class="line">- apiVersion: projectcalico.org/v3</span><br><span class="line">  kind: IPPool</span><br><span class="line">  metadata:</span><br><span class="line">    creationTimestamp: &quot;2020-08-19T08:32:03Z&quot;</span><br><span class="line">    name: default-ipv4-ippool</span><br><span class="line">    resourceVersion: &quot;170581&quot;</span><br><span class="line">    uid: c4d037b3-2542-4628-a18f-7c1636a039bb</span><br><span class="line">  spec:</span><br><span class="line">    blockSize: 26</span><br><span class="line">    cidr: 10.20.0.0/16</span><br><span class="line">    ipipMode: Always</span><br><span class="line">    natOutgoing: true</span><br><span class="line">    nodeSelector: all()</span><br><span class="line">    vxlanMode: Never</span><br><span class="line">kind: IPPoolList</span><br><span class="line">metadata:</span><br><span class="line">  resourceVersion: &quot;972246&quot;</span><br><span class="line"></span><br><span class="line">[root@node01 ~]# calicoctl get ippool -o wide</span><br><span class="line">NAME                  CIDR           NAT    IPIPMODE   VXLANMODE   DISABLED   SELECTOR   </span><br><span class="line">default-ipv4-ippool   10.20.0.0/16   true   Always     Never       false      all()</span><br></pre></td></tr></table></figure></p>
+<p>Route Reflector 模式</p>
+<ul>
+<li><p>关键配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 设置 CALICO_IPV4POOL_IPIP=“Never”,可以提高网络性能</span><br><span class="line">CALICO_IPV4POOL_IPIP: &quot;Never&quot;</span><br><span class="line">安装完成后会发现，网卡并未像开启IPIP那样生成tunl0网卡，而是通过物理网卡获取到各节点POD网段的路由，说明配置成功</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>关闭 node-to-node BGP网格<br>禁用node-to-node mesh的时候，网络立马就会断，因此断的话要提早作好影响的范围，也就是切换这个网络是须要断网的，使用node-to-node BGP这种也是建议100个节点如下，当超过100台节点必定要使用路由反射RR模式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">查询默认节点ASN</span><br><span class="line">[root@node01 ~]# calicoctl get nodes -o wide</span><br><span class="line">NAME     ASN       IPV4                IPV6   </span><br><span class="line">node01   (64512)   172.17.207.193/24          </span><br><span class="line">node02   (64512)   172.17.207.194/24          </span><br><span class="line">node03   (64512)   172.17.207.195/24 </span><br><span class="line"></span><br><span class="line">#首先执行以下命令查看是否存在默认的 BGP 配置</span><br><span class="line">calicoctl get bgpconfig default</span><br><span class="line">#如果存在则将其保存为配置文件</span><br><span class="line">calicoctl get bgpconfig default -o yaml &gt; bgp.yaml</span><br><span class="line">#修改其中的 spec.nodeToNodeMeshEnabled 为 false，然后进行替换</span><br><span class="line">calicoctl apply -f bgp.yaml</span><br><span class="line"></span><br><span class="line">#如果不存在则手动创建一个配置，然后应用</span><br><span class="line"> cat &lt;&lt; EOF | calicoctl create -f -</span><br><span class="line"> apiVersion: projectcalico.org/v3</span><br><span class="line"> kind: BGPConfiguration</span><br><span class="line"> metadata:</span><br><span class="line">   name: default</span><br><span class="line"> spec:</span><br><span class="line">   logSeverityScreen: Info</span><br><span class="line">   nodeToNodeMeshEnabled: false</span><br><span class="line">   asNumber: 64512</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line">BGPConfiguration: BGPConfiguration是全局的配置资源。</span><br><span class="line">nodeToNodeMeshEnabled: 就是是否开启全互连模式。</span><br><span class="line">asNumber: as表示自治系统，asN自治系统编号。 默认是64512。 这里必须提供，不然asNumber好像就变成空了。</span><br><span class="line">64512-65535也是私有的ASN，不能出现在公网。ASN在外网是唯一的，由IANA 地址授权委员会统一分配, 不过在内网就无所谓了。官网的例子是63400,同样没问题</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[root@node01 calico]# calicoctl node status</span><br><span class="line">Calico process is running.</span><br><span class="line"></span><br><span class="line">IPv4 BGP status</span><br><span class="line">No IPv4 peers found.</span><br><span class="line"></span><br><span class="line">IPv6 BGP status</span><br><span class="line">No IPv6 peers found.</span><br><span class="line">应用以后, bgp之间的连接就断了，然后路由也没了，网络也断了</span><br><span class="line">如果把nodeToNodeMeshEnabled改为true再次应用，就会再次启用全互连模式，网络也会恢复</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建对等规则</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[root@node01 calico]# cat rr.yml </span><br><span class="line">kind: BGPPeer</span><br><span class="line">apiVersion: projectcalico.org/v3</span><br><span class="line">metadata:</span><br><span class="line">  name: peer-to-rrs</span><br><span class="line">spec:</span><br><span class="line">  nodeSelector: &quot;!has(i-am-a-route-reflector)&quot;</span><br><span class="line">  peerSelector: has(i-am-a-route-reflector)</span><br><span class="line">---</span><br><span class="line">kind: BGPPeer</span><br><span class="line">apiVersion: projectcalico.org/v3</span><br><span class="line">metadata:</span><br><span class="line">  name: rr-mesh</span><br><span class="line">spec:</span><br><span class="line">  nodeSelector: has(i-am-a-route-reflector)</span><br><span class="line">  peerSelector: has(i-am-a-route-reflector)</span><br><span class="line"></span><br><span class="line">calicoctl create -f rr.yaml</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置对等体<br>为方便让BGPPeer轻松选择节点，经过标签选择器匹配，也就是能够去调用k8s里面的标签进行关联，给那个节点打个标签，我这将node1打上标签</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line">导出node02 node03配置</span><br><span class="line">[root@node01 calico]# calicoctl get node node03 --export -oyaml &gt; node03.yml</span><br><span class="line">[root@node01 calico]# cat node03.yml </span><br><span class="line">apiVersion: projectcalico.org/v3</span><br><span class="line">kind: Node</span><br><span class="line">metadata:</span><br><span class="line">  annotations:</span><br><span class="line">    projectcalico.org/kube-labels: &apos;&#123;&quot;beta.kubernetes.io/arch&quot;:&quot;amd64&quot;,&quot;beta.kubernetes.io/os&quot;:&quot;linux&quot;,&quot;kubernetes.io/arch&quot;:&quot;amd64&quot;,&quot;kubernetes.io/hostname&quot;:&quot;node03&quot;,&quot;kubernetes.io/os&quot;:&quot;linux&quot;&#125;&apos;</span><br><span class="line">  creationTimestamp: null</span><br><span class="line">  labels:</span><br><span class="line">    beta.kubernetes.io/arch: amd64</span><br><span class="line">    beta.kubernetes.io/os: linux</span><br><span class="line">    kubernetes.io/arch: amd64</span><br><span class="line">    kubernetes.io/hostname: node03</span><br><span class="line">    kubernetes.io/os: linux</span><br><span class="line">  name: node03</span><br><span class="line">spec:</span><br><span class="line">  bgp:</span><br><span class="line">    ipv4Address: 172.17.207.195/24</span><br><span class="line">    ipv4IPIPTunnelAddr: 10.20.186.192</span><br><span class="line">  orchRefs:</span><br><span class="line">  - nodeName: node03</span><br><span class="line">    orchestrator: k8s</span><br><span class="line">status: &#123;&#125;</span><br><span class="line"></span><br><span class="line"># 增加标签，将rr标签置为true,也可以通过命令行添加kubectl label node 　node03 i-am-a-route-reflector=true,标签名自己确定，前后一致就可以，</span><br><span class="line"># 增加标签，确保同一个反射簇配置ID一致，即node01与node02一致，用于冗余和防环</span><br><span class="line">[root@node01 calico]# cat node03.yml </span><br><span class="line">apiVersion: projectcalico.org/v3</span><br><span class="line">kind: Node</span><br><span class="line">metadata:</span><br><span class="line">  annotations:</span><br><span class="line">    projectcalico.org/kube-labels: &apos;&#123;&quot;beta.kubernetes.io/arch&quot;:&quot;amd64&quot;,&quot;beta.kubernetes.io/os&quot;:&quot;linux&quot;,&quot;kubernetes.io/arch&quot;:&quot;amd64&quot;,&quot;kubernetes.io/hostname&quot;:&quot;node03&quot;,&quot;kubernetes.io/os&quot;:&quot;linux&quot;&#125;&apos;</span><br><span class="line">  creationTimestamp: null</span><br><span class="line">  labels:</span><br><span class="line">    beta.kubernetes.io/arch: amd64</span><br><span class="line">    beta.kubernetes.io/os: linux</span><br><span class="line">    kubernetes.io/arch: amd64</span><br><span class="line">    kubernetes.io/hostname: node03</span><br><span class="line">    kubernetes.io/os: linux</span><br><span class="line">    i-am-a-route-reflector: true</span><br><span class="line">  name: node03</span><br><span class="line">spec:</span><br><span class="line">  bgp:</span><br><span class="line">    ipv4Address: 172.17.207.195/24</span><br><span class="line">    ipv4IPIPTunnelAddr: 10.20.186.192</span><br><span class="line">    routeReflectorClusterID: 224.0.0.1</span><br><span class="line">  orchRefs:</span><br><span class="line">  - nodeName: node03</span><br><span class="line">    orchestrator: k8s</span><br><span class="line">status: &#123;&#125;</span><br><span class="line"></span><br><span class="line">calicoctl apply -f node03.yml</span><br><span class="line"></span><br><span class="line">[root@node01 calico]# calicoctl apply -f rr.yml       </span><br><span class="line">Successfully applied 2 &apos;BGPPeer&apos; resource(s)</span><br><span class="line">[root@node01 calico]# calicoctl node status     </span><br><span class="line">Calico process is running.</span><br><span class="line"></span><br><span class="line">IPv4 BGP status</span><br><span class="line">+----------------+---------------+-------+----------+-------------+</span><br><span class="line">|  PEER ADDRESS  |   PEER TYPE   | STATE |  SINCE   |    INFO     |</span><br><span class="line">+----------------+---------------+-------+----------+-------------+</span><br><span class="line">| 172.17.207.195 | node specific | up    | 16:21:43 | Established |</span><br><span class="line">+----------------+---------------+-------+----------+-------------+</span><br><span class="line"></span><br><span class="line">IPv6 BGP status</span><br><span class="line">No IPv6 peers found.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">calicoctl apply -f node02.yml</span><br><span class="line">[root@node01 calico]# calicoctl node status</span><br><span class="line">Calico process is running.</span><br><span class="line"></span><br><span class="line">IPv4 BGP status</span><br><span class="line">+----------------+---------------+-------+----------+-------------+</span><br><span class="line">|  PEER ADDRESS  |   PEER TYPE   | STATE |  SINCE   |    INFO     |</span><br><span class="line">+----------------+---------------+-------+----------+-------------+</span><br><span class="line">| 172.17.207.195 | node specific | up    | 16:21:43 | Established |</span><br><span class="line">| 172.17.207.194 | node specific | up    | 16:29:48 | Established |</span><br><span class="line">+----------------+---------------+-------+----------+-------------+</span><br><span class="line"></span><br><span class="line">IPv6 BGP status</span><br><span class="line">No IPv6 peers found.</span><br><span class="line"></span><br><span class="line">同时在非 RR 节点上使用 calicoctl node status 应该能看到以下输出</span><br><span class="line">[root@node02 bin]# calicoctl node status</span><br><span class="line">Calico process is running.</span><br><span class="line"></span><br><span class="line">IPv4 BGP status</span><br><span class="line">+----------------+---------------+-------+----------+-------------+</span><br><span class="line">|  PEER ADDRESS  |   PEER TYPE   | STATE |  SINCE   |    INFO     |</span><br><span class="line">+----------------+---------------+-------+----------+-------------+</span><br><span class="line">| 172.17.207.190 | node specific | up    | 09:44:19 | Established |</span><br><span class="line">| 172.17.207.193 | node specific | up    | 09:44:22 | Established |</span><br><span class="line">| 172.17.207.195 | node specific | up    | 09:28:19 | Established |</span><br><span class="line">+----------------+---------------+-------+----------+-------------+</span><br><span class="line"></span><br><span class="line">IPv6 BGP status</span><br><span class="line">No IPv6 peers found.</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>调整 IPIP 规则</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Calico IPIP 模式的三个可选项:</span><br><span class="line">Always: 永远进行 IPIP 封装(默认)</span><br><span class="line">CrossSubnet: 只在跨网段时才进行 IPIP 封装，适合有 Kubernetes 节点在其他网段的情况，属于中肯友好方案</span><br><span class="line">Never: 从不进行 IPIP 封装，适合确认所有 Kubernetes 节点都在同一个网段下的情况</span><br><span class="line"></span><br><span class="line">[root@node01 calico]#calicoctl get ippool default-ipv4-ippool -o yaml &gt; ippool.yaml</span><br><span class="line"></span><br><span class="line">[root@node01 calico]# calicoctl get ippool default-ipv4-ippool -o yaml</span><br><span class="line">apiVersion: projectcalico.org/v3</span><br><span class="line">kind: IPPool</span><br><span class="line">metadata:</span><br><span class="line">  creationTimestamp: &quot;2020-08-19T08:32:03Z&quot;</span><br><span class="line">  name: default-ipv4-ippool</span><br><span class="line">  resourceVersion: &quot;170581&quot;</span><br><span class="line">  uid: c4d037b3-2542-4628-a18f-7c1636a039bb</span><br><span class="line">spec:</span><br><span class="line">  blockSize: 26</span><br><span class="line">  cidr: 10.20.0.0/16</span><br><span class="line">  ipipMode: Always</span><br><span class="line">  natOutgoing: true</span><br><span class="line">  nodeSelector: all()</span><br><span class="line">  vxlanMode: Never</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>修改 ipipMode 值为 CrossSubnet<br>重新使用 calicoctl apply -f ippool.yaml 应用既可</p>
+<ul>
+<li>增加路由联通网络<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">在开发机器添加路由既可，将 Pod IP 10.20.0.0/16 和 Service IP 10.254.0.0/16 路由到 RR 节点 172.16.0.13</span><br><span class="line"># Pod IP</span><br><span class="line">ip route add 10.20.0.0/16 via 172.16.0.13</span><br><span class="line"># Service IP</span><br><span class="line">ip route add 10.254.0.0/16 via 172.16.0.13</span><br><span class="line">最省事的方法是在开发网络的路由上做，设置完成后就可以直连集群内的 Pod IP 和 Service IP,至于想直接访问 Service Name 只需要调整上游 DNS 解析</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="办公网络与k8s网络方案"><a href="#办公网络与k8s网络方案" class="headerlink" title="办公网络与k8s网络方案"></a>办公网络与k8s网络方案</h5><p>网络环境假定如下:pod的ip是10.244.0.0/16这个网段，那么service是10.0.0.10/24，宿主机是172.17.0.0/24，那么办公网络是192.168.1.0/24</p>
+<p>第一种状况，k8s集群测试环境在办公网络的子网里面，那么这个实现就比较简单了，只须要在子网中上层的路由器添加一个规则就好了，ip route add,目的IP为10.244.0.0/16，到达的下一跳via为其中的k8s节点，好比k8s-node1 dev 接口A<br>ip route add 10.244.0.0/16 via <k8s-node1> dev A<br>添加这么一个规则，办公网络就能直接访问k8s的节点，直接就能访问pod IP,也就是下一跳地址以后，就能直接访问都podIP了</k8s-node1></p>
+<p>第二种状况，k8s集群与办公网络在不一样VLAN中，不一样机房 前提是k8s集群与办公网络是互通的，三层可达</p>
+<ul>
+<li>方案1 在路由器上添加路由表，10.244.0.0/16 <k8s-node1></k8s-node1></li>
+<li>方案２ 采用BGP，若是三层的路由支持BGP协议的话，直接就可让路由器BGP与路由反射器BGP创建链接，这样的话路由器上的BGP就能获取到了k8s上的路由表信息了，而后通过下一跳来转发到目的的node的pod中</li>
+</ul>
+<p>总结：只要是不一样vlan，必须是三层可达，能在上层的路由器上，访问集群的网段，pod网段仍是service网段，必定要告知它，帮它转发到下一跳是谁，下一跳若是是目的的节点，那就直接转发数据包。</p>
+<h5 id="网络策略"><a href="#网络策略" class="headerlink" title="网络策略"></a>网络策略</h5><p>网络的限制也就是ACP访问控制，天然是有两个方向，一个是入口方向<br>使用network policy对Pod网络进行隔离。支持对Pod级别和Namespace级别网络访问控制。<br>Pod网络入口方向隔离</p>
+<ul>
+<li>基于Pod级网络隔离：只容许特定对象访问Pod（使用标签订义），容许白名单上的IP地址或者IP段访问Pod</li>
+<li>基于Namespace级网络隔离：多个命名空间，A和B命名空间Pod彻底隔离</li>
+</ul>
+<p>Pod网络出口方向隔离</p>
+<ul>
+<li>拒绝某个Namespace上全部Pod访问外部</li>
+<li>基于目的IP的网络隔离：只容许Pod访问白名单上的IP地址或者IP段</li>
+<li>基于目标端口的网络隔离：只容许Pod访问白名单上的端口</li>
+</ul>
+<p><a href="https://cshihong.github.io/2018/01/23/BGP%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" target="_blank" rel="noopener">BGP基础知识</a><br><a href="https://blog.kelu.org/tech/2020/01/10/calico-series-2-bgp-tutorial.html" target="_blank" rel="noopener">BGP入门笔记</a><br><a href="http://dockone.io/article/10382" target="_blank" rel="noopener">谐云Calico大规模场景落地实践</a><br><a href="https://mritd.me/2019/06/18/calico-3.6-forward-network-traffic/" target="_blank" rel="noopener">Calico 3.6 转发外部流量到集群 Pod</a><br><a href="https://blog.csdn.net/nexus124/article/details/105005240" target="_blank" rel="noopener">Calico配置双RR架构</a></p>
+<hr>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+	  
+	    
+		<!-- 来必力City版安装代码 -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zOTQ5MS8xNjAxOA==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+		
+<!--		<div class="comment-section">
+  
+  
+
+
+</div> -->
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+
+<p>
+  由 <a href="https://hexo.io">hexo</a> 强力驱动 |&nbsp;&nbsp;本站总点击 <span id="busuanzi_value_site_pv"></span> 次
+&nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
+</p>
+<p>
+  &copy; 2020 <a href="https://t1ger.github.io"> t1ger </a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
+
+</p>
+
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-99921399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>
