@@ -1,0 +1,263 @@
+	<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
+  
+  <title>generate kubeconfig for jenkins  | t1ger的茶馆</title>
+  <meta name="author" content="t1ger">
+  
+  <meta name="description" content="https://t1ger.github.io/">
+  
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta property="og:title" content="generate kubeconfig for jenkins ">
+  <meta property="og:site_name" content="t1ger的茶馆">
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+</head>
+</html>
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">t1ger的茶馆</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="这是一个订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>generate kubeconfig for jenkins </h2>
+					
+					<div>
+						<span class="post-time">2021-03-02 12:00:44</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<h5 id="用户分类"><a href="#用户分类" class="headerlink" title="用户分类"></a><b>用户分类</b></h5><p>k8s集群里有两种用户</p>
+<ul>
+<li>普通用户</li>
+<li>service account用户 </li>
+</ul>
+<p>前者在集群外访问使用，是可以作用于全局的，跨 namespace，并且需要在全局唯一<br>后者在集群内pod使用，是K8S的一种资源，是存在于某个namespace之中的，在不同namespace中可以同名，代表了不同的资源。</p>
+<h5 id="创建useraccount"><a href="#创建useraccount" class="headerlink" title="创建useraccount"></a><b>创建useraccount</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">[root@master01 ssl]# cat jenkins_kubeconfig.sh </span><br><span class="line">export KUBE_APISERVER=&quot;https://lb.whistle.com.cn:6443&quot;</span><br><span class="line"></span><br><span class="line">kubectl config set-cluster kubernetes \</span><br><span class="line">  --certificate-authority=./ca.pem \</span><br><span class="line">  --embed-certs=true \</span><br><span class="line">  --server=$&#123;KUBE_APISERVER&#125; \</span><br><span class="line">  --kubeconfig=jenkins.kubeconfig</span><br><span class="line"></span><br><span class="line">kubectl config set-credentials kubernetes \</span><br><span class="line">  --client-certificate=./server.pem \</span><br><span class="line">  --client-key=./server-key.pem \</span><br><span class="line">  --embed-certs=true \</span><br><span class="line">  --kubeconfig=jenkins.kubeconfig</span><br><span class="line"></span><br><span class="line">kubectl config set-context default \</span><br><span class="line">  --cluster=kubernetes \</span><br><span class="line">  --user=kubernetes \</span><br><span class="line">  --kubeconfig=jenkins.kubeconfig</span><br><span class="line"></span><br><span class="line">kubectl config use-context default --kubeconfig=jenkins.kubeconfig</span><br></pre></td></tr></table></figure>
+<p>执行sh kubeconfig.sh 生成名称为jenkins.kubeconfig的kubeconfig文件</p>
+<p>基于RBAC（基于角色访问控制）的授权Authorization，创建以下集群角色，并绑定上面创建的user kubernetes</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">[root@master01 ssl]# cat /root/yaml/jenkins/jenkins_rbac.yml                     </span><br><span class="line">kind: ClusterRole</span><br><span class="line">apiVersion: rbac.authorization.k8s.io/v1</span><br><span class="line">metadata:</span><br><span class="line">  name: jenkins_admin</span><br><span class="line">rules:</span><br><span class="line">- apiGroups: [&quot;&quot;]</span><br><span class="line">  resources: [&quot;pods&quot;,&quot;services&quot;]</span><br><span class="line">  verbs: [&quot;get&quot;, &quot;watch&quot;, &quot;list&quot;, &quot;delete&quot;, &quot;create&quot;, &quot;update&quot;, &quot;patch&quot;]</span><br><span class="line">- apiGroups: [&quot;&quot;]</span><br><span class="line">  resources: [&quot;secrets&quot;]</span><br><span class="line">  verbs: [&quot;get&quot;, &quot;list&quot;, &quot;watch&quot;, &quot;create&quot;, &quot;update&quot;, &quot;patch&quot;, &quot;delete&quot;]</span><br><span class="line">- apiGroups: [&quot;extensions&quot;, &quot;apps&quot;]</span><br><span class="line">  resources: [&quot;deployments&quot;]</span><br><span class="line">  verbs: [&quot;get&quot;, &quot;list&quot;, &quot;watch&quot;, &quot;create&quot;, &quot;update&quot;, &quot;patch&quot;, &quot;delete&quot;]</span><br><span class="line">- apiGroups: [&quot;networking.k8s.io&quot;]</span><br><span class="line">  resources: [&quot;ingresses&quot;]</span><br><span class="line">  verbs: [&quot;get&quot;, &quot;list&quot;, &quot;watch&quot;, &quot;create&quot;, &quot;update&quot;, &quot;patch&quot;, &quot;delete&quot;]</span><br><span class="line">---</span><br><span class="line">apiVersion: rbac.authorization.k8s.io/v1</span><br><span class="line">kind: ClusterRoleBinding</span><br><span class="line">metadata:</span><br><span class="line">  name: clusterrolebinding-jenkins_admin</span><br><span class="line">roleRef:</span><br><span class="line">  apiGroup: rbac.authorization.k8s.io</span><br><span class="line">  kind: ClusterRole</span><br><span class="line">  name: jenkins_admin</span><br><span class="line">subjects:</span><br><span class="line">- apiGroup: rbac.authorization.k8s.io</span><br><span class="line">  kind: User</span><br><span class="line">  name: kubernetes</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@master01 jenkins]# kubectl apply -f jenkins_rbac.yml</span><br><span class="line">clusterrole.rbac.authorization.k8s.io/jenkins_admin created</span><br><span class="line">clusterrolebinding.rbac.authorization.k8s.io/clusterrolebinding-jenkins_admin created</span><br></pre></td></tr></table></figure>
+<p>在jenkins -&gt;Manage Jenkins-&gt;Manage Credentials-&gt; Add Credentials,选择Secret text,在Secret中填写jenkins.kubecofig,注意需要将文件内容base64编码，这个不是必须，注意在pipeline中使用的时候需要解码 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> withCredentials([string(credentialsId: &apos;local-k8s-kube-config&apos;, variable: &apos;kube_config&apos;)]) &#123;</span><br><span class="line">                sh &apos;echo &quot;$&#123;kube_config&#125;&quot; | base64 -d &gt; /root/.kube/config&apos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="了解一下认证机制和证书过期"><a href="#了解一下认证机制和证书过期" class="headerlink" title="了解一下认证机制和证书过期"></a><b>了解一下认证机制和证书过期</b></h5><p>k8s 的认证和访问控制包括: 认证 签权 准入控制，全部通过后api 请求会被处理<br>对于kubeconfig 这种 x509证书来说，只要证书不泄露，可以认为是很安全的<br>kubeconfig 证书不支持吊销，准确的说 k8s 没有实现CRL（证书吊销列表）或 OCSP（在线证书状态协议），并没有一个统一的地方管理这些证书，因此如果您的密钥被盗用，Kubernetes也无法在身份验证层知道</p>
+<p>如何解决这种问题：</p>
+<p>重新签发证书，涉及到apiserver 等组件的重启<br>如果用了 rbac，封禁这个角色的权限</p>
+<p>如何预防这种问题:</p>
+<p>重要：不要使用最高权限的证书，不要使用自带权限的证书如 system:master，这种只适合kubelet 等组件使用，不适合用来签发 kubeconfig<br>无论是用 user 还是 service account 来生成kubeconfig，都使用 rbac 来授权，这样就算 kubeconfig 丢失，也可以解除 clusterrolebinding来吊销权限。即管理给用户的授权，就变成管理clusterrolebinding了<br>证书的过期时间设置的短一点，如 1 个月就失效，将影响范围降低<br>合理规划主账号和子账户，如主账户只允许有一份 admin 证书，其他子用户全部基于 rbac 来操作，甚至主账户也可以用 rbac 来操作，只是权限特别大而已集成外部认证系统</p>
+<p>这里顺便介绍一下如何生成最高权限的kubeconfig<br>admin-csr.json<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;CN&quot;: &quot;kubernetes-admin&quot;,</span><br><span class="line">  &quot;hosts&quot;: [</span><br><span class="line">      &quot;172.18.0.1&quot;,&quot;100.64.230.122&quot;,&quot;100.75.187.77&quot;</span><br><span class="line">  ],</span><br><span class="line">  &quot;key&quot;: &#123;</span><br><span class="line">    &quot;algo&quot;: &quot;rsa&quot;,</span><br><span class="line">    &quot;size&quot;: 2048</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;names&quot;: [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;C&quot;: &quot;CN&quot;,</span><br><span class="line">      &quot;ST&quot;: &quot;BeiJing&quot;,</span><br><span class="line">      &quot;L&quot;: &quot;BeiJing&quot;,</span><br><span class="line">      &quot;O&quot;: &quot;system:masters&quot;,</span><br><span class="line">      &quot;OU&quot;: &quot;cloudnative&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>admin 证书<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/kubernetes/pki; cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=demo admin-csr.json | cfssljson -bare admin</span><br></pre></td></tr></table></figure></p>
+<p>生成 admin.conf，即最高权限的 kubeconfig<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"># 配置kubernetes集群参数</span><br><span class="line"></span><br><span class="line">kubectl config set-cluster kubernetes \</span><br><span class="line">  --certificate-authority=/etc/kubernetes/pki/ca.pem \</span><br><span class="line">  --embed-certs=true \</span><br><span class="line">  --server=https://vip:6443 \</span><br><span class="line">  --kubeconfig=admin.conf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 配置客户端认证参数</span><br><span class="line">kubectl config set-credentials kubernetes-admin \</span><br><span class="line">  --client-certificate=/etc/kubernetes/pki/admin.pem \</span><br><span class="line">  --embed-certs=true \</span><br><span class="line">  --client-key=/etc/kubernetes/pki/admin-key.pem \</span><br><span class="line">  --kubeconfig=admin.conf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 设置上下文参数 </span><br><span class="line">kubectl config set-context kubernetes-admin@kubernetes \</span><br><span class="line">  --cluster=kubernetes \</span><br><span class="line">  --user=kubernetes-admin \</span><br><span class="line">  --kubeconfig=admin.conf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 设置默认上下文</span><br><span class="line">kubectl config use-context kubernetes-admin@kubernetes --kubeconfig=admin.conf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 将 kubeconfig 拷贝到默认路径~/.kube/下，这是 kubectl 命令寻找 kubeconfig 时的默认路径</span><br><span class="line"># 也可以在 kubectl 中手动指定 kubeconfig 文件。如 kubectl --kubeconfig=zhangsan.conf get cs </span><br><span class="line">mkdir -p ~/.kube; cp admin.conf ~/.kube/config`</span><br></pre></td></tr></table></figure></p>
+<h5 id="证书续签"><a href="#证书续签" class="headerlink" title="证书续签"></a><b>证书续签</b></h5><p> CA 证书的有效期，默认为 10 年<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> cd /etc/kubernetes/pki</span><br><span class="line">ls | grep ca.crt | xargs -I &#123;&#125; openssl x509 -text -in &#123;&#125; | grep &quot;Not After&quot;</span><br></pre></td></tr></table></figure></p>
+<p>查看当前证书有效期</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubeadm alpha certs check-expiration</span><br></pre></td></tr></table></figure>
+<p>重新签发证书:续签全部证书<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubeadm alpha certs renew all</span><br></pre></td></tr></table></figure></p>
+<p>如果不是 kubeadm 创建的集群，需要手动重新生成所有组件的证书<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">1.配置kube-controller-manager支持轮换</span><br><span class="line">kube-controller-manager --experimental-cluster-signing-duration=87600h \</span><br><span class="line">                --feature-gates=RotateKubeletClientCertificate=true \</span><br><span class="line">                ...</span><br><span class="line"></span><br><span class="line">2.配置kubelet 证书</span><br><span class="line"># Refer https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/#approval</span><br><span class="line"></span><br><span class="line">3.配置 kubelet 的启动参数</span><br><span class="line">kubelet --feature-gates=RotateKubeletClientCertificate=true \</span><br><span class="line">                --cert-dir=/var/lib/kubelet/pki \</span><br><span class="line">                --rotate-certificates \</span><br><span class="line">                --rotate-server-certificates \</span><br><span class="line">                ...</span><br></pre></td></tr></table></figure></p>
+<hr>
+<p><a href="https://blog.csdn.net/sinat_33622098/article/details/109600135" target="_blank" rel="noopener">k8s中手动创建kubeconfig供jenkins使用</a><br><a href="https://www.jianshu.com/p/e2a7aaa1731a" target="_blank" rel="noopener">kubeconfig使用</a><br><a href="http://www.xuyasong.com/?p=2054" target="_blank" rel="noopener">K8S 集群中的认证、授权与 kubeconfig</a><br><a href="https://blog.51cto.com/lookingdream/2591627" target="_blank" rel="noopener">手动创建 k8s kubeconfig 文件以实现多环境切换</a><br><a href="https://blog.csdn.net/weixin_34409741/article/details/86279147" target="_blank" rel="noopener">K8s之配置文件kubeconfig生成</a><br><a href="https://blog.csdn.net/sysushui/article/details/104881715" target="_blank" rel="noopener">使用serviceaccount制作kubeconfig文件</a><br><a href="https://jimmysong.io/kubernetes-handbook/guide/auth-with-kubeconfig-or-token.html" target="_blank" rel="noopener">使用 kubeconfig 或 token 进行用户身份认证</a></p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+	  
+	    
+		<!-- 来必力City版安装代码 -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zOTQ5MS8xNjAxOA==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+		
+<!--		<div class="comment-section">
+  
+  
+
+
+</div> -->
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+
+<p>
+  由 <a href="https://hexo.io">hexo</a> 强力驱动 |&nbsp;&nbsp;本站总点击 <span id="busuanzi_value_site_pv"></span> 次
+&nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
+</p>
+<p>
+  &copy; 2021 <a href="https://t1ger.github.io"> t1ger </a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
+
+</p>
+
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-99921399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>

@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2021-01-05T09:09:59.362Z</updated>
+  <updated>2021-03-04T08:47:04.708Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,55 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>generate kubeconfig for jenkins </title>
+    <link href="https://t1ger.github.io/2021/03/02/generate-kubeconfig-for-jenkins/"/>
+    <id>https://t1ger.github.io/2021/03/02/generate-kubeconfig-for-jenkins/</id>
+    <published>2021-03-02T04:00:44.000Z</published>
+    <updated>2021-03-04T08:47:04.708Z</updated>
+    
+    <content type="html"><![CDATA[<h5 id="用户分类"><a href="#用户分类" class="headerlink" title="用户分类"></a><b>用户分类</b></h5><p>k8s集群里有两种用户</p>
+<ul>
+<li>普通用户</li>
+<li>service account用户 </li>
+</ul>
+<p>前者在集群外访问使用，是可以作用于全局的，跨 namespace，并且需要在全局唯一<br>后者在集群内pod使用，是K8S的一种资源，是存在于某个namespace之中的，在不同namespace中可以同名，代表了不同的资源。</p>
+<h5 id="创建useraccount"><a href="#创建useraccount" class="headerlink" title="创建useraccount"></a><b>创建useraccount</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">[root@master01 ssl]# cat jenkins_kubeconfig.sh </span><br><span class="line">export KUBE_APISERVER=&quot;https://lb.whistle.com.cn:6443&quot;</span><br><span class="line"></span><br><span class="line">kubectl config set-cluster kubernetes \</span><br><span class="line">  --certificate-authority=./ca.pem \</span><br><span class="line">  --embed-certs=true \</span><br><span class="line">  --server=$&#123;KUBE_APISERVER&#125; \</span><br><span class="line">  --kubeconfig=jenkins.kubeconfig</span><br><span class="line"></span><br><span class="line">kubectl config set-credentials kubernetes \</span><br><span class="line">  --client-certificate=./server.pem \</span><br><span class="line">  --client-key=./server-key.pem \</span><br><span class="line">  --embed-certs=true \</span><br><span class="line">  --kubeconfig=jenkins.kubeconfig</span><br><span class="line"></span><br><span class="line">kubectl config set-context default \</span><br><span class="line">  --cluster=kubernetes \</span><br><span class="line">  --user=kubernetes \</span><br><span class="line">  --kubeconfig=jenkins.kubeconfig</span><br><span class="line"></span><br><span class="line">kubectl config use-context default --kubeconfig=jenkins.kubeconfig</span><br></pre></td></tr></table></figure>
+<p>执行sh kubeconfig.sh 生成名称为jenkins.kubeconfig的kubeconfig文件</p>
+<p>基于RBAC（基于角色访问控制）的授权Authorization，创建以下集群角色，并绑定上面创建的user kubernetes</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">[root@master01 ssl]# cat /root/yaml/jenkins/jenkins_rbac.yml                     </span><br><span class="line">kind: ClusterRole</span><br><span class="line">apiVersion: rbac.authorization.k8s.io/v1</span><br><span class="line">metadata:</span><br><span class="line">  name: jenkins_admin</span><br><span class="line">rules:</span><br><span class="line">- apiGroups: [&quot;&quot;]</span><br><span class="line">  resources: [&quot;pods&quot;,&quot;services&quot;]</span><br><span class="line">  verbs: [&quot;get&quot;, &quot;watch&quot;, &quot;list&quot;, &quot;delete&quot;, &quot;create&quot;, &quot;update&quot;, &quot;patch&quot;]</span><br><span class="line">- apiGroups: [&quot;&quot;]</span><br><span class="line">  resources: [&quot;secrets&quot;]</span><br><span class="line">  verbs: [&quot;get&quot;, &quot;list&quot;, &quot;watch&quot;, &quot;create&quot;, &quot;update&quot;, &quot;patch&quot;, &quot;delete&quot;]</span><br><span class="line">- apiGroups: [&quot;extensions&quot;, &quot;apps&quot;]</span><br><span class="line">  resources: [&quot;deployments&quot;]</span><br><span class="line">  verbs: [&quot;get&quot;, &quot;list&quot;, &quot;watch&quot;, &quot;create&quot;, &quot;update&quot;, &quot;patch&quot;, &quot;delete&quot;]</span><br><span class="line">- apiGroups: [&quot;networking.k8s.io&quot;]</span><br><span class="line">  resources: [&quot;ingresses&quot;]</span><br><span class="line">  verbs: [&quot;get&quot;, &quot;list&quot;, &quot;watch&quot;, &quot;create&quot;, &quot;update&quot;, &quot;patch&quot;, &quot;delete&quot;]</span><br><span class="line">---</span><br><span class="line">apiVersion: rbac.authorization.k8s.io/v1</span><br><span class="line">kind: ClusterRoleBinding</span><br><span class="line">metadata:</span><br><span class="line">  name: clusterrolebinding-jenkins_admin</span><br><span class="line">roleRef:</span><br><span class="line">  apiGroup: rbac.authorization.k8s.io</span><br><span class="line">  kind: ClusterRole</span><br><span class="line">  name: jenkins_admin</span><br><span class="line">subjects:</span><br><span class="line">- apiGroup: rbac.authorization.k8s.io</span><br><span class="line">  kind: User</span><br><span class="line">  name: kubernetes</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@master01 jenkins]# kubectl apply -f jenkins_rbac.yml</span><br><span class="line">clusterrole.rbac.authorization.k8s.io/jenkins_admin created</span><br><span class="line">clusterrolebinding.rbac.authorization.k8s.io/clusterrolebinding-jenkins_admin created</span><br></pre></td></tr></table></figure>
+<p>在jenkins -&gt;Manage Jenkins-&gt;Manage Credentials-&gt; Add Credentials,选择Secret text,在Secret中填写jenkins.kubecofig,注意需要将文件内容base64编码，这个不是必须，注意在pipeline中使用的时候需要解码 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> withCredentials([string(credentialsId: &apos;local-k8s-kube-config&apos;, variable: &apos;kube_config&apos;)]) &#123;</span><br><span class="line">                sh &apos;echo &quot;$&#123;kube_config&#125;&quot; | base64 -d &gt; /root/.kube/config&apos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="了解一下认证机制和证书过期"><a href="#了解一下认证机制和证书过期" class="headerlink" title="了解一下认证机制和证书过期"></a><b>了解一下认证机制和证书过期</b></h5><p>k8s 的认证和访问控制包括: 认证 签权 准入控制，全部通过后api 请求会被处理<br>对于kubeconfig 这种 x509证书来说，只要证书不泄露，可以认为是很安全的<br>kubeconfig 证书不支持吊销，准确的说 k8s 没有实现CRL（证书吊销列表）或 OCSP（在线证书状态协议），并没有一个统一的地方管理这些证书，因此如果您的密钥被盗用，Kubernetes也无法在身份验证层知道</p>
+<p>如何解决这种问题：</p>
+<p>重新签发证书，涉及到apiserver 等组件的重启<br>如果用了 rbac，封禁这个角色的权限</p>
+<p>如何预防这种问题:</p>
+<p>重要：不要使用最高权限的证书，不要使用自带权限的证书如 system:master，这种只适合kubelet 等组件使用，不适合用来签发 kubeconfig<br>无论是用 user 还是 service account 来生成kubeconfig，都使用 rbac 来授权，这样就算 kubeconfig 丢失，也可以解除 clusterrolebinding来吊销权限。即管理给用户的授权，就变成管理clusterrolebinding了<br>证书的过期时间设置的短一点，如 1 个月就失效，将影响范围降低<br>合理规划主账号和子账户，如主账户只允许有一份 admin 证书，其他子用户全部基于 rbac 来操作，甚至主账户也可以用 rbac 来操作，只是权限特别大而已集成外部认证系统</p>
+<p>这里顺便介绍一下如何生成最高权限的kubeconfig<br>admin-csr.json<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;CN&quot;: &quot;kubernetes-admin&quot;,</span><br><span class="line">  &quot;hosts&quot;: [</span><br><span class="line">      &quot;172.18.0.1&quot;,&quot;100.64.230.122&quot;,&quot;100.75.187.77&quot;</span><br><span class="line">  ],</span><br><span class="line">  &quot;key&quot;: &#123;</span><br><span class="line">    &quot;algo&quot;: &quot;rsa&quot;,</span><br><span class="line">    &quot;size&quot;: 2048</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;names&quot;: [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;C&quot;: &quot;CN&quot;,</span><br><span class="line">      &quot;ST&quot;: &quot;BeiJing&quot;,</span><br><span class="line">      &quot;L&quot;: &quot;BeiJing&quot;,</span><br><span class="line">      &quot;O&quot;: &quot;system:masters&quot;,</span><br><span class="line">      &quot;OU&quot;: &quot;cloudnative&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>admin 证书<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/kubernetes/pki; cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=demo admin-csr.json | cfssljson -bare admin</span><br></pre></td></tr></table></figure></p>
+<p>生成 admin.conf，即最高权限的 kubeconfig<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"># 配置kubernetes集群参数</span><br><span class="line"></span><br><span class="line">kubectl config set-cluster kubernetes \</span><br><span class="line">  --certificate-authority=/etc/kubernetes/pki/ca.pem \</span><br><span class="line">  --embed-certs=true \</span><br><span class="line">  --server=https://vip:6443 \</span><br><span class="line">  --kubeconfig=admin.conf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 配置客户端认证参数</span><br><span class="line">kubectl config set-credentials kubernetes-admin \</span><br><span class="line">  --client-certificate=/etc/kubernetes/pki/admin.pem \</span><br><span class="line">  --embed-certs=true \</span><br><span class="line">  --client-key=/etc/kubernetes/pki/admin-key.pem \</span><br><span class="line">  --kubeconfig=admin.conf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 设置上下文参数 </span><br><span class="line">kubectl config set-context kubernetes-admin@kubernetes \</span><br><span class="line">  --cluster=kubernetes \</span><br><span class="line">  --user=kubernetes-admin \</span><br><span class="line">  --kubeconfig=admin.conf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 设置默认上下文</span><br><span class="line">kubectl config use-context kubernetes-admin@kubernetes --kubeconfig=admin.conf</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 将 kubeconfig 拷贝到默认路径~/.kube/下，这是 kubectl 命令寻找 kubeconfig 时的默认路径</span><br><span class="line"># 也可以在 kubectl 中手动指定 kubeconfig 文件。如 kubectl --kubeconfig=zhangsan.conf get cs </span><br><span class="line">mkdir -p ~/.kube; cp admin.conf ~/.kube/config`</span><br></pre></td></tr></table></figure></p>
+<h5 id="证书续签"><a href="#证书续签" class="headerlink" title="证书续签"></a><b>证书续签</b></h5><p> CA 证书的有效期，默认为 10 年<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> cd /etc/kubernetes/pki</span><br><span class="line">ls | grep ca.crt | xargs -I &#123;&#125; openssl x509 -text -in &#123;&#125; | grep &quot;Not After&quot;</span><br></pre></td></tr></table></figure></p>
+<p>查看当前证书有效期</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubeadm alpha certs check-expiration</span><br></pre></td></tr></table></figure>
+<p>重新签发证书:续签全部证书<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubeadm alpha certs renew all</span><br></pre></td></tr></table></figure></p>
+<p>如果不是 kubeadm 创建的集群，需要手动重新生成所有组件的证书<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">1.配置kube-controller-manager支持轮换</span><br><span class="line">kube-controller-manager --experimental-cluster-signing-duration=87600h \</span><br><span class="line">                --feature-gates=RotateKubeletClientCertificate=true \</span><br><span class="line">                ...</span><br><span class="line"></span><br><span class="line">2.配置kubelet 证书</span><br><span class="line"># Refer https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/#approval</span><br><span class="line"></span><br><span class="line">3.配置 kubelet 的启动参数</span><br><span class="line">kubelet --feature-gates=RotateKubeletClientCertificate=true \</span><br><span class="line">                --cert-dir=/var/lib/kubelet/pki \</span><br><span class="line">                --rotate-certificates \</span><br><span class="line">                --rotate-server-certificates \</span><br><span class="line">                ...</span><br></pre></td></tr></table></figure></p>
+<hr>
+<p><a href="https://blog.csdn.net/sinat_33622098/article/details/109600135" target="_blank" rel="noopener">k8s中手动创建kubeconfig供jenkins使用</a><br><a href="https://www.jianshu.com/p/e2a7aaa1731a" target="_blank" rel="noopener">kubeconfig使用</a><br><a href="http://www.xuyasong.com/?p=2054" target="_blank" rel="noopener">K8S 集群中的认证、授权与 kubeconfig</a><br><a href="https://blog.51cto.com/lookingdream/2591627" target="_blank" rel="noopener">手动创建 k8s kubeconfig 文件以实现多环境切换</a><br><a href="https://blog.csdn.net/weixin_34409741/article/details/86279147" target="_blank" rel="noopener">K8s之配置文件kubeconfig生成</a><br><a href="https://blog.csdn.net/sysushui/article/details/104881715" target="_blank" rel="noopener">使用serviceaccount制作kubeconfig文件</a><br><a href="https://jimmysong.io/kubernetes-handbook/guide/auth-with-kubeconfig-or-token.html" target="_blank" rel="noopener">使用 kubeconfig 或 token 进行用户身份认证</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h5 id=&quot;用户分类&quot;&gt;&lt;a href=&quot;#用户分类&quot; class=&quot;headerlink&quot; title=&quot;用户分类&quot;&gt;&lt;/a&gt;&lt;b&gt;用户分类&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;k8s集群里有两种用户&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;普通用户&lt;/li&gt;
+&lt;li&gt;service account用
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>从零开始创建自己的deb包</title>
@@ -526,81 +575,6 @@
     <summary type="html">
     
       &lt;h5 id=&quot;tushare简介&quot;&gt;&lt;a href=&quot;#tushare简介&quot; class=&quot;headerlink&quot; title=&quot;tushare简介&quot;&gt;&lt;/a&gt;&lt;b&gt;tushare简介&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;下面是官网对其的介绍,详细参考&lt;a href=&quot;http://tush
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>如何进行jvm故障排查定位</title>
-    <link href="https://t1ger.github.io/2019/07/25/%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8Cjvm%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%E5%AE%9A%E4%BD%8D/"/>
-    <id>https://t1ger.github.io/2019/07/25/如何进行jvm故障排查定位/</id>
-    <published>2019-07-25T05:01:33.000Z</published>
-    <updated>2019-07-25T06:56:20.423Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="故障类型分析"><a href="#故障类型分析" class="headerlink" title="故障类型分析"></a><b>故障类型分析</b></h3><p>线上的jvm故障基本可以分为两大类:</p>
-<ul>
-<li>CPU占用过高</li>
-<li>内存问题,通常可以理解为gc的问题,因为java的内存有gc进行管理.</li>
-</ul>
-<h3 id="故障排查兵器谱"><a href="#故障排查兵器谱" class="headerlink" title="故障排查兵器谱"></a><b>故障排查兵器谱</b></h3><p>命令行工具<br>jps等工具都是对tools.jar类的包装,使用起来方便简单.在下边的故障排查中会用到我们这里提到的工具,大家平时应该熟记于心.</p>
-<ul>
-<li>top</li>
-<li><p>jps: JVM Process Status Tool，显示指定系统内所有的HotSpot虚拟机进程</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">jps </span><br><span class="line">jps -l pid #输出主类的全名，如果进程执行的是jar包，输出jar包路径</span><br><span class="line">jps -v pid #输出虚拟机进程启动时JVM参数</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>jstat: JVM Statistics Monitoring Tool，用于收集HotSpot虚拟机各方面的运行数据</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#我想监控gc，每250ms查询一次，一共查询20次，进程号为123</span><br><span class="line">jstat -gc 123 250 20</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>jinfo: Configuration Info for Java，显示虚拟机配置信息</p>
-</li>
-<li><p>jmap: Memory Map for Java，生成虚拟机的内存转储快照(heap dump文件),jmap dump文件的时候会触发 FGC ，使用的时候注意场景)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">jmap pid</span><br><span class="line">jmap -histo:live pid &gt; a.log  #当前Java进程创建的活跃对象数目和占用内存大小</span><br><span class="line">jmap -dump:live, format=b,file=xxx.xxx pid #当前Java进程的内存占用情况导出来</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>jstack: Stack Trace for Java，显示虚拟机的线程快照</p>
-</li>
-</ul>
-<p>图形工具</p>
-<ul>
-<li>jconsole: JVM各状态查看工具</li>
-<li>visualVM</li>
-</ul>
-<h3 id="CPU问题"><a href="#CPU问题" class="headerlink" title="CPU问题"></a>CPU问题</h3><p>CPU负载比较高的时候,我们需要先找到那个java进程,然后根据找到的那个”问题线程”,根据线程的堆栈信息找到代码,最后进行代码排查</p>
-<ul>
-<li>top命令定位到cpu消耗最高的进程,并记住进程pid</li>
-<li>通过 top -Hp pid 找到问题线程,记住线程 tid</li>
-<li>通过jstack -l tid &gt;jstack.log 将线程堆栈信息dump到指定文件中</li>
-<li>线程tid 是十进制的,堆栈中的线程id是16进制,使用 printf “%x\n” tid 转化</li>
-<li>通过转化的16进制数字从堆栈信息中找到对应的线程堆栈.</li>
-<li>如果有gc线程,可以推断内存泄露导致频发的gc,可以通过 jstat -gcutil pid 1s查看<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# jstat -gcutil 27534 1s    </span><br><span class="line">  S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT   </span><br><span class="line"> 0.00   0.00  100.00  99.34  91.25  82.89  52648  463.968   1439   3701.045  3473.868</span><br><span class="line">  0.00  0.00   89.65  99.34  91.25  82.89  52649  463.975   1440   3711.702  3476.880</span><br><span class="line">  0.00  0.00  100.00  99.34  91.25  82.89  52649  463.975   1440   3711.702  3476.880</span><br><span class="line">  0.00  0.00  100.00   99.34  91.25  82.89  52649  463.975  1443   3714.241  3479.891</span><br><span class="line">  0.00  0.00  100.00  99.34  91.25  82.89  52649  463.975   1443   3714.241 3479.891</span><br><span class="line">  0.00  0.00  100.00  99.34  91.25  82.89  52649  463.975   1443   3714.241  3479.891</span><br><span class="line">  0.00  0.00  100.00  99.34  91.25  82.89  52649  463.975   1444   3719.604  3483.889</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>可以看到每隔几秒就会full gc，而且Eden和Old都是99%，就是说每次full gc都没有回收到多少内存，所以一直在反复的跑</p>
-<p>jinfo用来查看运行中的虚拟机的参数,甚至在运行时动态修改一些JVM参数,选项-XX:+PrintFlagsFinal可以列出所有的JVM flag,而其中的标注为manageable的flag则是可通过JDK management interface(-XX:+PrintFlagsFinal)动态修改<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# java -XX:+PrintFlagsFinal -version | grep manageable</span><br><span class="line">     intx CMSAbortablePrecleanWaitMillis            = 100                                 &#123;manageable&#125;</span><br><span class="line">     intx CMSTriggerInterval                        = -1                                  &#123;manageable&#125;</span><br><span class="line">     intx CMSWaitDuration                           = 2000                                &#123;manageable&#125;</span><br><span class="line">     bool HeapDumpAfterFullGC                       = false                               &#123;manageable&#125;</span><br><span class="line">     bool HeapDumpBeforeFullGC                      = false                               &#123;manageable&#125;</span><br><span class="line">     bool HeapDumpOnOutOfMemoryError                = false                               &#123;manageable&#125;</span><br><span class="line">    ccstr HeapDumpPath                              =                                     &#123;manageable&#125;</span><br><span class="line">    uintx MaxHeapFreeRatio                          = 100                                 &#123;manageable&#125;</span><br><span class="line">    uintx MinHeapFreeRatio                          = 0                                   &#123;manageable&#125;</span><br><span class="line">     bool PrintClassHistogram                       = false                               &#123;manageable&#125;</span><br><span class="line">     bool PrintClassHistogramAfterFullGC            = false                               &#123;manageable&#125;</span><br><span class="line">     bool PrintClassHistogramBeforeFullGC           = false                               &#123;manageable&#125;</span><br><span class="line">     bool PrintConcurrentLocks                      = false                               &#123;manageable&#125;</span><br><span class="line">     bool PrintGC                                   = false                               &#123;manageable&#125;</span><br><span class="line">     bool PrintGCDateStamps                         = false                               &#123;manageable&#125;</span><br><span class="line">     bool PrintGCDetails                            = false                               &#123;manageable&#125;</span><br><span class="line">     bool PrintGCID                                 = false                               &#123;manageable&#125;</span><br><span class="line">     bool PrintGCTimeStamps                         = false                               &#123;manageable&#125;</span><br><span class="line">java version &quot;1.8.0_112&quot;</span><br><span class="line">Java(TM) SE Runtime Environment (build 1.8.0_112-b15)</span><br><span class="line">Java HotSpot(TM) 64-Bit Server VM (build 25.112-b15, mixed mode)</span><br></pre></td></tr></table></figure></p>
-<p>用jinfo打开以下选项，把full gc前后的虚拟机内存dump下来<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">jinfo -flag +PrintGC pid</span><br><span class="line">jinfo -flag +PrintGCDetails pid</span><br><span class="line">jinfo -flag HeapDumpPath=/home/rain/heapdump pid</span><br><span class="line">jinfo -flag +HeapDumpBeforeFullGC pid</span><br><span class="line">jinfo -flag +HeapDumpAfterFullGC pid</span><br></pre></td></tr></table></figure></p>
-<p>PrintGC和PrintGCDetails把gc日志输出到了nohup.out，查看nohup文件，可以看到full gc前后各dump了一次虚拟机内存，然后赶紧用jinfo关掉gc选项，选项前+号表示打开，-号表示关闭.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">jinfo -flag -HeapDumpBeforeFullGC pid</span><br><span class="line">jinfo -flag -HeapDumpAfterFullGC pid</span><br></pre></td></tr></table></figure></p>
-<p>在HeapDumpPath下找到dump下来的hprof文件,下载下来用Jprofile，jvisualvm 等工具都可以分析</p>
-<h3 id="内存问题"><a href="#内存问题" class="headerlink" title="内存问题"></a>内存问题</h3><p>这里简单的说下,在java虚拟机中,内存分为: 新生代(Eden), 老年代(Old),永久代.<br>新生代存放朝生夕死的对象<br>老年代存放从新生代迁移过来的周期较久的对象.<br>永久代是非堆内存的组成部分.主要存放加载类的class类级对象,比如说class本身,method,field等等</p>
-<p>在进行内存问题处理的时候,我们经常会碰到以下两种异常:<br>java.lang.OutOfMemoryError: PermGen space<br>如果出现这个异常,一般都是程序启动需要加载大量的第三方jar包,需要调整perm的内存设置<br>java.lang.OutOfMemoryError: Java heap space<br>如果出现这个异常,一般是由于虚拟机设置堆内存过小或者代码创建了大量的大对象,并且长时间不能被回收.</p>
-<p>通常gc管理内存,一种是内存溢出,一种是内存没有溢出,gc处于亚健康情况<br>内存溢出的情况可以通过加上 -XX:+HeapDumpOnOutOfMemoryError 参数，该参数作用是：在程序内存溢出时输出 dump 文件</p>
-<p>内存不溢出的情况比较复杂,一般gc会将内存分为一块较大的Eden空间和两块较小的Survivor空间,每次使用Eden和其中的一块Survivor.当回收时,将Eden和Survivor中还存活着的对象一次性拷贝到另外一块Survivor空间上,最后清理掉Eden和刚才用过的Survivor的空间.HotSpot虚拟机默认Eden和Survivor的大小比例是8:1</p>
-<p>YGC会经过两个过程,一个是扫描,一个是复制,扫描比较快,复制相对慢一些,如果每次都有大量的对象复制,STW(stop the world)时间会延长,另外一种情况是gc和系统的swap同时进行,也会延长STW时间<br>FGC触发原因有以下几个方面:<br>1.Old区内存不足<br>2.元数据区内存不足<br>3.cms promotion failed<br>4.concurrent mode failure.<br>5.jvm基于悲观策略认为ygc后old区无法放下晋升对象<br>6.jmap触发或者系统触发System.gc()</p>
-<p>一般gc健康的情况下,YGC 5秒一次左右，每次不超过50毫秒，FGC 最好没有，CMS GC 一天一次左右<br>gc超过5秒,说明系统内存过大,如果YGC频率过高,说明Eden区过小,可以增加Eden去</p>
-<p>内存问题的排查思路和cpu类似,在进行cpu分析的时候也顺带说了下内存:</p>
-<ul>
-<li>通过top命令定位内存消耗最高的进程,并记住进程pid</li>
-<li>jmap -histo:live pid查看当前进程创建的活跃对象的数目和占用内存的大小,从而定位代码</li>
-</ul>
-<p>对于一般的问题，通过这几个方面的思考，大致可以锁定问题所在，或是缩小问题可能发生的范围。例如对某些特定类型的内存泄漏来说，到这一步已经可以分析出是什么类型导致内存泄漏</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;故障类型分析&quot;&gt;&lt;a href=&quot;#故障类型分析&quot; class=&quot;headerlink&quot; title=&quot;故障类型分析&quot;&gt;&lt;/a&gt;&lt;b&gt;故障类型分析&lt;/b&gt;&lt;/h3&gt;&lt;p&gt;线上的jvm故障基本可以分为两大类:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;CPU占用过高&lt;/li&gt;
-&lt;l
     
     </summary>
     
