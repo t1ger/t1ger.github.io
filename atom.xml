@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://t1ger.github.io/"/>
-  <updated>2021-03-10T02:26:50.048Z</updated>
+  <updated>2021-03-23T08:18:56.359Z</updated>
   <id>https://t1ger.github.io/</id>
   
   <author>
@@ -14,6 +14,1264 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title></title>
+    <link href="https://t1ger.github.io/2021/03/23/Getting-Started-With-Istio1-9/"/>
+    <id>https://t1ger.github.io/2021/03/23/Getting-Started-With-Istio1-9/</id>
+    <published>2021-03-23T08:18:56.359Z</published>
+    <updated>2021-03-23T08:18:56.359Z</updated>
+    
+    <content type="html"><![CDATA[<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="tags" content="">
+<meta name="date" content="2021-03-22 17:31:36"><style>body {
+  max-width: 980px;
+  border: 1px solid #ddd;
+  outline: 1300px solid #fff;
+  margin: 16px auto;
+}
+
+body .markdown-body
+{
+  padding: 45px;
+}
+
+@font-face {
+  font-family: fontawesome-mini;
+  src: url(data:font/woff;charset=utf-8;base64,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) format('woff');
+}
+
+.markdown-body {
+  font-family: sans-serif;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  color: #333333;
+  overflow: hidden;
+  font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+
+.markdown-body a {
+  background: transparent;
+}
+
+.markdown-body a:active,
+.markdown-body a:hover {
+  outline: 0;
+}
+
+.markdown-body b,
+.markdown-body strong {
+  font-weight: bold;
+}
+
+.markdown-body mark {
+  background: #ff0;
+  color: #000;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.markdown-body sub,
+.markdown-body sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+.markdown-body sup {
+  top: -0.5em;
+}
+.markdown-body sub {
+  bottom: -0.25em;
+}
+
+.markdown-body h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+
+.markdown-body img {
+  border: 0;
+}
+
+.markdown-body hr {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  height: 0;
+}
+
+.markdown-body pre {
+  overflow: auto;
+}
+
+.markdown-body code,
+.markdown-body kbd,
+.markdown-body pre,
+.markdown-body samp {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+
+.markdown-body input {
+  color: inherit;
+  font: inherit;
+  margin: 0;
+}
+
+.markdown-body html input[disabled] {
+  cursor: default;
+}
+
+.markdown-body input {
+  line-height: normal;
+}
+
+.markdown-body input[type="checkbox"] {
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.markdown-body table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.markdown-body td,
+.markdown-body th {
+  padding: 0;
+}
+
+.markdown-body .codehilitetable,
+.markdown-body .highlighttable {
+  border: 0;
+  border-spacing: 0;
+}
+
+.markdown-body .codehilitetable tr,
+.markdown-body .highlighttable {
+  border: 0;
+}
+
+.markdown-body .codehilitetable pre,
+.markdown-body .codehilitetable div.codehilite,
+.markdown-body .highlighttable pre,
+.markdown-body .highlighttable div.highlight {
+  margin: 0;
+}
+
+.markdown-body .linenos,
+.markdown-body .code,
+.markdown-body .codehilitetable td,
+.markdown-body .highlighttable td {
+  border: 0;
+  padding: 0;
+}
+
+.markdown-body td:not(.linenos) .linenodiv {
+  padding: 0 !important;
+}
+
+.markdown-body .code {
+  width: 100%;
+}
+
+.markdown-body .linenos div pre,
+.markdown-body .linenodiv pre,
+.markdown-body .linenodiv {
+  border: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  -webkit-border-top-left-radius: 3px;
+  -webkit-border-bottom-left-radius: 3px;
+  -moz-border-radius-topleft: 3px;
+  -moz-border-radius-bottomleft: 3px;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+.markdown-body .code div pre,
+.markdown-body .code div {
+  border: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  -webkit-border-top-right-radius: 3px;
+  -webkit-border-bottom-right-radius: 3px;
+  -moz-border-radius-topright: 3px;
+  -moz-border-radius-bottomright: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.markdown-body * {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.markdown-body input {
+  font: 13px Helvetica, arial, freesans, clean, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+  line-height: 1.4;
+}
+
+.markdown-body a {
+  color: #4183c4;
+  text-decoration: none;
+}
+
+.markdown-body a:hover,
+.markdown-body a:focus,
+.markdown-body a:active {
+  text-decoration: underline;
+}
+
+.markdown-body hr {
+  height: 0;
+  margin: 15px 0;
+  overflow: hidden;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.markdown-body hr:before,
+.markdown-body hr:after {
+  display: table;
+  content: " ";
+}
+
+.markdown-body hr:after {
+  clear: both;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  line-height: 1.1;
+}
+
+.markdown-body h1 {
+  font-size: 30px;
+}
+
+.markdown-body h2 {
+  font-size: 21px;
+}
+
+.markdown-body h3 {
+  font-size: 16px;
+}
+
+.markdown-body h4 {
+  font-size: 14px;
+}
+
+.markdown-body h5 {
+  font-size: 12px;
+}
+
+.markdown-body h6 {
+  font-size: 11px;
+}
+
+.markdown-body blockquote {
+  margin: 0;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.markdown-body ol ol,
+.markdown-body ul ol {
+  list-style-type: lower-roman;
+}
+
+.markdown-body ul ul ol,
+.markdown-body ul ol ol,
+.markdown-body ol ul ol,
+.markdown-body ol ol ol {
+  list-style-type: lower-alpha;
+}
+
+.markdown-body dd {
+  margin-left: 0;
+}
+
+.markdown-body code,
+.markdown-body pre,
+.markdown-body samp {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 12px;
+}
+
+.markdown-body pre {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.markdown-body kbd {
+  background-color: #e7e7e7;
+  background-image: -moz-linear-gradient(#fefefe, #e7e7e7);
+  background-image: -webkit-linear-gradient(#fefefe, #e7e7e7);
+  background-image: linear-gradient(#fefefe, #e7e7e7);
+  background-repeat: repeat-x;
+  border-radius: 2px;
+  border: 1px solid #cfcfcf;
+  color: #000;
+  padding: 3px 5px;
+  line-height: 10px;
+  font: 11px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  display: inline-block;
+}
+
+.markdown-body>*:first-child {
+  margin-top: 0 !important;
+}
+
+.markdown-body>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+.markdown-body .headerlink {
+  font: normal 400 16px fontawesome-mini;
+  vertical-align: middle;
+  margin-left: -16px;
+  float: left;
+  display: inline-block;
+  text-decoration: none;
+  opacity: 0;
+  color: #333;
+}
+
+.markdown-body .headerlink:focus {
+  outline: none;
+}
+
+.markdown-body h1 .headerlink {
+  margin-top: 0.8rem;
+}
+
+.markdown-body h2 .headerlink,
+.markdown-body h3 .headerlink {
+  margin-top: 0.6rem;
+}
+
+.markdown-body h4 .headerlink {
+  margin-top: 0.2rem;
+}
+
+.markdown-body h5 .headerlink,
+.markdown-body h6 .headerlink {
+  margin-top: 0;
+}
+
+.markdown-body .headerlink:hover,
+.markdown-body h1:hover .headerlink,
+.markdown-body h2:hover .headerlink,
+.markdown-body h3:hover .headerlink,
+.markdown-body h4:hover .headerlink,
+.markdown-body h5:hover .headerlink,
+.markdown-body h6:hover .headerlink {
+  opacity: 1;
+  text-decoration: none;
+}
+
+.markdown-body h1 {
+  padding-bottom: 0.3em;
+  font-size: 2.25em;
+  line-height: 1.2;
+  border-bottom: 1px solid #eee;
+}
+
+.markdown-body h2 {
+  padding-bottom: 0.3em;
+  font-size: 1.75em;
+  line-height: 1.225;
+  border-bottom: 1px solid #eee;
+}
+
+.markdown-body h3 {
+  font-size: 1.5em;
+  line-height: 1.43;
+}
+
+.markdown-body h4 {
+  font-size: 1.25em;
+}
+
+.markdown-body h5 {
+  font-size: 1em;
+}
+
+.markdown-body h6 {
+  font-size: 1em;
+  color: #777;
+}
+
+.markdown-body p,
+.markdown-body blockquote,
+.markdown-body ul,
+.markdown-body ol,
+.markdown-body dl,
+.markdown-body table,
+.markdown-body pre,
+.markdown-body .admonition {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.markdown-body hr {
+  height: 4px;
+  padding: 0;
+  margin: 16px 0;
+  background-color: #e7e7e7;
+  border: 0 none;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 2em;
+}
+
+.markdown-body ul ul,
+.markdown-body ul ol,
+.markdown-body ol ol,
+.markdown-body ol ul {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.markdown-body li>p {
+  margin-top: 16px;
+}
+
+.markdown-body dl {
+  padding: 0;
+}
+
+.markdown-body dl dt {
+  padding: 0;
+  margin-top: 16px;
+  font-size: 1em;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.markdown-body dl dd {
+  padding: 0 16px;
+  margin-bottom: 16px;
+}
+
+.markdown-body blockquote {
+  padding: 0 15px;
+  color: #777;
+  border-left: 4px solid #ddd;
+}
+
+.markdown-body blockquote>:first-child {
+  margin-top: 0;
+}
+
+.markdown-body blockquote>:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body table {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  word-break: normal;
+  word-break: keep-all;
+}
+
+.markdown-body table th {
+  font-weight: bold;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+  padding: 6px 13px;
+  border: 1px solid #ddd;
+}
+
+.markdown-body table tr {
+  background-color: #fff;
+  border-top: 1px solid #ccc;
+}
+
+.markdown-body table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+.markdown-body img {
+  max-width: 100%;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.markdown-body code,
+.markdown-body samp {
+  padding: 0;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(0,0,0,0.04);
+  border-radius: 3px;
+}
+
+.markdown-body code:before,
+.markdown-body code:after {
+  letter-spacing: -0.2em;
+  content: "\00a0";
+}
+
+.markdown-body pre>code {
+  padding: 0;
+  margin: 0;
+  font-size: 100%;
+  word-break: normal;
+  white-space: pre;
+  background: transparent;
+  border: 0;
+}
+
+.markdown-body .codehilite,
+.markdown-body .highlight {
+  margin-bottom: 16px;
+}
+
+.markdown-body .codehilite pre,
+.markdown-body .highlight pre,
+.markdown-body pre {
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #f7f7f7;
+  border-radius: 3px;
+}
+
+.markdown-body .codehilite pre,
+.markdown-body .highlight pre {
+  margin-bottom: 0;
+  word-break: normal;
+}
+
+.markdown-body pre {
+  word-wrap: normal;
+}
+
+.markdown-body pre code {
+  display: inline;
+  max-width: initial;
+  padding: 0;
+  margin: 0;
+  overflow: initial;
+  line-height: inherit;
+  word-wrap: normal;
+  background-color: transparent;
+  border: 0;
+}
+
+.markdown-body pre code:before,
+.markdown-body pre code:after {
+  content: normal;
+}
+
+/* Admonition */
+.markdown-body .admonition {
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  position: relative;
+  border-radius: 3px;
+  border: 1px solid #e0e0e0;
+  border-left: 6px solid #333;
+  padding: 10px 10px 10px 30px;
+}
+
+.markdown-body .admonition table {
+  color: #333;
+}
+
+.markdown-body .admonition p {
+  padding: 0;
+}
+
+.markdown-body .admonition-title {
+  font-weight: bold;
+  margin: 0;
+}
+
+.markdown-body .admonition>.admonition-title {
+  color: #333;
+}
+
+.markdown-body .attention>.admonition-title {
+  color: #a6d796;
+}
+
+.markdown-body .caution>.admonition-title {
+  color: #d7a796;
+}
+
+.markdown-body .hint>.admonition-title {
+  color: #96c6d7;
+}
+
+.markdown-body .danger>.admonition-title {
+  color: #c25f77;
+}
+
+.markdown-body .question>.admonition-title {
+  color: #96a6d7;
+}
+
+.markdown-body .note>.admonition-title {
+  color: #d7c896;
+}
+
+.markdown-body .admonition:before,
+.markdown-body .attention:before,
+.markdown-body .caution:before,
+.markdown-body .hint:before,
+.markdown-body .danger:before,
+.markdown-body .question:before,
+.markdown-body .note:before {
+  font: normal normal 16px fontawesome-mini;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  line-height: 1.5;
+  color: #333;
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding-top: 10px;
+  padding-left: 10px;
+}
+
+.markdown-body .admonition:before {
+  content: "\f056\00a0";
+  color: 333;
+}
+
+.markdown-body .attention:before {
+  content: "\f058\00a0";
+  color: #a6d796;
+}
+
+.markdown-body .caution:before {
+  content: "\f06a\00a0";
+  color: #d7a796;
+}
+
+.markdown-body .hint:before {
+  content: "\f05a\00a0";
+  color: #96c6d7;
+}
+
+.markdown-body .danger:before {
+  content: "\f057\00a0";
+  color: #c25f77;
+}
+
+.markdown-body .question:before {
+  content: "\f059\00a0";
+  color: #96a6d7;
+}
+
+.markdown-body .note:before {
+  content: "\f040\00a0";
+  color: #d7c896;
+}
+
+.markdown-body .admonition::after {
+  content: normal;
+}
+
+.markdown-body .attention {
+  border-left: 6px solid #a6d796;
+}
+
+.markdown-body .caution {
+  border-left: 6px solid #d7a796;
+}
+
+.markdown-body .hint {
+  border-left: 6px solid #96c6d7;
+}
+
+.markdown-body .danger {
+  border-left: 6px solid #c25f77;
+}
+
+.markdown-body .question {
+  border-left: 6px solid #96a6d7;
+}
+
+.markdown-body .note {
+  border-left: 6px solid #d7c896;
+}
+
+.markdown-body .admonition>*:first-child {
+  margin-top: 0 !important;
+}
+
+.markdown-body .admonition>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* progress bar*/
+.markdown-body .progress {
+  display: block;
+  width: 300px;
+  margin: 10px 0;
+  height: 24px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #ededed;
+  position: relative;
+  box-shadow: inset -1px 1px 3px rgba(0, 0, 0, .1);
+}
+
+.markdown-body .progress-label {
+  position: absolute;
+  text-align: center;
+  font-weight: bold;
+  width: 100%; margin: 0;
+  line-height: 24px;
+  color: #333;
+  text-shadow: 1px 1px 0 #fefefe, -1px -1px 0 #fefefe, -1px 1px 0 #fefefe, 1px -1px 0 #fefefe, 0 1px 0 #fefefe, 0 -1px 0 #fefefe, 1px 0 0 #fefefe, -1px 0 0 #fefefe, 1px 1px 2px #000;
+  -webkit-font-smoothing: antialiased !important;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.markdown-body .progress-bar {
+  height: 24px;
+  float: left;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #96c6d7;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), inset 0 -1px 0 rgba(0, 0, 0, .1);
+  background-size: 30px 30px;
+  background-image: -webkit-linear-gradient(
+    135deg, rgba(255, 255, 255, .4) 27%,
+    transparent 27%,
+    transparent 52%, rgba(255, 255, 255, .4) 52%,
+    rgba(255, 255, 255, .4) 77%,
+    transparent 77%, transparent
+  );
+  background-image: -moz-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, .4) 27%, transparent 27%,
+    transparent 52%, rgba(255, 255, 255, .4) 52%,
+    rgba(255, 255, 255, .4) 77%, transparent 77%,
+    transparent
+  );
+  background-image: -ms-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, .4) 27%, transparent 27%,
+    transparent 52%, rgba(255, 255, 255, .4) 52%,
+    rgba(255, 255, 255, .4) 77%, transparent 77%,
+    transparent
+  );
+  background-image: -o-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, .4) 27%, transparent 27%,
+    transparent 52%, rgba(255, 255, 255, .4) 52%,
+    rgba(255, 255, 255, .4) 77%, transparent 77%,
+    transparent
+  );
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, .4) 27%, transparent 27%,
+    transparent 52%, rgba(255, 255, 255, .4) 52%,
+    rgba(255, 255, 255, .4) 77%, transparent 77%,
+    transparent
+  );
+}
+
+.markdown-body .progress-100plus .progress-bar {
+  background-color: #a6d796;
+}
+
+.markdown-body .progress-80plus .progress-bar {
+  background-color: #c6d796;
+}
+
+.markdown-body .progress-60plus .progress-bar {
+  background-color: #d7c896;
+}
+
+.markdown-body .progress-40plus .progress-bar {
+  background-color: #d7a796;
+}
+
+.markdown-body .progress-20plus .progress-bar {
+  background-color: #d796a6;
+}
+
+.markdown-body .progress-0plus .progress-bar {
+  background-color: #c25f77;
+}
+
+.markdown-body .candystripe-animate .progress-bar{
+  -webkit-animation: animate-stripes 3s linear infinite;
+  -moz-animation: animate-stripes 3s linear infinite;
+  animation: animate-stripes 3s linear infinite;
+}
+
+@-webkit-keyframes animate-stripes {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 60px 0;
+  }
+}
+
+@-moz-keyframes animate-stripes {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 60px 0;
+  }
+}
+
+@keyframes animate-stripes {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 60px 0;
+  }
+}
+
+.markdown-body .gloss .progress-bar {
+  box-shadow:
+    inset 0 4px 12px rgba(255, 255, 255, .7),
+    inset 0 -12px 0 rgba(0, 0, 0, .05);
+}
+
+/* MultiMarkdown Critic Blocks */
+.markdown-body .critic_mark {
+  background: #ff0;
+}
+
+.markdown-body .critic_delete {
+  color: #c82829;
+  text-decoration: line-through;
+}
+
+.markdown-body .critic_insert {
+  color: #718c00 ;
+  text-decoration: underline;
+}
+
+.markdown-body .critic_comment {
+  color: #8e908c;
+  font-style: italic;
+}
+
+.markdown-body .headeranchor {
+  font: normal normal 16px fontawesome-mini;
+  line-height: 1;
+  display: inline-block;
+  text-decoration: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.headeranchor:before {
+  content: '\e157';
+}
+
+.markdown-body .task-list-item {
+  list-style-type: none;
+}
+
+.markdown-body .task-list-item+.task-list-item {
+  margin-top: 3px;
+}
+
+.markdown-body .task-list-item input {
+  margin: 0 4px 0.25em -20px;
+  vertical-align: middle;
+}
+
+/* Media */
+@media only screen and (min-width: 480px) {
+  .markdown-body {
+    font-size:14px;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .markdown-body {
+    font-size:16px;
+  }
+}
+
+@media print {
+  .markdown-body * {
+    background: transparent !important;
+    color: black !important;
+    filter:none !important;
+    -ms-filter: none !important;
+  }
+
+  .markdown-body {
+    font-size:12pt;
+    max-width:100%;
+    outline:none;
+    border: 0;
+  }
+
+  .markdown-body a,
+  .markdown-body a:visited {
+    text-decoration: underline;
+  }
+
+  .markdown-body .headeranchor-link {
+    display: none;
+  }
+
+  .markdown-body a[href]:after {
+    content: " (" attr(href) ")";
+  }
+
+  .markdown-body abbr[title]:after {
+    content: " (" attr(title) ")";
+  }
+
+  .markdown-body .ir a:after,
+  .markdown-body a[href^="javascript:"]:after,
+  .markdown-body a[href^="#"]:after {
+    content: "";
+  }
+
+  .markdown-body pre {
+    white-space: pre;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .markdown-body pre,
+  .markdown-body blockquote {
+    border: 1px solid #999;
+    padding-right: 1em;
+    page-break-inside: avoid;
+  }
+
+  .markdown-body .progress,
+  .markdown-body .progress-bar {
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+
+  .markdown-body .progress {
+    border: 1px solid #ddd;
+  }
+
+  .markdown-body .progress-bar {
+    height: 22px;
+    border-right: 1px solid #ddd;
+  }
+
+  .markdown-body tr,
+  .markdown-body img {
+    page-break-inside: avoid;
+  }
+
+  .markdown-body img {
+    max-width: 100% !important;
+  }
+
+  .markdown-body p,
+  .markdown-body h2,
+  .markdown-body h3 {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .markdown-body h2,
+  .markdown-body h3 {
+    page-break-after: avoid;
+  }
+}
+</style><style>/*GitHub*/
+.highlight {background-color:#fff;color:#333333;}
+.highlight .hll {background-color:#ffffcc;}
+.highlight .c{color:#999988;font-style:italic}
+.highlight .err{color:#a61717;background-color:#e3d2d2}
+.highlight .k{font-weight:bold}
+.highlight .o{font-weight:bold}
+.highlight .cm{color:#999988;font-style:italic}
+.highlight .cp{color:#999999;font-weight:bold}
+.highlight .c1{color:#999988;font-style:italic}
+.highlight .cs{color:#999999;font-weight:bold;font-style:italic}
+.highlight .gd{color:#000000;background-color:#ffdddd}
+.highlight .ge{font-style:italic}
+.highlight .gr{color:#aa0000}
+.highlight .gh{color:#999999}
+.highlight .gi{color:#000000;background-color:#ddffdd}
+.highlight .go{color:#888888}
+.highlight .gp{color:#555555}
+.highlight .gs{font-weight:bold}
+.highlight .gu{color:#800080;font-weight:bold}
+.highlight .gt{color:#aa0000}
+.highlight .kc{font-weight:bold}
+.highlight .kd{font-weight:bold}
+.highlight .kn{font-weight:bold}
+.highlight .kp{font-weight:bold}
+.highlight .kr{font-weight:bold}
+.highlight .kt{color:#445588;font-weight:bold}
+.highlight .m{color:#009999}
+.highlight .s{color:#dd1144}
+.highlight .n{color:#333333}
+.highlight .na{color:teal}
+.highlight .nb{color:#0086b3}
+.highlight .nc{color:#445588;font-weight:bold}
+.highlight .no{color:teal}
+.highlight .ni{color:purple}
+.highlight .ne{color:#990000;font-weight:bold}
+.highlight .nf{color:#990000;font-weight:bold}
+.highlight .nn{color:#555555}
+.highlight .nt{color:navy}
+.highlight .nv{color:teal}
+.highlight .ow{font-weight:bold}
+.highlight .w{color:#bbbbbb}
+.highlight .mf{color:#009999}
+.highlight .mh{color:#009999}
+.highlight .mi{color:#009999}
+.highlight .mo{color:#009999}
+.highlight .sb{color:#dd1144}
+.highlight .sc{color:#dd1144}
+.highlight .sd{color:#dd1144}
+.highlight .s2{color:#dd1144}
+.highlight .se{color:#dd1144}
+.highlight .sh{color:#dd1144}
+.highlight .si{color:#dd1144}
+.highlight .sx{color:#dd1144}
+.highlight .sr{color:#009926}
+.highlight .s1{color:#dd1144}
+.highlight .ss{color:#990073}
+.highlight .bp{color:#999999}
+.highlight .vc{color:teal}
+.highlight .vg{color:teal}
+.highlight .vi{color:teal}
+.highlight .il{color:#009999}
+.highlight .gc{color:#999;background-color:#EAF2F5}
+</style><title>Getting Started With Istio1.9</title></head><body><article class="markdown-body"><h4 id="download-and-install-istio"><b>Download and install Istio</b><a class="headerlink" href="#download-and-install-istio" title="Permanent link"></a></h4>
+<div class="highlight"><pre>curl -L https://istio.io/downloadIstio | sh -
+cd istio-1.9.1
+cp tools/istioctl.bash  /root/
+source /root/istioctl.bash 
+
+#we use the demo configuration profile
+istioctl install --set profile=demo -y
+
+#enable access logs 
+istioctl install --set meshConfig.accessLogFile=/dev/stdout
+
+
+
+#Add a namespace label to instruct Istio to 
+automatically inject Envoy sidecar proxies when you deploy your application later
+
+kubectl label namespace back-end istio-injection=enabled
+
+
+#
+kubectl -n istio-system get deploy
+</pre></div>
+
+<h4 id="deploy-the-sample-application"><b>Deploy the sample application</b><a class="headerlink" href="#deploy-the-sample-application" title="Permanent link"></a></h4>
+<div class="highlight"><pre>kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml -nback-end
+
+# kubectl get services -nback-end
+NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+details       ClusterIP   10.10.167.174   &lt;none&gt;        9080/TCP   46d
+productpage   ClusterIP   10.10.38.82     &lt;none&gt;        9080/TCP   46d
+ratings       ClusterIP   10.10.146.1     &lt;none&gt;        9080/TCP   46d
+reviews       ClusterIP   10.10.121.159   &lt;none&gt;        9080/TCP   46d
+
+
+# kubectl get pod -nback-end     
+NAME                              READY   STATUS    RESTARTS   AGE
+details-v1-7cf94f6cfc-74nzz       2/2     Running   0          3d
+productpage-v1-699d889699-f9v89   2/2     Running   0          3d
+ratings-v1-6676c6c6d9-hm42v       2/2     Running   0          3d
+reviews-v1-768b495cc9-9rcrn       2/2     Running   0          3d
+reviews-v2-76f576ddbc-nbtnz       2/2     Running   0          3d
+reviews-v3-5785689f47-njxl6       2/2     Running   0          3d
+
+
+# kubectl exec &quot;$(kubectl get pod -nback-end -l app=ratings -o jsonpath=&#39;{.items[0].metadata.name}&#39;)&quot; -nback-end -c ratings -- curl -sS productpage:9080/productpage | grep -o &quot;&lt;title&gt;.*&lt;/title&gt;&quot; 
+&lt;title&gt;Simple Bookstore App&lt;/title&gt;
+</pre></div>
+
+<h4 id="open-the-application-to-outside-traffic"><b>Open the application to outside traffic</b><a class="headerlink" href="#open-the-application-to-outside-traffic" title="Permanent link"></a></h4>
+<div class="highlight"><pre># kubectl apply -f samples/bookinfo/networking/bookinfo-gateway.yaml -nback-end
+
+
+# istioctl analyze -nback-end
+✔ No validation issues found when analyzing namespace: back-end.
+
+
+# kubectl get svc istio-ingressgateway -n istio-system
+NAME                   TYPE           CLUSTER-IP    EXTERNAL-IP   PORT(S)                                                                      AGE
+istio-ingressgateway   LoadBalancer   10.10.238.4   &lt;pending&gt;     15021:40386/TCP,80:32705/TCP,443:39232/TCP,31400:46574/TCP,15443:44787/TCP   46d
+
+
+if the EXTERNAL-IP value is set, your environment has an external load balancer that you can use for the ingress gateway. If the EXTERNAL-IP value is &lt;none&gt; (or perpetually &lt;pending&gt;), your environment does not provide an external load balancer for the ingress gateway. In this case, you can access the gateway using the service’s node port.
+
+export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath=&#39;{.status.loadBalancer.ingress[0].ip}&#39;)
+export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath=&#39;{.spec.ports[?(@.name==&quot;http2&quot;)].port}&#39;)
+export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath=&#39;{.spec.ports[?(@.name==&quot;https&quot;)].port}&#39;)
+
+这里我们通过node port方式访问 http://masterip:32705/productpage
+</pre></div>
+
+<h4 id="view-the-dashboard"><b>View the dashboard</b><a class="headerlink" href="#view-the-dashboard" title="Permanent link"></a></h4>
+<p>Use the following instructions to deploy the Kiali dashboard, along with Prometheus, Grafana, and Jaeger</p>
+<div class="highlight"><pre># istioctl apply -f samples/addons/kiali.yaml 
+This will install the Istio 1.9.1  profile with [&quot;Istio core&quot; &quot;Istiod&quot; &quot;Ingress gateways&quot;] components into the cluster. Proceed? (y/N) y
+✔ Istio core installed                                                                                                             
+✔ Istiod installed                                                                                                                 
+✔ Ingress gateways installed                                                                                                       
+- Pruning removed resources                                                                                                          Removed PodDisruptionBudget:istio-system:istio-egressgateway.
+  Removed Deployment:istio-system:istio-egressgateway.
+  Removed Service:istio-system:istio-egressgateway.
+  Removed ServiceAccount:istio-system:istio-egressgateway-service-account.
+  Removed RoleBinding:istio-system:istio-egressgateway-sds.
+  Removed Role:istio-system:istio-egressgateway-sds.
+✔ Installation complete                                       
+
+
+# kubectl apply -f samples/addons/prometheus.yaml 
+serviceaccount/prometheus created
+configmap/prometheus created
+clusterrole.rbac.authorization.k8s.io/prometheus created
+clusterrolebinding.rbac.authorization.k8s.io/prometheus created
+service/prometheus created
+deployment.apps/prometheus created
+
+#这里需要等待一会才部署完成
+# while ! kubectl wait --for=condition=available --timeout=600s deployment/kiali -n istio-system; do sleep 1; done
+deployment.apps/kiali condition met
+
+# istioctl dashboard kiali
+http://localhost:20001/kiali
+Failed to open browser; open http://localhost:20001/kiali in your browser.
+
+# kubectl get pod -nistio-system
+NAME                                  READY   STATUS    RESTARTS   AGE
+istio-ingressgateway-98c798c9-rtcd8   1/1     Running   0          57m
+istiod-845ddbdd69-crnb4               1/1     Running   0          58m
+kiali-d4fdb9cdb-88lgm                 1/1     Running   0          19m
+prometheus-7d76687994-5rgvs           2/2     Running   0          3m26s
+
+
+tiger@abc:~$  port-forward --namespace istio-system service/kiali 4001:20001
+我们访问http://localhost:4001/就可以了
+
+#或者通过node port访问
+# kubectl get service kiali -n istio-system -o yaml &gt; kiali-service.yaml
+# vim kiali-service.yaml
+
+spec:
+  clusterIP: 10.10.29.155
+  ports:
+  - name: http
+   # -&gt; nodePort: 32123
+    port: 20001
+    protocol: TCP
+    targetPort: 20001
+  - name: http-metrics
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+  selector:
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/name: kiali
+  sessionAffinity: None
+  type: ClusterIP   # -&gt; type: NodePort
+status:
+  loadBalancer: {}
+</pre></div>
+
+<h4 id="uninstall-istio"><b>Uninstall Istio</b><a class="headerlink" href="#uninstall-istio" title="Permanent link"></a></h4>
+<div class="highlight"><pre># istioctl x uninstall --purge
+
+
+#The control plane namespace (e.g., istio-system) is not removed by default. If no longer needed, use the following command to remove it:
+# kubectl delete namespace istio-system
+</pre></div>
+
+<p>[ref]
+<a href="https://istio.io/latest/docs/setup/getting-started" target="_blank" rel="noopener">Getting Started</a></p></article></body></html>]]></content>
+    
+    <summary type="html">
+    
+      &lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;generator&quot; content=&quot;Hexo 3.8.0&quot;&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-wid
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Getting Started With Istio1.9</title>
+    <link href="https://t1ger.github.io/2021/03/22/Getting-Started-With-Istio1-9/"/>
+    <id>https://t1ger.github.io/2021/03/22/Getting-Started-With-Istio1-9/</id>
+    <published>2021-03-22T09:31:36.000Z</published>
+    <updated>2021-03-23T08:42:24.722Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="Download-and-install-Istio"><a href="#Download-and-install-Istio" class="headerlink" title="Download and install Istio"></a><b>Download and install Istio</b></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">$ curl -L https://istio.io/downloadIstio | sh -</span><br><span class="line">$ cd istio-1.9.1</span><br><span class="line">$ cp tools/istioctl.bash  /root/</span><br><span class="line">$ source /root/istioctl.bash </span><br><span class="line"></span><br><span class="line">#we use the demo configuration profile</span><br><span class="line">$ istioctl install --set profile=demo -y</span><br><span class="line"></span><br><span class="line">#enable access logs </span><br><span class="line">$ istioctl install --set meshConfig.accessLogFile=/dev/stdout</span><br><span class="line"></span><br><span class="line">#Add a namespace label to instruct Istio to automatically inject Envoy sidecar proxies when you deploy your application later</span><br><span class="line">$ kubectl label namespace back-end istio-injection=enabled</span><br><span class="line"></span><br><span class="line">#manually inject a deployment</span><br><span class="line">istioctl kube-inject -f samples/sleep/sleep.yaml | kubectl apply -f -</span><br><span class="line"></span><br><span class="line"># inspecting the deployments, pods, services and other resources that were installed by Istio</span><br><span class="line">$ kubectl -n istio-system get deploy</span><br><span class="line">NAME                   READY   UP-TO-DATE   AVAILABLE   AGE</span><br><span class="line">istio-ingressgateway   1/1     1            1           47d</span><br><span class="line">istiod                 1/1     1            1           47d</span><br><span class="line">kiali                  1/1     1            1           52m</span><br><span class="line">prometheus             1/1     1            1           35m</span><br><span class="line"></span><br><span class="line">#display the names of Istio configuration profiles</span><br><span class="line">$ istioctl profile list</span><br><span class="line">Istio configuration profiles:</span><br><span class="line">    default</span><br><span class="line">    demo</span><br><span class="line">    empty</span><br><span class="line">    minimal</span><br><span class="line">    openshift</span><br><span class="line">    preview</span><br><span class="line">    remote</span><br></pre></td></tr></table></figure>
+<h4 id="Deploy-the-sample-application"><a href="#Deploy-the-sample-application" class="headerlink" title="Deploy the sample application"></a><b>Deploy the sample application</b></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml -nback-end</span><br><span class="line"></span><br><span class="line">$ kubectl get services -nback-end</span><br><span class="line">NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE</span><br><span class="line">details       ClusterIP   10.10.167.174   &lt;none&gt;        9080/TCP   46d</span><br><span class="line">productpage   ClusterIP   10.10.38.82     &lt;none&gt;        9080/TCP   46d</span><br><span class="line">ratings       ClusterIP   10.10.146.1     &lt;none&gt;        9080/TCP   46d</span><br><span class="line">reviews       ClusterIP   10.10.121.159   &lt;none&gt;        9080/TCP   46d</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ kubectl get pod -nback-end     </span><br><span class="line">NAME                              READY   STATUS    RESTARTS   AGE</span><br><span class="line">details-v1-7cf94f6cfc-74nzz       2/2     Running   0          3d</span><br><span class="line">productpage-v1-699d889699-f9v89   2/2     Running   0          3d</span><br><span class="line">ratings-v1-6676c6c6d9-hm42v       2/2     Running   0          3d</span><br><span class="line">reviews-v1-768b495cc9-9rcrn       2/2     Running   0          3d</span><br><span class="line">reviews-v2-76f576ddbc-nbtnz       2/2     Running   0          3d</span><br><span class="line">reviews-v3-5785689f47-njxl6       2/2     Running   0          3d</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ kubectl exec &quot;$(kubectl get pod -nback-end -l app=ratings -o jsonpath=&apos;&#123;.items[0].metadata.name&#125;&apos;)&quot; -nback-end -c ratings -- curl -sS productpage:9080/productpage | grep -o &quot;&lt;title&gt;.*&lt;/title&gt;&quot; </span><br><span class="line">&lt;title&gt;Simple Bookstore App&lt;/title&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="Open-the-application-to-outside-traffic"><a href="#Open-the-application-to-outside-traffic" class="headerlink" title="Open the application to outside traffic"></a><b>Open the application to outside traffic</b></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl apply -f samples/bookinfo/networking/bookinfo-gateway.yaml -nback-end</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># istioctl analyze -nback-end</span><br><span class="line">✔ No validation issues found when analyzing namespace: back-end.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ kubectl get svc istio-ingressgateway -n istio-system</span><br><span class="line">NAME                   TYPE           CLUSTER-IP    EXTERNAL-IP   PORT(S)                                                                      AGE</span><br><span class="line">istio-ingressgateway   LoadBalancer   10.10.238.4   &lt;pending&gt;     15021:40386/TCP,80:32705/TCP,443:39232/TCP,31400:46574/TCP,15443:44787/TCP   46d</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if the EXTERNAL-IP value is set, your environment has an external load balancer that you can use for the ingress gateway. If the EXTERNAL-IP value is &lt;none&gt; (or perpetually &lt;pending&gt;), your environment does not provide an external load balancer for the ingress gateway. In this case, you can access the gateway using the service’s node port.</span><br><span class="line"></span><br><span class="line">export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath=&apos;&#123;.status.loadBalancer.ingress[0].ip&#125;&apos;)</span><br><span class="line">export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath=&apos;&#123;.spec.ports[?(@.name==&quot;http2&quot;)].port&#125;&apos;)</span><br><span class="line">export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath=&apos;&#123;.spec.ports[?(@.name==&quot;https&quot;)].port&#125;&apos;)</span><br><span class="line"></span><br><span class="line">这里我们通过node port方式访问 http://masterip:32705/productpage</span><br></pre></td></tr></table></figure>
+<h4 id="View-the-dashboard"><a href="#View-the-dashboard" class="headerlink" title="View the dashboard"></a><b>View the dashboard</b></h4><p>Use the following instructions to deploy the Kiali dashboard, along with Prometheus, Grafana, and Jaeger</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">$ istioctl apply -f samples/addons/kiali.yaml </span><br><span class="line">This will install the Istio 1.9.1  profile with [&quot;Istio core&quot; &quot;Istiod&quot; &quot;Ingress gateways&quot;] components into the cluster. Proceed? (y/N) y</span><br><span class="line">✔ Istio core installed                                                                                                             </span><br><span class="line">✔ Istiod installed                                                                                                                 </span><br><span class="line">✔ Ingress gateways installed                                                                                                       </span><br><span class="line">- Pruning removed resources                                                                                                          Removed PodDisruptionBudget:istio-system:istio-egressgateway.</span><br><span class="line">  Removed Deployment:istio-system:istio-egressgateway.</span><br><span class="line">  Removed Service:istio-system:istio-egressgateway.</span><br><span class="line">  Removed ServiceAccount:istio-system:istio-egressgateway-service-account.</span><br><span class="line">  Removed RoleBinding:istio-system:istio-egressgateway-sds.</span><br><span class="line">  Removed Role:istio-system:istio-egressgateway-sds.</span><br><span class="line">✔ Installation complete                                       </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ kubectl apply -f samples/addons/prometheus.yaml </span><br><span class="line">serviceaccount/prometheus created</span><br><span class="line">configmap/prometheus created</span><br><span class="line">clusterrole.rbac.authorization.k8s.io/prometheus created</span><br><span class="line">clusterrolebinding.rbac.authorization.k8s.io/prometheus created</span><br><span class="line">service/prometheus created</span><br><span class="line">deployment.apps/prometheus created</span><br><span class="line"></span><br><span class="line">#这里需要等待一会才部署完成</span><br><span class="line">$ while ! kubectl wait --for=condition=available --timeout=600s deployment/kiali -n istio-system; do sleep 1; done</span><br><span class="line">deployment.apps/kiali condition met</span><br><span class="line"></span><br><span class="line">$ istioctl dashboard kiali</span><br><span class="line">http://localhost:20001/kiali</span><br><span class="line">Failed to open browser; open http://localhost:20001/kiali in your browser.</span><br><span class="line"></span><br><span class="line">$ kubectl get pod -nistio-system</span><br><span class="line">NAME                                  READY   STATUS    RESTARTS   AGE</span><br><span class="line">istio-ingressgateway-98c798c9-rtcd8   1/1     Running   0          57m</span><br><span class="line">istiod-845ddbdd69-crnb4               1/1     Running   0          58m</span><br><span class="line">kiali-d4fdb9cdb-88lgm                 1/1     Running   0          19m</span><br><span class="line">prometheus-7d76687994-5rgvs           2/2     Running   0          3m26s</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">tiger@abc:~$  port-forward --namespace istio-system service/kiali 4001:20001</span><br><span class="line">我们访问http://localhost:4001/就可以了</span><br><span class="line"></span><br><span class="line">#或者通过node port访问</span><br><span class="line">$ kubectl get service kiali -n istio-system -o yaml &gt; kiali-service.yaml</span><br><span class="line">$ vim kiali-service.yaml</span><br><span class="line"></span><br><span class="line">spec:</span><br><span class="line">  clusterIP: 10.10.29.155</span><br><span class="line">  ports:</span><br><span class="line">  - name: http</span><br><span class="line">   # -&gt; nodePort: 32123</span><br><span class="line">    port: 20001</span><br><span class="line">    protocol: TCP</span><br><span class="line">    targetPort: 20001</span><br><span class="line">  - name: http-metrics</span><br><span class="line">    port: 9090</span><br><span class="line">    protocol: TCP</span><br><span class="line">    targetPort: 9090</span><br><span class="line">  selector:</span><br><span class="line">    app.kubernetes.io/instance: kiali-server</span><br><span class="line">    app.kubernetes.io/name: kiali</span><br><span class="line">  sessionAffinity: None</span><br><span class="line">  type: ClusterIP   # -&gt; type: NodePort</span><br><span class="line">status:</span><br><span class="line">  loadBalancer: &#123;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Uninstall-Istio"><a href="#Uninstall-Istio" class="headerlink" title="Uninstall Istio"></a><b>Uninstall Istio</b></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ istioctl x uninstall --purge</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#The control plane namespace (e.g., istio-system) is not removed by default. </span><br><span class="line">If no longer needed, use the following command to remove it:</span><br><span class="line"></span><br><span class="line">$ kubectl delete namespace istio-system</span><br></pre></td></tr></table></figure>
+<h4 id="upgrade-istio-from-1-8-to-1-9"><a href="#upgrade-istio-from-1-8-to-1-9" class="headerlink" title="upgrade istio from 1.8 to 1.9"></a><b>upgrade istio from 1.8 to 1.9</b></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line">$ ./istioctl upgrade -f demo.yaml                           </span><br><span class="line">2021-03-19T08:37:18.145328Z     info    proto: tag has too few fields: &quot;-&quot;</span><br><span class="line">Control Plane - istio-egressgateway pod - istio-egressgateway-7fc985bd9f-tnjcl - version: 1.8.2</span><br><span class="line">Control Plane - istio-ingressgateway pod - istio-ingressgateway-58f9d7d858-bg272 - version: 1.8.2</span><br><span class="line">Control Plane - istiod pod - istiod-7d8f784f96-vpx8v - version: 1.8.2</span><br><span class="line"></span><br><span class="line">Upgrade version check passed: 1.8.2 -&gt; 1.9.1.</span><br><span class="line"></span><br><span class="line">2021-03-19T08:37:18.503724Z     info    Error: failed to generate Istio configs from file [demo.yaml] for the current version: 1.8.2, error: Get &quot;https://github.com/istio/istio/releases/download/1.8.2/istio-1.8.2-osx.tar.gz&quot;: read tcp 172.17.20.10:5127-&gt;52.74.223.119:443: read: connection reset by peer</span><br><span class="line"></span><br><span class="line">Error: failed to generate Istio configs from file [demo.yaml] for the current version: 1.8.2, error: Get &quot;https://github.com/istio/istio/releases/download/1.8.2/istio-1.8.2-osx.tar.gz&quot;: read tcp 172.17.20.10:5127-&gt;52.74.223.119:443: read: connection reset by peer</span><br><span class="line"></span><br><span class="line">增加hosts</span><br><span class="line">52.69.186.44 github.com</span><br><span class="line"></span><br><span class="line">$ ./istioctl upgrade -f demo.yaml </span><br><span class="line">2021-03-19T09:02:56.689202Z     info    proto: tag has too few fields: &quot;-&quot;</span><br><span class="line">Control Plane - istio-egressgateway pod - istio-egressgateway-7fc985bd9f-tnjcl - version: 1.8.2</span><br><span class="line">Control Plane - istio-ingressgateway pod - istio-ingressgateway-58f9d7d858-bg272 - version: 1.8.2</span><br><span class="line">Control Plane - istiod pod - istiod-7d8f784f96-vpx8v - version: 1.8.2</span><br><span class="line"></span><br><span class="line">Upgrade version check passed: 1.8.2 -&gt; 1.9.1.</span><br><span class="line"></span><br><span class="line">Upgrade check: Warning!!! The following IOPS will be changed as part of upgrade. Please double check they are correct:</span><br><span class="line">spec:</span><br><span class="line">  addonComponents: map[istiocoredns:map[enabled:false]] -&gt;</span><br><span class="line">  components:</span><br><span class="line">    egressGateways:</span><br><span class="line">      &apos;[#0]&apos;:</span><br><span class="line">        k8s:</span><br><span class="line">          env: &apos;[map[name:ISTIO_META_ROUTER_MODE value:standard]] -&gt;&apos;</span><br><span class="line">          hpaSpec: map[maxReplicas:5 metrics:[map[resource:map[name:cpu targetAverageUtilization:80] type:Resource]] minReplicas:1 scaleTargetRef:map[apiVersion:apps/v1 kind:Deployment name:istio-egressgateway]] -&gt;</span><br><span class="line">          resources:</span><br><span class="line">            limits: map[cpu:2000m memory:1024Mi] -&gt;</span><br><span class="line">          service: map[ports:[map[name:http2 port:80 protocol:TCP targetPort:8080] map[name:https port:443 protocol:TCP targetPort:8443] map[name:tls port:15443 protocol:TCP targetPort:15443]]] -&gt;</span><br><span class="line">          strategy: map[rollingUpdate:map[maxSurge:100% maxUnavailable:25%]] -&gt;</span><br><span class="line">    ingressGateways:</span><br><span class="line">      &apos;[#0]&apos;:</span><br><span class="line">        k8s:</span><br><span class="line">          env: &apos;[map[name:ISTIO_META_ROUTER_MODE value:standard]] -&gt;&apos;</span><br><span class="line">          hpaSpec: map[maxReplicas:5 metrics:[map[resource:map[name:cpu targetAverageUtilization:80] type:Resource]] minReplicas:1 scaleTargetRef:map[apiVersion:apps/v1 kind:Deployment name:istio-ingressgateway]] -&gt;</span><br><span class="line">          resources:</span><br><span class="line">            limits: map[cpu:2000m memory:1024Mi] -&gt;</span><br><span class="line">          strategy: map[rollingUpdate:map[maxSurge:100% maxUnavailable:25%]] -&gt;</span><br><span class="line">    pilot:</span><br><span class="line">      k8s:</span><br><span class="line">        readinessProbe: map[httpGet:map[path:/ready port:8080] initialDelaySeconds:1 periodSeconds:3 timeoutSeconds:5] -&gt;</span><br><span class="line">        replicaCount: -&gt; 1</span><br><span class="line">        strategy: map[rollingUpdate:map[maxSurge:100% maxUnavailable:25%]] -&gt;</span><br><span class="line">  installPackagePath: /tmp/istio-install-packages/istio-1.8.2/manifests -&gt;</span><br><span class="line">  values:</span><br><span class="line">    clusterResources: true -&gt;</span><br><span class="line">    global:</span><br><span class="line">      meshExpansion: map[enabled:false useILB:false] -&gt;</span><br><span class="line">    istiocoredns: map[coreDNSImage:coredns/coredns coreDNSPluginImage:istio/coredns-plugin:0.2-istio-1.1 coreDNSTag:1.6.2] -&gt;</span><br><span class="line">    sidecarInjectorWebhook: map[enableNamespacesByDefault:false objectSelector:map[autoInject:true enabled:false] rewriteAppHTTPProbe:true] -&gt;</span><br><span class="line"></span><br><span class="line">Confirm to proceed [y/N]? y</span><br><span class="line">✔ Istio core installed                                                                                                             </span><br><span class="line">✔ Istiod installed                                                                                                                 </span><br><span class="line">✔ Ingress gateways installed                                                                                                       </span><br><span class="line">✔ Egress gateways installed                                                                                                        </span><br><span class="line">✔ Installation complete                                                                                                            ..........</span><br><span class="line">Upgrade rollout completed. All Istio control plane pods are running on the target version.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Control Plane - istio-egressgateway pod - istio-egressgateway-d65f89ff9-dd5bk - version: 1.9.1</span><br><span class="line">Control Plane - istio-ingressgateway pod - istio-ingressgateway-79d84c875d-tnjfg - version: 1.9.1</span><br><span class="line">Control Plane - istiod pod - istiod-bbbdc64cb-8q96m - version: 1.9.1</span><br><span class="line"></span><br><span class="line">Success. Now the Istio control plane is running at version 1.9.1.</span><br><span class="line"></span><br><span class="line">To upgrade the Istio data plane, you will need to re-inject it.</span><br><span class="line">If you’re using automatic sidecar injection, you can upgrade the sidecar by doing a rolling update for all the pods:</span><br><span class="line">    kubectl rollout restart deployment --namespace &lt;namespace with auto injection&gt;</span><br><span class="line">If you’re using manual injection, you can upgrade the sidecar by executing:</span><br><span class="line">    kubectl apply -f &lt; (istioctl kube-inject -f &lt;original application deployment yaml&gt;)</span><br><span class="line"></span><br><span class="line">$ istioctl version  </span><br><span class="line">client version: 1.9.1</span><br><span class="line">control plane version: 1.9.1</span><br><span class="line">data plane version: 1.9.1 (8 proxies)</span><br></pre></td></tr></table></figure>
+<p>[ref]<br><a href="https://istio.io/latest/docs/setup/getting-started" target="_blank" rel="noopener">Getting Started</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;Download-and-install-Istio&quot;&gt;&lt;a href=&quot;#Download-and-install-Istio&quot; class=&quot;headerlink&quot; title=&quot;Download and install Istio&quot;&gt;&lt;/a&gt;&lt;b&gt;Downl
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>quick understanding Loki for k8s</title>
@@ -523,86 +1781,6 @@
     <summary type="html">
     
       &lt;h5 id=&quot;k8s环境如下&quot;&gt;&lt;a href=&quot;#k8s环境如下&quot; class=&quot;headerlink&quot; title=&quot;k8s环境如下&quot;&gt;&lt;/a&gt;&lt;b&gt;k8s环境如下&lt;/b&gt;&lt;/h5&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>How to install ceph-nautilus on CentOS7</title>
-    <link href="https://t1ger.github.io/2020/01/02/How-to-install-ceph-nautilus-on-CentOS7/"/>
-    <id>https://t1ger.github.io/2020/01/02/How-to-install-ceph-nautilus-on-CentOS7/</id>
-    <published>2020-01-02T07:45:04.000Z</published>
-    <updated>2020-01-02T09:57:24.490Z</updated>
-    
-    <content type="html"><![CDATA[<h5 id="Prepare"><a href="#Prepare" class="headerlink" title="Prepare"></a><b>Prepare</b></h5><p>System: CentOS 7.5<br>IP: 192.168.1.129-132<br>Hostname: admin node1-3<br>Disk:/dev/sdb 100G<br>Role: admin osd</p>
-<ul>
-<li><p>replace ali yum source</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup</span><br><span class="line">wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo</span><br><span class="line">sed -i -e &apos;/mirrors.cloud.aliyuncs.com/d&apos; -e &apos;/mirrors.aliyuncs.com/d&apos; /etc/yum.repos.d/CentOS-Base.repo</span><br><span class="line">yum clean up &amp;&amp; yum makecache &amp;&amp; yum update -y</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>set ceph source and epel source, turn off firewalld</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">rpm -Uvh https://mirrors.aliyun.com/ceph/rpm-nautilus/el7/noarch/ceph-release-1-1.el7.noarch.rpm</span><br><span class="line">yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</span><br><span class="line"></span><br><span class="line">systemctl stop firewalld</span><br><span class="line">systemctl disable firewalld</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>make sure time sync,all node install chrony</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">yum install -y chrony</span><br><span class="line"></span><br><span class="line">#admin node sync aliyun ntp server</span><br><span class="line">sudo sed -i &apos;/^server .*/d&apos; /etc/chrony.conf</span><br><span class="line">sudo sed -ri &apos;3s#^$#server ntp1.aliyun.com iburst\nallow 192.168.1.0/24#&apos; /etc/chrony.conf</span><br><span class="line">sudo systemctl enable chronyd</span><br><span class="line">sudo systemctl restart chronyd</span><br><span class="line"></span><br><span class="line"># other node sync admin node</span><br><span class="line">ssh node1 &quot;sudo sed -i &apos;/^server .*/d&apos; /etc/chrony.conf&quot;</span><br><span class="line">ssh node1 &quot;sudo sed -ri &apos;3s#^\$#server 192.168.1.129 iburst#&apos; /etc/chrony.conf&quot;</span><br><span class="line">ssh node2 &quot;sudo sed -i &apos;/^server .*/d&apos; /etc/chrony.conf&quot;</span><br><span class="line">ssh node2 &quot;sudo sed -ri &apos;3s#^\$#server 192.168.1.129 iburst#&apos; /etc/chrony.conf&quot;</span><br><span class="line">ssh node3 &quot;sudo sed -i &apos;/^server .*/d&apos; /etc/chrony.conf&quot;</span><br><span class="line">ssh node3 &quot;sudo sed -ri &apos;3s#^\$#server 192.168.1.129 iburst#&apos; /etc/chrony.conf&quot;</span><br><span class="line"></span><br><span class="line">#reboot chrony service</span><br><span class="line">ssh node1 sudo systemctl enable chronyd</span><br><span class="line">ssh node1 sudo systemctl restart chronyd</span><br><span class="line">ssh node2 sudo systemctl enable chronyd</span><br><span class="line">ssh node2 sudo systemctl restart chronyd</span><br><span class="line">ssh node3 sudo systemctl enable chronyd</span><br><span class="line">ssh node3 sudo systemctl restart chronyd</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h5 id="Install-ceph"><a href="#Install-ceph" class="headerlink" title="Install ceph"></a><b>Install ceph</b></h5><ul>
-<li><p>install ceph-deploy</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y https://mirrors.aliyun.com/ceph/rpm-nautilus/el7/noarch/ceph-deploy-2.0.1-0.noarch.rpm</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>install ceph</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ceph-deploy install admin node1 node2 node3</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>add mon</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ceph-deploy new node1 node2 node3</span><br><span class="line">ceph-deploy mon create-initial</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>create ceph admin node</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ceph-deploy mgr create node1 node2 node3</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>create osd node</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ceph-deploy osd create --data /dev/sdb node1</span><br><span class="line">ceph-deploy osd create --data /dev/sdb node2</span><br><span class="line">ceph-deploy osd create --data /dev/sdb node3</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>enable dashboard</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#from nautilus, dashboard as Independent Modules. need install on all mgr node</span><br><span class="line">yum install -y ceph-mgr-dashboard</span><br><span class="line"># if error</span><br><span class="line">pip uninstall urllib3</span><br><span class="line">yum install python-urllib3 -y</span><br><span class="line"></span><br><span class="line">#enable dashboard</span><br><span class="line">ceph mgr module enable dashboard　--force</span><br><span class="line"></span><br><span class="line"># enable ssl/tls</span><br><span class="line">ceph mgr module enable dashboard　--force</span><br><span class="line"></span><br><span class="line"># create admin user</span><br><span class="line">ceph dashboard ac-user-create admin admin administrator</span><br><span class="line"></span><br><span class="line"># view ceph-mgr service</span><br><span class="line">ceph mgr services</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>sync conf to all node and copy mgr file to admin</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"># only push config</span><br><span class="line">[root@admin ~]#ceph-deploy --overwrite-conf admin node1 node2 node3</span><br><span class="line"></span><br><span class="line"># push config and client.admin key</span><br><span class="line">[root@admin ~]# ceph-deploy admin admin</span><br><span class="line"></span><br><span class="line">[ceph_deploy.conf][DEBUG ] found configuration file at: /root/.cephdeploy.conf</span><br><span class="line">[ceph_deploy.cli][INFO  ] Invoked (2.0.1): /usr/bin/ceph-deploy admin admin</span><br><span class="line">[ceph_deploy.cli][INFO  ] ceph-deploy options:</span><br><span class="line">[ceph_deploy.cli][INFO  ]  username                      : None</span><br><span class="line">[ceph_deploy.cli][INFO  ]  verbose                       : False</span><br><span class="line">[ceph_deploy.cli][INFO  ]  overwrite_conf                : False</span><br><span class="line">[ceph_deploy.cli][INFO  ]  quiet                         : False</span><br><span class="line">[ceph_deploy.cli][INFO  ]  cd_conf                       : &lt;ceph_deploy.conf.cephdeploy.Conf instance at 0x7f21349cad40&gt;</span><br><span class="line">[ceph_deploy.cli][INFO  ]  cluster                       : ceph</span><br><span class="line">[ceph_deploy.cli][INFO  ]  client                        : [&apos;admin&apos;]</span><br><span class="line">[ceph_deploy.cli][INFO  ]  func                          : &lt;function admin at 0x7f21356e01b8&gt;</span><br><span class="line">[ceph_deploy.cli][INFO  ]  ceph_conf                     : None</span><br><span class="line">[ceph_deploy.cli][INFO  ]  default_release               : False</span><br><span class="line">[ceph_deploy.admin][DEBUG ] Pushing admin keys and conf to admin</span><br><span class="line">[admin][DEBUG ] connected to host: admin </span><br><span class="line">[admin][DEBUG ] detect platform information from remote host</span><br><span class="line">[admin][DEBUG ] detect machine type</span><br><span class="line">[admin][DEBUG ] write cluster configuration to /etc/ceph/&#123;cluster&#125;.conf</span><br><span class="line"></span><br><span class="line">[root@admin ~]# ceph -s</span><br><span class="line">  cluster:</span><br><span class="line">    id:     376a41f4-2aa1-4f96-9bcb-700f2787ebd8</span><br><span class="line">    health: HEALTH_OK</span><br><span class="line"></span><br><span class="line">[root@admin ~]#  ceph osd tree</span><br><span class="line">ID CLASS WEIGHT  TYPE NAME      STATUS REWEIGHT PRI-AFF </span><br><span class="line">-1       0.29008 root default                           </span><br><span class="line">-3       0.09669     host node1                         </span><br><span class="line"> 0   hdd 0.09669         osd.0      up  1.00000 1.00000 </span><br><span class="line">-5       0.09669     host node2                         </span><br><span class="line"> 1   hdd 0.09669         osd.1      up  1.00000 1.00000 </span><br><span class="line">-7       0.09669     host node3                         </span><br><span class="line"> 2   hdd 0.09669         osd.2      up  1.00000 1.00000</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h5 id="how-to-clear-if-you-reinstall"><a href="#how-to-clear-if-you-reinstall" class="headerlink" title=" how to clear,if you reinstall"></a><b> how to clear,if you reinstall</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@admin ~]#  ceph-deploy purge admin node1 node2 node3</span><br><span class="line">[root@admin ~]#  ceph-deploy purgedata admin node1 node2 node3</span><br><span class="line">[root@admin ~]#  ceph-deploy forgetkeys</span><br></pre></td></tr></table></figure>
-<p>ref<br><a href="https://docs.ceph.com/docs/nautilus/mgr/dashboard/" target="_blank" rel="noopener">ceph dashboard</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h5 id=&quot;Prepare&quot;&gt;&lt;a href=&quot;#Prepare&quot; class=&quot;headerlink&quot; title=&quot;Prepare&quot;&gt;&lt;/a&gt;&lt;b&gt;Prepare&lt;/b&gt;&lt;/h5&gt;&lt;p&gt;System: CentOS 7.5&lt;br&gt;IP: 192.168.1.129-132
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Ldap新增用户无法登录GitLab排查</title>
-    <link href="https://t1ger.github.io/2019/09/19/Ldap%E6%96%B0%E5%A2%9E%E7%94%A8%E6%88%B7%E6%97%A0%E6%B3%95%E7%99%BB%E5%BD%95GitLab%E6%8E%92%E6%9F%A5/"/>
-    <id>https://t1ger.github.io/2019/09/19/Ldap新增用户无法登录GitLab排查/</id>
-    <published>2019-09-19T04:53:48.000Z</published>
-    <updated>2019-09-19T05:38:56.789Z</updated>
-    
-    <content type="html"><![CDATA[<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">问题背景,Gitlab通过ldap方式认证,今天想新增加一个新用户cibot,用于jenkins拉取代码. 通过工具复制了一个用户,修改uid,登录的时候发现用户无法登录.</span><br><span class="line">报错信息如下:</span><br><span class="line">Undefined method `provider&apos; for nil:nilclass</span><br><span class="line">通过搜索发现大部分人都碰到过这个错误,有的是邮箱地址没填写,有的是版本过低,也有说是gitlab bug的</span><br></pre></td></tr></table></figure>
-<p>首先，登录 GitLab 所在服务器，发现正常输出<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo gitlab-rake gitlab:ldap:check</span><br><span class="line">Checking LDAP ...</span><br><span class="line"></span><br><span class="line">LDAP: ... Server: ldapmain</span><br><span class="line">LDAP authentication... Success</span><br><span class="line">LDAP users with access to your GitLab server (only showing the first 100 results)</span><br></pre></td></tr></table></figure></p>
-<p>由于GitLab 使用 PostgreSQL 数据库存储用户等相关数据,查看一下 GitLab 数据库 PostgreSQL 的配置文件，看下相关的配置信息，一般来说，GitLab 服务会专门创建一个系统用户来管理该数据库服务<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">[root@bogon ~]# cat /var/opt/gitlab/gitlab-rails/etc/database.yml</span><br><span class="line"># This file is managed by gitlab-ctl. Manual changes will be</span><br><span class="line"># erased! To change the contents below, edit /etc/gitlab/gitlab.rb</span><br><span class="line"># and run `sudo gitlab-ctl reconfigure`.</span><br><span class="line"></span><br><span class="line">production:</span><br><span class="line">  adapter: postgresql</span><br><span class="line">  encoding: unicode</span><br><span class="line">  collation: </span><br><span class="line">  database: gitlabhq_production</span><br><span class="line">  pool: 10</span><br><span class="line">  username: &quot;gitlab&quot;</span><br><span class="line">  password: </span><br><span class="line">  host: &quot;/var/opt/gitlab/postgresql&quot;</span><br><span class="line">  port: 5432</span><br><span class="line">  socket: </span><br><span class="line">  sslmode: </span><br><span class="line">  sslcompression: 0</span><br><span class="line">  sslrootcert: </span><br><span class="line">  sslca: </span><br><span class="line">  load_balancing: &#123;&quot;hosts&quot;:[]&#125;</span><br><span class="line">  prepared_statements: false</span><br><span class="line">  statements_limit: 1000</span><br><span class="line">  fdw:</span><br></pre></td></tr></table></figure></p>
-<p>看到 username: “gitlab，那么查看下当前系统有哪些跟 gitlab 相关的用户<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@bogon ~]# cat /etc/passwd | grep &apos;gitlab-&apos;</span><br><span class="line">gitlab-www:x:996:993::/var/opt/gitlab/nginx:/bin/false</span><br><span class="line">gitlab-redis:x:994:991::/var/opt/gitlab/redis:/bin/false</span><br><span class="line">gitlab-psql:x:993:990::/var/opt/gitlab/postgresql:/bin/sh</span><br><span class="line">gitlab-prometheus:x:992:989::/var/opt/gitlab/prometheus:/bin/sh</span><br></pre></td></tr></table></figure></p>
-<p>看到 gitlab-psql 账户就是我们要使用的用户，接下来就切换到该用户，并连接到 gitlabhq_production 数据库<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">[root@bogon ~]#  su - gitlab-psql</span><br><span class="line">Last login: Thu Sep 19 10:53:57 CST 2019 on pts/0</span><br><span class="line">-sh-4.2$ psql -h /var/opt/gitlab/postgresql -d gitlabhq_production</span><br><span class="line">psql (9.6.11)</span><br><span class="line">Type &quot;help&quot; for help.</span><br><span class="line"></span><br><span class="line">gitlabhq_production=# \h</span><br><span class="line">Available help:</span><br><span class="line">  ABORT                            COMMENT                          DECLARE                          EXECUTE</span><br><span class="line">  ALTER AGGREGATE                  COMMIT                           DELETE                           EXPLAIN</span><br><span class="line">  ALTER COLLATION                  COMMIT PREPARED                  DISCARD                          FETCH</span><br><span class="line">  ALTER CONVERSION                 COPY                             DO                               GRANT</span><br><span class="line">  ALTER DATABASE                   CREATE ACCESS METHOD             DROP ACCESS METHOD               IMPORT FOREIGN SCHEMA</span><br><span class="line">  ALTER DEFAULT PRIVILEGES         CREATE AGGREGATE                 DROP AGGREGATE                   INSERT</span><br><span class="line">  ALTER DOMAIN                     CREATE CAST                      DROP CAST                        LISTEN</span><br><span class="line"></span><br><span class="line"># \l 列举所有的数据库列表，相当于 mysql 的 show databases</span><br><span class="line"># 因为连接时指定了 -d gitlabhq_production，默认进去的就是 gitlabhq_production 数据库，不需要切换。</span><br><span class="line">gitlabhq_production=# \l</span><br><span class="line">                                             List of databases</span><br><span class="line">        Name         |    Owner    | Encoding |   Collate   |    Ctype    |        Access privileges        </span><br><span class="line">---------------------+-------------+----------+-------------+-------------+---------------------------------</span><br><span class="line"> gitlabhq_production | gitlab      | UTF8     | en_US.UTF-8 | en_US.UTF-8 | </span><br><span class="line"> postgres            | gitlab-psql | UTF8     | en_US.UTF-8 | en_US.UTF-8 | </span><br><span class="line"> template0           | gitlab-psql | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/&quot;gitlab-psql&quot;               +</span><br><span class="line">                     |             |          |             |             | &quot;gitlab-psql&quot;=CTc/&quot;gitlab-psql&quot;</span><br><span class="line"> template1           | gitlab-psql | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/&quot;gitlab-psql&quot;               +</span><br><span class="line">                     |             |          |             |             | &quot;gitlab-psql&quot;=CTc/&quot;gitlab-psql&quot;</span><br><span class="line">(4 rows)</span><br><span class="line"># 列举当前数据库所有表，相当于 mysql 的 show tables</span><br><span class="line">gitlabhq_production=# \dt</span><br><span class="line">                         List of relations</span><br><span class="line"> Schema |                   Name                   | Type  | Owner  </span><br><span class="line">--------+------------------------------------------+-------+--------</span><br><span class="line"> public | abuse_reports                            | table | gitlab</span><br><span class="line"> public | appearances                              | table | gitlab</span><br><span class="line"> public | application_setting_terms                | table | gitlab</span><br><span class="line"> public | application_settings                     | table | gitlab</span><br><span class="line"> public | ar_internal_metadata                     | table | gitlab</span><br><span class="line"> public | audit_events                             | table | gitlab</span><br><span class="line"> public | award_emoji                              | table | gitlab</span><br><span class="line"> public | badges                                   | table | gitlab</span><br><span class="line"> public | board_group_recent_visits                | table | gitlab</span><br><span class="line"> public | board_project_recent_visits              | table | gitlab</span><br><span class="line"> public | boards                                   | table | gitlab</span><br><span class="line"> public | broadcast_messages                       | table | gitlab</span><br><span class="line"> ......</span><br><span class="line"></span><br><span class="line"> # 查看单表结构，相当于 desc tblname, show columns from tbname</span><br><span class="line">gitlabhq_production=# \d users</span><br><span class="line">                                                      Table &quot;public.users&quot;</span><br><span class="line">                    Column                    |            Type             |                     Modifiers                      </span><br><span class="line">----------------------------------------------+-----------------------------+----------------------------------------------------</span><br><span class="line"> id                                           | integer                     | not null default nextval(&apos;users_id_seq&apos;::regclass)</span><br><span class="line"> email                                        | character varying           | not null default &apos;&apos;::character varying</span><br><span class="line"> encrypted_password                           | character varying           | not null default &apos;&apos;::character varying</span><br><span class="line"> reset_password_token                         | character varying           | </span><br><span class="line"> reset_password_sent_at                       | timestamp without time zone | </span><br><span class="line"> remember_created_at                          | timestamp without time zone | </span><br><span class="line"> sign_in_count                                | integer                     | default 0</span><br><span class="line"> current_sign_in_at                           | timestamp without time zone | </span><br><span class="line"> last_sign_in_at                              | timestamp without time zone | </span><br><span class="line"> current_sign_in_ip                           | character varying           | </span><br><span class="line"> last_sign_in_ip                              | character varying           | </span><br><span class="line"> created_at                                   | timestamp without time zone | </span><br><span class="line"> updated_at                                   | timestamp without time zone | </span><br><span class="line">.....</span><br><span class="line"></span><br><span class="line">看下 users 表，这里面存储的就是所有的用户信息，接下来，我们可以查看验证一下新增用户信息:</span><br><span class="line"># users 表查看用户信息</span><br><span class="line">gitlabhq_production=# SELECT id,email,name,username FROM users WHERE username=&apos;cibot&apos;;</span><br><span class="line"> id | email | name | username </span><br><span class="line">----+-------+------+----------</span><br><span class="line">(0 rows)</span><br></pre></td></tr></table></figure></p>
-<p>发现cibot用户信息为空,说明数据库中还未存储用户信息.在/var/log/gitlab/gitlab-rails/application.log日志里看到错误信息<br>September 19, 2019 11:02: (LDAP) Error saving user uid=cibot,ou=user,dc=company,dc=com,dc=cn (<a href="mailto:cibot@company.com.cn" target="_blank" rel="noopener">cibot@company.com.cn</a>): [“Email has already been taken”]</p>
-<p>仔细查看新增用户信息,发现使用的邮箱地址是同一地址,gitlab认为已经使用,无法登录.<br>通过工具修改email地址,登录成功</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class
     
     </summary>
     

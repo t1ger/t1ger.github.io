@@ -1,0 +1,243 @@
+	<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
+  
+  <title>Getting Started With Istio1.9 | t1ger的茶馆</title>
+  <meta name="author" content="t1ger">
+  
+  <meta name="description" content="https://t1ger.github.io/">
+  
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta property="og:title" content="Getting Started With Istio1.9">
+  <meta property="og:site_name" content="t1ger的茶馆">
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+</head>
+</html>
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">t1ger的茶馆</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="这是一个订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>Getting Started With Istio1.9</h2>
+					
+					<div>
+						<span class="post-time">2021-03-22 17:31:36</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<h4 id="Download-and-install-Istio"><a href="#Download-and-install-Istio" class="headerlink" title="Download and install Istio"></a><b>Download and install Istio</b></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">$ curl -L https://istio.io/downloadIstio | sh -</span><br><span class="line">$ cd istio-1.9.1</span><br><span class="line">$ cp tools/istioctl.bash  /root/</span><br><span class="line">$ source /root/istioctl.bash </span><br><span class="line"></span><br><span class="line">#we use the demo configuration profile</span><br><span class="line">$ istioctl install --set profile=demo -y</span><br><span class="line"></span><br><span class="line">#enable access logs </span><br><span class="line">$ istioctl install --set meshConfig.accessLogFile=/dev/stdout</span><br><span class="line"></span><br><span class="line">#Add a namespace label to instruct Istio to automatically inject Envoy sidecar proxies when you deploy your application later</span><br><span class="line">$ kubectl label namespace back-end istio-injection=enabled</span><br><span class="line"></span><br><span class="line">#manually inject a deployment</span><br><span class="line">istioctl kube-inject -f samples/sleep/sleep.yaml | kubectl apply -f -</span><br><span class="line"></span><br><span class="line"># inspecting the deployments, pods, services and other resources that were installed by Istio</span><br><span class="line">$ kubectl -n istio-system get deploy</span><br><span class="line">NAME                   READY   UP-TO-DATE   AVAILABLE   AGE</span><br><span class="line">istio-ingressgateway   1/1     1            1           47d</span><br><span class="line">istiod                 1/1     1            1           47d</span><br><span class="line">kiali                  1/1     1            1           52m</span><br><span class="line">prometheus             1/1     1            1           35m</span><br><span class="line"></span><br><span class="line">#display the names of Istio configuration profiles</span><br><span class="line">$ istioctl profile list</span><br><span class="line">Istio configuration profiles:</span><br><span class="line">    default</span><br><span class="line">    demo</span><br><span class="line">    empty</span><br><span class="line">    minimal</span><br><span class="line">    openshift</span><br><span class="line">    preview</span><br><span class="line">    remote</span><br></pre></td></tr></table></figure>
+<h4 id="Deploy-the-sample-application"><a href="#Deploy-the-sample-application" class="headerlink" title="Deploy the sample application"></a><b>Deploy the sample application</b></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml -nback-end</span><br><span class="line"></span><br><span class="line">$ kubectl get services -nback-end</span><br><span class="line">NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE</span><br><span class="line">details       ClusterIP   10.10.167.174   &lt;none&gt;        9080/TCP   46d</span><br><span class="line">productpage   ClusterIP   10.10.38.82     &lt;none&gt;        9080/TCP   46d</span><br><span class="line">ratings       ClusterIP   10.10.146.1     &lt;none&gt;        9080/TCP   46d</span><br><span class="line">reviews       ClusterIP   10.10.121.159   &lt;none&gt;        9080/TCP   46d</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ kubectl get pod -nback-end     </span><br><span class="line">NAME                              READY   STATUS    RESTARTS   AGE</span><br><span class="line">details-v1-7cf94f6cfc-74nzz       2/2     Running   0          3d</span><br><span class="line">productpage-v1-699d889699-f9v89   2/2     Running   0          3d</span><br><span class="line">ratings-v1-6676c6c6d9-hm42v       2/2     Running   0          3d</span><br><span class="line">reviews-v1-768b495cc9-9rcrn       2/2     Running   0          3d</span><br><span class="line">reviews-v2-76f576ddbc-nbtnz       2/2     Running   0          3d</span><br><span class="line">reviews-v3-5785689f47-njxl6       2/2     Running   0          3d</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ kubectl exec &quot;$(kubectl get pod -nback-end -l app=ratings -o jsonpath=&apos;&#123;.items[0].metadata.name&#125;&apos;)&quot; -nback-end -c ratings -- curl -sS productpage:9080/productpage | grep -o &quot;&lt;title&gt;.*&lt;/title&gt;&quot; </span><br><span class="line">&lt;title&gt;Simple Bookstore App&lt;/title&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="Open-the-application-to-outside-traffic"><a href="#Open-the-application-to-outside-traffic" class="headerlink" title="Open the application to outside traffic"></a><b>Open the application to outside traffic</b></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl apply -f samples/bookinfo/networking/bookinfo-gateway.yaml -nback-end</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># istioctl analyze -nback-end</span><br><span class="line">✔ No validation issues found when analyzing namespace: back-end.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ kubectl get svc istio-ingressgateway -n istio-system</span><br><span class="line">NAME                   TYPE           CLUSTER-IP    EXTERNAL-IP   PORT(S)                                                                      AGE</span><br><span class="line">istio-ingressgateway   LoadBalancer   10.10.238.4   &lt;pending&gt;     15021:40386/TCP,80:32705/TCP,443:39232/TCP,31400:46574/TCP,15443:44787/TCP   46d</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if the EXTERNAL-IP value is set, your environment has an external load balancer that you can use for the ingress gateway. If the EXTERNAL-IP value is &lt;none&gt; (or perpetually &lt;pending&gt;), your environment does not provide an external load balancer for the ingress gateway. In this case, you can access the gateway using the service’s node port.</span><br><span class="line"></span><br><span class="line">export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath=&apos;&#123;.status.loadBalancer.ingress[0].ip&#125;&apos;)</span><br><span class="line">export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath=&apos;&#123;.spec.ports[?(@.name==&quot;http2&quot;)].port&#125;&apos;)</span><br><span class="line">export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath=&apos;&#123;.spec.ports[?(@.name==&quot;https&quot;)].port&#125;&apos;)</span><br><span class="line"></span><br><span class="line">这里我们通过node port方式访问 http://masterip:32705/productpage</span><br></pre></td></tr></table></figure>
+<h4 id="View-the-dashboard"><a href="#View-the-dashboard" class="headerlink" title="View the dashboard"></a><b>View the dashboard</b></h4><p>Use the following instructions to deploy the Kiali dashboard, along with Prometheus, Grafana, and Jaeger</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">$ istioctl apply -f samples/addons/kiali.yaml </span><br><span class="line">This will install the Istio 1.9.1  profile with [&quot;Istio core&quot; &quot;Istiod&quot; &quot;Ingress gateways&quot;] components into the cluster. Proceed? (y/N) y</span><br><span class="line">✔ Istio core installed                                                                                                             </span><br><span class="line">✔ Istiod installed                                                                                                                 </span><br><span class="line">✔ Ingress gateways installed                                                                                                       </span><br><span class="line">- Pruning removed resources                                                                                                          Removed PodDisruptionBudget:istio-system:istio-egressgateway.</span><br><span class="line">  Removed Deployment:istio-system:istio-egressgateway.</span><br><span class="line">  Removed Service:istio-system:istio-egressgateway.</span><br><span class="line">  Removed ServiceAccount:istio-system:istio-egressgateway-service-account.</span><br><span class="line">  Removed RoleBinding:istio-system:istio-egressgateway-sds.</span><br><span class="line">  Removed Role:istio-system:istio-egressgateway-sds.</span><br><span class="line">✔ Installation complete                                       </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ kubectl apply -f samples/addons/prometheus.yaml </span><br><span class="line">serviceaccount/prometheus created</span><br><span class="line">configmap/prometheus created</span><br><span class="line">clusterrole.rbac.authorization.k8s.io/prometheus created</span><br><span class="line">clusterrolebinding.rbac.authorization.k8s.io/prometheus created</span><br><span class="line">service/prometheus created</span><br><span class="line">deployment.apps/prometheus created</span><br><span class="line"></span><br><span class="line">#这里需要等待一会才部署完成</span><br><span class="line">$ while ! kubectl wait --for=condition=available --timeout=600s deployment/kiali -n istio-system; do sleep 1; done</span><br><span class="line">deployment.apps/kiali condition met</span><br><span class="line"></span><br><span class="line">$ istioctl dashboard kiali</span><br><span class="line">http://localhost:20001/kiali</span><br><span class="line">Failed to open browser; open http://localhost:20001/kiali in your browser.</span><br><span class="line"></span><br><span class="line">$ kubectl get pod -nistio-system</span><br><span class="line">NAME                                  READY   STATUS    RESTARTS   AGE</span><br><span class="line">istio-ingressgateway-98c798c9-rtcd8   1/1     Running   0          57m</span><br><span class="line">istiod-845ddbdd69-crnb4               1/1     Running   0          58m</span><br><span class="line">kiali-d4fdb9cdb-88lgm                 1/1     Running   0          19m</span><br><span class="line">prometheus-7d76687994-5rgvs           2/2     Running   0          3m26s</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">tiger@abc:~$  port-forward --namespace istio-system service/kiali 4001:20001</span><br><span class="line">我们访问http://localhost:4001/就可以了</span><br><span class="line"></span><br><span class="line">#或者通过node port访问</span><br><span class="line">$ kubectl get service kiali -n istio-system -o yaml &gt; kiali-service.yaml</span><br><span class="line">$ vim kiali-service.yaml</span><br><span class="line"></span><br><span class="line">spec:</span><br><span class="line">  clusterIP: 10.10.29.155</span><br><span class="line">  ports:</span><br><span class="line">  - name: http</span><br><span class="line">   # -&gt; nodePort: 32123</span><br><span class="line">    port: 20001</span><br><span class="line">    protocol: TCP</span><br><span class="line">    targetPort: 20001</span><br><span class="line">  - name: http-metrics</span><br><span class="line">    port: 9090</span><br><span class="line">    protocol: TCP</span><br><span class="line">    targetPort: 9090</span><br><span class="line">  selector:</span><br><span class="line">    app.kubernetes.io/instance: kiali-server</span><br><span class="line">    app.kubernetes.io/name: kiali</span><br><span class="line">  sessionAffinity: None</span><br><span class="line">  type: ClusterIP   # -&gt; type: NodePort</span><br><span class="line">status:</span><br><span class="line">  loadBalancer: &#123;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Uninstall-Istio"><a href="#Uninstall-Istio" class="headerlink" title="Uninstall Istio"></a><b>Uninstall Istio</b></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ istioctl x uninstall --purge</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#The control plane namespace (e.g., istio-system) is not removed by default. </span><br><span class="line">If no longer needed, use the following command to remove it:</span><br><span class="line"></span><br><span class="line">$ kubectl delete namespace istio-system</span><br></pre></td></tr></table></figure>
+<h4 id="upgrade-istio-from-1-8-to-1-9"><a href="#upgrade-istio-from-1-8-to-1-9" class="headerlink" title="upgrade istio from 1.8 to 1.9"></a><b>upgrade istio from 1.8 to 1.9</b></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line">$ ./istioctl upgrade -f demo.yaml                           </span><br><span class="line">2021-03-19T08:37:18.145328Z     info    proto: tag has too few fields: &quot;-&quot;</span><br><span class="line">Control Plane - istio-egressgateway pod - istio-egressgateway-7fc985bd9f-tnjcl - version: 1.8.2</span><br><span class="line">Control Plane - istio-ingressgateway pod - istio-ingressgateway-58f9d7d858-bg272 - version: 1.8.2</span><br><span class="line">Control Plane - istiod pod - istiod-7d8f784f96-vpx8v - version: 1.8.2</span><br><span class="line"></span><br><span class="line">Upgrade version check passed: 1.8.2 -&gt; 1.9.1.</span><br><span class="line"></span><br><span class="line">2021-03-19T08:37:18.503724Z     info    Error: failed to generate Istio configs from file [demo.yaml] for the current version: 1.8.2, error: Get &quot;https://github.com/istio/istio/releases/download/1.8.2/istio-1.8.2-osx.tar.gz&quot;: read tcp 172.17.20.10:5127-&gt;52.74.223.119:443: read: connection reset by peer</span><br><span class="line"></span><br><span class="line">Error: failed to generate Istio configs from file [demo.yaml] for the current version: 1.8.2, error: Get &quot;https://github.com/istio/istio/releases/download/1.8.2/istio-1.8.2-osx.tar.gz&quot;: read tcp 172.17.20.10:5127-&gt;52.74.223.119:443: read: connection reset by peer</span><br><span class="line"></span><br><span class="line">增加hosts</span><br><span class="line">52.69.186.44 github.com</span><br><span class="line"></span><br><span class="line">$ ./istioctl upgrade -f demo.yaml </span><br><span class="line">2021-03-19T09:02:56.689202Z     info    proto: tag has too few fields: &quot;-&quot;</span><br><span class="line">Control Plane - istio-egressgateway pod - istio-egressgateway-7fc985bd9f-tnjcl - version: 1.8.2</span><br><span class="line">Control Plane - istio-ingressgateway pod - istio-ingressgateway-58f9d7d858-bg272 - version: 1.8.2</span><br><span class="line">Control Plane - istiod pod - istiod-7d8f784f96-vpx8v - version: 1.8.2</span><br><span class="line"></span><br><span class="line">Upgrade version check passed: 1.8.2 -&gt; 1.9.1.</span><br><span class="line"></span><br><span class="line">Upgrade check: Warning!!! The following IOPS will be changed as part of upgrade. Please double check they are correct:</span><br><span class="line">spec:</span><br><span class="line">  addonComponents: map[istiocoredns:map[enabled:false]] -&gt;</span><br><span class="line">  components:</span><br><span class="line">    egressGateways:</span><br><span class="line">      &apos;[#0]&apos;:</span><br><span class="line">        k8s:</span><br><span class="line">          env: &apos;[map[name:ISTIO_META_ROUTER_MODE value:standard]] -&gt;&apos;</span><br><span class="line">          hpaSpec: map[maxReplicas:5 metrics:[map[resource:map[name:cpu targetAverageUtilization:80] type:Resource]] minReplicas:1 scaleTargetRef:map[apiVersion:apps/v1 kind:Deployment name:istio-egressgateway]] -&gt;</span><br><span class="line">          resources:</span><br><span class="line">            limits: map[cpu:2000m memory:1024Mi] -&gt;</span><br><span class="line">          service: map[ports:[map[name:http2 port:80 protocol:TCP targetPort:8080] map[name:https port:443 protocol:TCP targetPort:8443] map[name:tls port:15443 protocol:TCP targetPort:15443]]] -&gt;</span><br><span class="line">          strategy: map[rollingUpdate:map[maxSurge:100% maxUnavailable:25%]] -&gt;</span><br><span class="line">    ingressGateways:</span><br><span class="line">      &apos;[#0]&apos;:</span><br><span class="line">        k8s:</span><br><span class="line">          env: &apos;[map[name:ISTIO_META_ROUTER_MODE value:standard]] -&gt;&apos;</span><br><span class="line">          hpaSpec: map[maxReplicas:5 metrics:[map[resource:map[name:cpu targetAverageUtilization:80] type:Resource]] minReplicas:1 scaleTargetRef:map[apiVersion:apps/v1 kind:Deployment name:istio-ingressgateway]] -&gt;</span><br><span class="line">          resources:</span><br><span class="line">            limits: map[cpu:2000m memory:1024Mi] -&gt;</span><br><span class="line">          strategy: map[rollingUpdate:map[maxSurge:100% maxUnavailable:25%]] -&gt;</span><br><span class="line">    pilot:</span><br><span class="line">      k8s:</span><br><span class="line">        readinessProbe: map[httpGet:map[path:/ready port:8080] initialDelaySeconds:1 periodSeconds:3 timeoutSeconds:5] -&gt;</span><br><span class="line">        replicaCount: -&gt; 1</span><br><span class="line">        strategy: map[rollingUpdate:map[maxSurge:100% maxUnavailable:25%]] -&gt;</span><br><span class="line">  installPackagePath: /tmp/istio-install-packages/istio-1.8.2/manifests -&gt;</span><br><span class="line">  values:</span><br><span class="line">    clusterResources: true -&gt;</span><br><span class="line">    global:</span><br><span class="line">      meshExpansion: map[enabled:false useILB:false] -&gt;</span><br><span class="line">    istiocoredns: map[coreDNSImage:coredns/coredns coreDNSPluginImage:istio/coredns-plugin:0.2-istio-1.1 coreDNSTag:1.6.2] -&gt;</span><br><span class="line">    sidecarInjectorWebhook: map[enableNamespacesByDefault:false objectSelector:map[autoInject:true enabled:false] rewriteAppHTTPProbe:true] -&gt;</span><br><span class="line"></span><br><span class="line">Confirm to proceed [y/N]? y</span><br><span class="line">✔ Istio core installed                                                                                                             </span><br><span class="line">✔ Istiod installed                                                                                                                 </span><br><span class="line">✔ Ingress gateways installed                                                                                                       </span><br><span class="line">✔ Egress gateways installed                                                                                                        </span><br><span class="line">✔ Installation complete                                                                                                            ..........</span><br><span class="line">Upgrade rollout completed. All Istio control plane pods are running on the target version.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Control Plane - istio-egressgateway pod - istio-egressgateway-d65f89ff9-dd5bk - version: 1.9.1</span><br><span class="line">Control Plane - istio-ingressgateway pod - istio-ingressgateway-79d84c875d-tnjfg - version: 1.9.1</span><br><span class="line">Control Plane - istiod pod - istiod-bbbdc64cb-8q96m - version: 1.9.1</span><br><span class="line"></span><br><span class="line">Success. Now the Istio control plane is running at version 1.9.1.</span><br><span class="line"></span><br><span class="line">To upgrade the Istio data plane, you will need to re-inject it.</span><br><span class="line">If you’re using automatic sidecar injection, you can upgrade the sidecar by doing a rolling update for all the pods:</span><br><span class="line">    kubectl rollout restart deployment --namespace &lt;namespace with auto injection&gt;</span><br><span class="line">If you’re using manual injection, you can upgrade the sidecar by executing:</span><br><span class="line">    kubectl apply -f &lt; (istioctl kube-inject -f &lt;original application deployment yaml&gt;)</span><br><span class="line"></span><br><span class="line">$ istioctl version  </span><br><span class="line">client version: 1.9.1</span><br><span class="line">control plane version: 1.9.1</span><br><span class="line">data plane version: 1.9.1 (8 proxies)</span><br></pre></td></tr></table></figure>
+<p>[ref]<br><a href="https://istio.io/latest/docs/setup/getting-started" target="_blank" rel="noopener">Getting Started</a></p>
+
+							<!-- 支付宝打赏图案 -->
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+	  
+	    
+		<!-- 来必力City版安装代码 -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zOTQ5MS8xNjAxOA==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+		
+<!--		<div class="comment-section">
+  
+  
+
+
+</div> -->
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+
+<p>
+  由 <a href="https://hexo.io">hexo</a> 强力驱动 |&nbsp;&nbsp;本站总点击 <span id="busuanzi_value_site_pv"></span> 次
+&nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
+</p>
+<p>
+  &copy; 2021 <a href="https://t1ger.github.io"> t1ger </a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
+
+</p>
+
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-99921399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>
