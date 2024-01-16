@@ -1,0 +1,247 @@
+	<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="google-site-verification" content="B6QNJ8N2Q7hbnMncyrM5GMCWgK-vIAEx0o2DQre64ls">
+  
+  <title>How to pass variable from one playbook to another playbook? | t1ger的茶馆</title>
+  <meta name="author" content="t1ger">
+  
+  <meta name="description" content="https://t1ger.github.io/">
+  
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta property="og:title" content="How to pass variable from one playbook to another playbook?">
+  <meta property="og:site_name" content="t1ger的茶馆">
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+</head>
+</html>
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">t1ger的茶馆</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="这是一个订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>How to pass variable from one playbook to another playbook?</h2>
+					
+					<div>
+						<span class="post-time">2024-01-16 17:25:09</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<p>在实际工作中，我们有时候需要将一个playbook的变量传递给另外一个playbook.</p>
+<p>这里分为两个情况，我们分别来看看</p>
+<h5 id="同一个目标主机之间的playbook-变量传递"><a href="#同一个目标主机之间的playbook-变量传递" class="headerlink" title="同一个目标主机之间的playbook 变量传递"></a><b>同一个目标主机之间的playbook 变量传递</b></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">[root@ansible-server ~]# cat global.yaml</span><br><span class="line">---</span><br><span class="line"># Combine multiple playbooks</span><br><span class="line">  - import_playbook: test.play1.yaml</span><br><span class="line">  - import_playbook: test.play2.yaml</span><br><span class="line">[root@ansible-server ~]#</span><br><span class="line">#test.play1.yaml</span><br><span class="line">---</span><br><span class="line">- hosts: localhost</span><br><span class="line">  gather_facts: false</span><br><span class="line"></span><br><span class="line">  tasks:</span><br><span class="line">   - name: Register a new value</span><br><span class="line">     shell: echo &quot;/etc/resolv.conf&quot;</span><br><span class="line">     register: PLAY1VAR</span><br><span class="line"></span><br><span class="line">   - debug: msg=&quot;&#123;&#123;PLAY1VAR.stdout&#125;&#125;&quot;</span><br><span class="line"></span><br><span class="line">#test.play2.yaml</span><br><span class="line">---</span><br><span class="line">- hosts: localhost</span><br><span class="line">  gather_facts: false</span><br><span class="line"></span><br><span class="line">  tasks:</span><br><span class="line">   - name: Echo the output - PLAY1 variable vaule</span><br><span class="line">     shell: cat &quot;&#123;&#123;PLAY1VAR.stdout&#125;&#125;&quot; |tail -1</span><br><span class="line">     register: PLAY2_RESULTS</span><br><span class="line"></span><br><span class="line">   - debug: msg=&quot;&#123;&#123;PLAY2_RESULTS.stdout&#125;&#125;&quot;</span><br></pre></td></tr></table></figure>
+<p>输出结果为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">[root@ansible-server ~]# ansible-playbook -i localhost global.yaml</span><br><span class="line"></span><br><span class="line"> ansible-playbook -i localhost global.yaml  </span><br><span class="line">[WARNING]: No inventory was parsed, only implicit localhost is available</span><br><span class="line">[WARNING]: provided hosts list is empty, only localhost is available. Note that</span><br><span class="line">the implicit localhost does not match &apos;all&apos;</span><br><span class="line"></span><br><span class="line">PLAY [localhost] ***************************************************************</span><br><span class="line"></span><br><span class="line">TASK [Register a new value] ****************************************************</span><br><span class="line">changed: [localhost]</span><br><span class="line"></span><br><span class="line">TASK [debug] *******************************************************************</span><br><span class="line">ok: [localhost] =&gt; &#123;</span><br><span class="line">    &quot;msg&quot;: &quot;/etc/resolv.conf&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">PLAY [localhost] ***************************************************************</span><br><span class="line"></span><br><span class="line">TASK [Echo the output - PLAY1 variable vaule] **********************************</span><br><span class="line">changed: [localhost]</span><br><span class="line"></span><br><span class="line">TASK [debug] *******************************************************************</span><br><span class="line">ok: [localhost] =&gt; &#123;</span><br><span class="line">    &quot;msg&quot;: &quot;search .&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">PLAY RECAP *********************************************************************</span><br><span class="line">localhost                  : ok=4    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0</span><br></pre></td></tr></table></figure>
+<h5 id="不同目标主机之间的playbook-变量传递"><a href="#不同目标主机之间的playbook-变量传递" class="headerlink" title="不同目标主机之间的playbook 变量传递"></a><b>不同目标主机之间的playbook 变量传递</b></h5><p>如果我们将test.play2.yaml的目标主机改变，test.play1.yaml的目标主机保持不变<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&gt; ansible-playbook -i localhost global.yaml</span><br><span class="line">[WARNING]: No inventory was parsed, only implicit localhost is available</span><br><span class="line">[WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit localhost does not match &apos;all&apos;</span><br><span class="line">[WARNING]: Could not match supplied host pattern, ignoring: 192.168.1.9</span><br><span class="line"></span><br><span class="line">PLAY [192.168.1.9] ***********************************************************************************************************</span><br><span class="line">skipping: no hosts matched</span><br><span class="line"></span><br><span class="line">PLAY [localhost] *************************************************************************************************************</span><br><span class="line"></span><br><span class="line">TASK [Echo the output - PLAY1 variable vaule] ********************************************************************************</span><br><span class="line">fatal: [localhost]: FAILED! =&gt; &#123;&quot;msg&quot;: &quot;The task includes an option with an undefined variable. The error was: &apos;PLAY1VAR&apos; is undefined\n\nThe error appears to be in &apos;/home/tiger/test.play2.yaml&apos;: line 6, column 6, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n  tasks:\n   - name: Echo the output - PLAY1 variable vaule\n     ^ here\n&quot;&#125;</span><br><span class="line"></span><br><span class="line">PLAY RECAP *******************************************************************************************************************</span><br><span class="line">localhost                  : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0</span><br></pre></td></tr></table></figure></p>
+<p>怎么解决呢？</p>
+<p>调整test.paly1.yaml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">- hosts: localhost</span><br><span class="line">  gather_facts: false</span><br><span class="line"></span><br><span class="line">  tasks:</span><br><span class="line">   - name: Register a new value</span><br><span class="line">     shell: echo &quot;/etc/resolv.conf&quot;</span><br><span class="line">     register: PLAY1VAR</span><br><span class="line"></span><br><span class="line">   - debug: msg=&quot;&#123;&#123;PLAY1VAR.stdout&#125;&#125;&quot;</span><br><span class="line"></span><br><span class="line">   - name: Register dummy host with variable</span><br><span class="line">     add_host:</span><br><span class="line">       name: &quot;DUMMY_HOST&quot;</span><br><span class="line">       PLAY1VAR_NEW: &quot; &#123;&#123; PLAY1VAR.stdout &#125;&#125;&quot;</span><br></pre></td></tr></table></figure>
+<p>调整test.play2.yaml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">- hosts: 192.168.1.9</span><br><span class="line">  gather_facts: false</span><br><span class="line"></span><br><span class="line">  tasks:</span><br><span class="line">   - name: Echo the output - PLAY1 variable vaule</span><br><span class="line">     shell: cat &#123;&#123; hostvars[&apos;DUMMY_HOST&apos;][&apos;PLAY1VAR_NEW&apos;] &#125;&#125; |tail -1</span><br><span class="line">     register: PLAY2_RESULTS</span><br><span class="line"></span><br><span class="line">   - debug: msg=&quot;&#123;&#123;PLAY2_RESULTS.stdout&#125;&#125;&quot;</span><br></pre></td></tr></table></figure>
+							<!-- 支付宝打赏图案 -->
+      						<!--
+      						<div id="donate_guide" class="donate_bar center ">
+          					<a href="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          					<img src="http://mypay-1253516637.costj.myqcloud.com/2000.jpg" title="支付宝打赏" height="164px" width="164px">
+          					</a> 
+      						</div>
+      						-->
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+	  
+	    
+		<!-- 来必力City版安装代码 -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC8zOTQ5MS8xNjAxOA==">
+	<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+	</script>
+<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+		
+<!--		<div class="comment-section">
+  
+  
+
+
+</div> -->
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+
+<p>
+  由 <a href="https://hexo.io">hexo</a> 强力驱动 |&nbsp;&nbsp;本站总点击 <span id="busuanzi_value_site_pv"></span> 次
+&nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
+</p>
+<p>
+  &copy; 2024 <a href="https://t1ger.github.io"> t1ger </a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
+
+</p>
+
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-99921399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>
