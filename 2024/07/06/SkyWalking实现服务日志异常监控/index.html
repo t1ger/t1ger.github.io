@@ -141,7 +141,8 @@
 <p>有了指标数据后，我们可以在 config/alarm-settings.yml 添加对应的告警规则，该规则定义如果一分钟内日志异常数量超过 5 就会发出告警信息</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">service_error_log_rule:</span><br><span class="line">  expression: sum(service_log_count &gt;5 ) &gt;= 1</span><br><span class="line">  period: 2</span><br><span class="line">  message: service &#123;name&#125; Error Level number over 5 in 1 minutes of last 2 minutes</span><br></pre></td></tr></table></figure>
 <p>配置好以上规则后，我们稍等 1 分钟，便可以在告警记录面板查看到响应的告警信息</p>
-
+<p>在配置好监控告警之后，想增加个认证，通过nginx来搞吧，发现如果在企业微信里每次都输入账号密码，确实很难受，于是有了下面的配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">在http里增加</span><br><span class="line">map $http_user_agent $auth_type &#123;</span><br><span class="line">    default &quot;Restricted&quot;;</span><br><span class="line">    &quot;~*WindowsWechat&quot; &quot;off&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">在server里增加</span><br><span class="line"></span><br><span class="line">auth_basic $auth_type;</span><br><span class="line">auth_basic_user_file auth_basic/auth.pass;</span><br></pre></td></tr></table></figure>
 							<!-- 支付宝打赏图案 -->
       						<!--
       						<div id="donate_guide" class="donate_bar center ">
@@ -201,7 +202,7 @@
 &nbsp;&nbsp;|&nbsp;&nbsp;您是第 <span id="busuanzi_value_site_uv"></span> 位访客
 </p>
 <p>
-  &copy; 2024 <a href="https://t1ger.github.io"> t1ger </a>
+  &copy; 2025 <a href="https://t1ger.github.io"> t1ger </a>
   &nbsp;&nbsp;|&nbsp;&nbsp;<span><a href="/baidusitemap.xml">百度网站地图</a></span>
 
 </p>
